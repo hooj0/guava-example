@@ -120,7 +120,7 @@ import com.google.common.base.Optional;
 		</tr>
 	</tbody>
 </table>
- * <b>function:</b> Optional Null 
+ * Optional Null 
  * @author hoojo
  * @createDate 2017年9月29日 下午5:57:12
  * @file OptionalTest.java
