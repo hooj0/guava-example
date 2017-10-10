@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 
 /**
+ * 数据校验或检查
 <table width="631" cellspacing="0" cellpadding="0" border="1">
 <tbody>
 <tr>
