@@ -9,7 +9,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
 
 /**
- * <b>function:</b> Objects 工具类
+ * Objects 工具类
  * @author hoojo
  * @createDate 2017年10月10日 下午5:42:23
  * @file ObjectsTest.java
