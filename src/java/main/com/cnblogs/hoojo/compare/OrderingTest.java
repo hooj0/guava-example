@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 /**
- * 
+ * 数据排序
  * <table cellspacing="0" cellpadding="0" border="1">
 <tbody>
 <tr>
@@ -107,7 +107,6 @@ import com.google.common.collect.Ordering;
 </tr>
 </tbody>
 </table>
- * 
  * @author hoojo
  * @createDate 2017年10月10日 下午6:19:03
  * @file OrderingTest.java
