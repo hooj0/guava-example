@@ -8,6 +8,7 @@ import org.junit.Test;
 import com.google.common.base.Throwables;
 
 /**
+ * Throwables 异常类处理
  * <table cellspacing="0" cellpadding="0" border="1">
 <tbody>
 <tr>
