@@ -36,7 +36,7 @@ import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 
 /**
- * <b>function:</b> 不可变集合
+ * 不可变集合
  * 
  * <table cellspacing="0" cellpadding="0" border="1">
 <tbody>
