@@ -13,9 +13,7 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.TreeMultimap;
 
 /**
- * 
-一键多值集合
-
+ * 一键多值集合
 Implement：
 <table width="614" cellspacing="0" cellpadding="0" border="1">
 <tbody>
