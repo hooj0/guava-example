@@ -15,7 +15,7 @@ import com.google.common.collect.Ordering;
 import com.google.common.collect.TreeMultiset;
 
 /**
- * <b>function:</b> 新集合对象
+ * 新集合对象
 
 
 API：
