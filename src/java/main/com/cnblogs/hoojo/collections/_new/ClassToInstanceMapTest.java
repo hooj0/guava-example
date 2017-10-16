@@ -5,7 +5,7 @@ import org.junit.Test;
 import com.google.common.collect.MutableClassToInstanceMap;
 
 /**
- * <b>function:</b> MutableClassToInstanceMap和 ImmutableClassToInstanceMap。
+ * MutableClassToInstanceMap和 ImmutableClassToInstanceMap。
  * @author hoojo
  * @createDate 2017年10月16日 下午2:41:00
  * @file ClassToInstanceMapTest.java
