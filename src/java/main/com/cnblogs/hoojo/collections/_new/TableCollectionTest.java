@@ -9,7 +9,7 @@ import com.google.common.collect.Tables;
 import com.google.common.collect.TreeBasedTable;
 
 /**
- * <b>function:</b> table
+ * table
 
 HashBasedTable：本质上用HashMap<R, HashMap<C, V>>实现；
 
