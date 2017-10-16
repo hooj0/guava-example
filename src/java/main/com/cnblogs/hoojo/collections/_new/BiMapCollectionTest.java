@@ -8,7 +8,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 
 /**
- * <b>function:</b> 双向Map
+ * 双向Map
 
 <table cellspacing="0" cellpadding="0" border="1">
 <tbody>
