@@ -10,7 +10,7 @@ import com.google.common.collect.TreeRangeMap;
 import com.google.common.collect.TreeRangeSet;
 
 /**
- * <b>function:</b> RangeSet/RangeMap
+ * RangeSet/RangeMap
  * @author hoojo
  * @createDate 2017年10月16日 下午2:48:26
  * @file RangeCollectionTest.java
