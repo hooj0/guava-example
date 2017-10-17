@@ -65,7 +65,7 @@ import com.google.common.primitives.Ints;
 </tr>
 </tbody>
 </table>
- * <b>function:</b> 集合工具类
+ * 集合工具类
  * @author hoojo
  * @createDate 2017年10月17日 下午3:55:32
  * @file IterablesTest.java
