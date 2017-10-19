@@ -14,7 +14,7 @@ import com.google.common.collect.ForwardingSet;
 import com.google.common.collect.Sets;
 
 /**
- * <b>function:</b> 集合扩展工具类
+ * 集合扩展工具类
 
 <table>
 <thead>
