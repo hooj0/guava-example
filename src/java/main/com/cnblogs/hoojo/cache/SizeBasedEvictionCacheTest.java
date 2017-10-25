@@ -15,7 +15,7 @@ import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.ImmutableMap;
 
 /**
- * <b>function:</b> 【基于容量回收-数量】缓存回收策略 超出指定size后回收
+ * 【基于容量回收-数量】缓存回收策略 超出指定size后回收
  * 
  * <h2>缓存回收</h2> 缓存回收方式：基于容量回收、定时回收和基于引用回收；<br/>
  * <br/>
