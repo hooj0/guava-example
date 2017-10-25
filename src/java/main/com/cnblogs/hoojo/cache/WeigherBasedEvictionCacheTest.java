@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.ImmutableSortedSet;
 
 /**
- * <b>function:</b> 【基于容量回收-权重】缓存回收策略 超出指定weights后回收
+ * 【基于容量回收-权重】缓存回收策略 超出指定weights后回收
  * 
  * <h2>缓存回收</h2> 缓存回收方式：基于容量回收、定时回收和基于引用回收；<br/>
  * <br/>
