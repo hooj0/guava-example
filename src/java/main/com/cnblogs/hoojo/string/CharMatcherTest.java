@@ -8,7 +8,7 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Predicate;
 
 /**
- * <b>function:</b> 字符匹配器
+ * 字符匹配器
  * @author hoojo
  * @createDate 2017年10月30日 下午4:42:24
  * @file CharMatcherTest.java
