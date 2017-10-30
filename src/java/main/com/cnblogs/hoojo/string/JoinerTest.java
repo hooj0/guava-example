@@ -10,7 +10,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 
 /**
- * <b>function:</b> Joiner 连接器
+ * Joiner 连接器
 
 <table class="src" style="box-sizing: border-box; border-collapse: collapse; border-spacing: 0px;  border-color: rgb(214, 214, 214); width: 495.555572509766px; vertical-align: top; margin-top: 8px; margin-bottom: 8px; color: rgb(49, 49, 49);    font-size: 14.4444446563721px; line-height: 22px; background-color: rgb(247, 247, 247);">
 	<tbody style="box-sizing: border-box;">
