@@ -69,7 +69,7 @@ public class PreconditionsTest {
 		
 		try {
 			// 检查参数，不满足条件就抛出默认异常
-			checkArgument(3 == 2);
+			checkArgument(3 == 2);			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

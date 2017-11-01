@@ -168,7 +168,18 @@ public class OptionalTest {
 			System.out.println(a.asSet());
 			
 			System.out.println(Optional.fromNullable(null).or(333));
+			System.out.println(Optional.fromNullable(444).or(333));
 			System.out.println(a.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testNotNull() {
+		try {
+			Optional<Integer> a = Optional.of(null);
+			System.out.println(a.isPresent());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

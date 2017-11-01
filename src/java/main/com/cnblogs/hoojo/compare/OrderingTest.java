@@ -209,8 +209,9 @@ public class OrderingTest {
 		
 				@Override
 				public Integer apply(Entity input) {
-					if (input != null)
+					if (input != null) {
 						return input.b;
+					}
 					
 					return null;
 				}
