@@ -138,20 +138,20 @@ public class OptionalTest {
 			
 			Optional<Integer> a = Optional.fromNullable(3);
 			
-			System.out.println(a.isPresent()); // 是否不为空
-			System.out.println(a.get()); // 获取源对象
-			System.out.println(a.or(2)); // 如果源对象为空就返回2
+			System.out.println(a.isPresent()); // 是否存在 true
+			System.out.println(a.get()); // 获取源对象 3
+			System.out.println(a.or(2)); // 如果源对象为空就返回 2
 			System.out.println(a.orNull()); // 如果源对象为空就返回null
 			
-			System.out.println(a.asSet());
+			System.out.println(a.asSet());	// [3]
 			
 			Optional<Integer> b = Optional.fromNullable(null);
 			
-			System.out.println(b.isPresent());
-			System.out.println(b.or(1));
-			System.out.println(b.orNull());
+			System.out.println(b.isPresent()); // false
+			System.out.println(b.or(1)); // 1
+			System.out.println(b.orNull()); // null
 			
-			System.out.println(b.get());
+			System.out.println(b.get()); // Exception
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -162,13 +162,13 @@ public class OptionalTest {
 		
 		try {
 			Optional<Integer> a = Optional.absent();
-			System.out.println(a.isPresent());
-			System.out.println(a.or(3));
+			System.out.println(a.isPresent()); // false
+			System.out.println(a.or(3)); // 3
 			
-			System.out.println(a.asSet());
+			System.out.println(a.asSet()); // []
 			
-			System.out.println(Optional.fromNullable(null).or(333));
-			System.out.println(Optional.fromNullable(444).or(333));
+			System.out.println(Optional.fromNullable(null).or(333)); // 333
+			System.out.println(Optional.fromNullable(444).or(333)); // 444
 			System.out.println(a.get());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -179,7 +179,15 @@ public class OptionalTest {
 	public void testNotNull() {
 		try {
 			Optional<Integer> a = Optional.of(null);
-			System.out.println(a.isPresent());
+			System.out.println(a.isPresent()); // exception
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			Optional<Integer> a = Optional.of(666);
+			System.out.println(a.isPresent()); // true
+			System.out.println(a.get()); // 666
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
