@@ -2,7 +2,6 @@ package com.cnblogs.hoojo.cache;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
