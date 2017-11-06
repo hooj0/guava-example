@@ -113,24 +113,30 @@ public class MultisetConllectonsTest {
 			hash.add("china", 2);
 			hash.addAll(Arrays.asList("world", "java", "world"));
 			
-			System.out.println(hash);
+			System.out.println(hash); // [world x 2, java, china x 2, home]
 			
-			System.out.println(hash.size()); // 总数量、长度
-			System.out.println(hash.elementSet()); // 去掉重复的元素
-			System.out.println(hash.entrySet()); // entrySet 元素的集合
+			// 总数量、长度
+			System.out.println(hash.size()); // 6
+			// 去掉重复的元素
+			System.out.println(hash.elementSet()); // [world, java, china, home]
+			// entrySet 元素的集合
+			System.out.println(hash.entrySet()); // [world x 2, java, china x 2, home]
 
-			System.out.println(hash.count("java")); // 查看元素 java的数量
-			hash.setCount("java", 5); // 设置 java 元素数量为 5
-			System.out.println(hash.count("java")); 
+			// 查看元素 java的数量
+			System.out.println(hash.count("java")); // 1
 			
-			System.out.println(hash.setCount("home", 1, 3)); // 设置home x 1 的元素个数为3
-			System.out.println(hash);
+			hash.setCount("java", 5); // 设置 java 元素数量为 5
+			System.out.println(hash.count("java"));  // 5
+			
+			// 设置home x 1 的元素个数为3
+			System.out.println(hash.setCount("home", 1, 3)); // true
+			System.out.println(hash); // [world x 2, java x 5, china x 2, home x 3]
 			
 			hash.remove("java"); // 删除1个元素
-			System.out.println(hash.count("java"));
+			System.out.println(hash.count("java")); // 4
 			
 			hash.remove("java", 2); // 删除2个元素
-			System.out.println(hash.count("java"));
+			System.out.println(hash.count("java")); // 2
 			
 			hash.setCount("home", 0); // 等于 删除 home
 			hash.forEach(s -> System.out.println(s));
@@ -155,29 +161,29 @@ public class MultisetConllectonsTest {
 			tree.add("china", 2);
 			tree.addAll(Arrays.asList("world", "java", "world", "zbus", "zday", "zday"));
 			
-			System.out.println("tree: " + tree);
-			System.out.println(tree.descendingMultiset()); // 倒序
+			System.out.println("tree: " + tree); // [china x 2, home, java, world x 2, zbus, zday x 2]
+			System.out.println(tree.descendingMultiset()); // 倒序 [zday x 2, zbus, world x 2, java, home, china x 2]
 			
 			System.out.println("------------截取元素--------");
-			System.out.println(tree);
+			System.out.println(tree); // [china x 2, home, java, world x 2, zbus, zday x 2]
 			// 取从头部到指定元素区间的元素(上限)
-			System.out.println(tree.headMultiset("java", BoundType.CLOSED)); // 闭区间  <= java
-			System.out.println(tree.headMultiset("java", BoundType.OPEN)); // 开区间 < java
+			System.out.println(tree.headMultiset("java", BoundType.CLOSED)); // 闭区间  <= java  [china x 2, home, java]
+			System.out.println(tree.headMultiset("java", BoundType.OPEN)); // 开区间 < java   [china x 2, home]
 			
-			System.out.println(tree.tailMultiset("java", BoundType.CLOSED)); // 闭区间  >= java
-			System.out.println(tree.tailMultiset("java", BoundType.OPEN)); // 开区间 > java
+			System.out.println(tree.tailMultiset("java", BoundType.CLOSED)); // 闭区间  >= java	[java, world x 2, zbus, zday x 2]
+			System.out.println(tree.tailMultiset("java", BoundType.OPEN)); // 开区间 > java		[world x 2, zbus, zday x 2]
 			
-			System.out.println(tree.subMultiset("home", BoundType.CLOSED, "world", BoundType.CLOSED)); // 获取 home 到 world 元素中间的节点，包含起始元素
-			System.out.println(tree.subMultiset("home", BoundType.OPEN, "world", BoundType.OPEN)); // 获取 home 到 world 元素中间的节点
+			System.out.println(tree.subMultiset("home", BoundType.CLOSED, "world", BoundType.CLOSED)); // [home, java, world x 2] 获取 home 到 world 元素中间的节点，包含起始元素
+			System.out.println(tree.subMultiset("home", BoundType.OPEN, "world", BoundType.OPEN)); // [java] 获取 home 到 world 元素中间的节点
 			System.out.println("------------截取元素--------");
 			
-			System.out.println(tree.firstEntry()); // 取到首个元素
+			System.out.println(tree.firstEntry()); // china x 2 取到首个元素
 			
-			System.out.println(tree.pollFirstEntry()); // 拉出首个元素
-			System.out.println("tree: " + tree);
+			System.out.println(tree.pollFirstEntry()); // china x 2 拉出首个元素
+			System.out.println("tree: " + tree); // [home, java, world x 2, zbus, zday x 2]
 			
-			System.out.println(tree.pollLastEntry()); // 拉出最后一个元素
-			System.out.println("tree: " + tree);
+			System.out.println(tree.pollLastEntry()); // zday x 2 拉出最后一个元素
+			System.out.println("tree: " + tree); // [home, java, world x 2, zbus]
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -193,7 +199,7 @@ public class MultisetConllectonsTest {
 			linked.add(1);
 			linked.addAll(Lists.newArrayList(9, 99, 55));
 			
-			System.out.println(linked);
+			System.out.println(linked); // [2 x 2, 3 x 2, 5, 1 x 2, 7, 9, 99, 55]
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -205,7 +211,7 @@ public class MultisetConllectonsTest {
 			concurrent.add(1);
 			concurrent.addAll(Lists.newArrayList(9, 99, 55));
 			
-			System.out.println(concurrent);
+			System.out.println(concurrent); // [1 x 2, 2 x 2, 3 x 2, 99, 5, 7, 55, 9]
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -215,22 +221,22 @@ public class MultisetConllectonsTest {
 		try {
 			ImmutableMultiset<Integer> immutable = ImmutableMultiset.<Integer>builder().add(2, 3, 5, 1, 7, 2, 3).build();
 			
-			System.out.println(immutable);
-			System.out.println(immutable.asList());
+			System.out.println(immutable); // [2 x 2, 3 x 2, 5, 1, 7]
+			System.out.println(immutable.asList()); // [2, 2, 3, 3, 5, 1, 7]
 			// immutable.of(2, 3);
 			
 			// 排序
 			ImmutableSortedMultiset<Integer> sort = ImmutableSortedMultiset.<Integer>of(2, 3, 5, 1, 7, 2, 3);
 			
-			System.out.println(sort);
-			System.out.println(sort.asList());
+			System.out.println(sort); // [1, 2 x 2, 3 x 2, 5, 7]
+			System.out.println(sort.asList()); // [1, 2, 2, 3, 3, 5, 7]
 			
 			// 逆序
 			sort = ImmutableSortedMultiset.orderedBy(Ordering.<Integer>natural().reverse()).add(2, 3, 5, 1, 7, 2, 3).build();
-			System.out.println(sort);
+			System.out.println(sort); // [7, 5, 3 x 2, 2 x 2, 1]
 			
 			sort = ImmutableSortedMultiset.<Integer>reverseOrder().add(2, 3, 5, 1, 7, 2, 3, 77, 99).build();
-			System.out.println(sort);
+			System.out.println(sort); // [99, 77, 7, 5, 3 x 2, 2 x 2, 1]
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

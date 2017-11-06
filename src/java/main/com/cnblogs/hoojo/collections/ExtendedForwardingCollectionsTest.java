@@ -176,6 +176,6 @@ public class ExtendedForwardingCollectionsTest {
 		map.put("z", 5);
 		map.put("x", 7);
 		
-		System.out.println(map.toString());
+		System.out.println(map.toString()); // [a=1, b=3, z=5, x=7, d=10]
 	}
 }

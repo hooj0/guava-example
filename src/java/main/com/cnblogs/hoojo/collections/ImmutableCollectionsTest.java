@@ -206,67 +206,67 @@ public class ImmutableCollectionsTest {
 		
 		// collection
 		ImmutableCollection<Integer> collection = ImmutableSet.<Integer>of(4, 1, 2, 3);
-		System.out.println(collection);
+		System.out.println(collection); // [4, 1, 2, 3]
 		// 转换为ImmutableList
-		System.out.println(collection.asList());
+		System.out.println(collection.asList()); //[4, 1, 2, 3]
 		// 长度
-		System.out.println(collection.size());
+		System.out.println(collection.size()); // 4
 		// iterator 迭代器
 		System.out.println(collection.iterator().hasNext());
 		collection.forEach(x -> System.out.println("print: " + x));
 		
 		// list -> jdk -> ImmutableList
 		List<Integer> list = ImmutableList.sortedCopyOf(collection);
-		System.out.println(list);
+		System.out.println(list); // [1, 2, 3, 4]
 		
 		// set -> jdk -> ImmutableSet
 		Set<Integer> set = ImmutableSet.<Integer>of(4, 1, 2, 3, 3);
-		System.out.println(set);
+		System.out.println(set); // [4, 1, 2, 3]
 		
 		//SortedSet/NavigableSet-> jdk -> ImmutableSortedSet
 		SortedSet<Integer> sortedSet = ImmutableSortedSet.<Integer>of(4, 1, 2, 3, 3);
-		System.out.println(sortedSet);
+		System.out.println(sortedSet); // [1, 2, 3, 4]
 		
 		// map-> jdk -> ImmutableMap
 		Map<String, Integer> map = ImmutableMap.<String, Integer>of("key", 30);
-		System.out.println(map);
+		System.out.println(map); // {key=30}
 		
 		// SortedMap-> jdk -> ImmutableSortedMap
 		SortedMap<String, Integer> sortedMap = ImmutableSortedMap.<String, Integer>copyOf(map);
-		System.out.println(sortedMap);
+		System.out.println(sortedMap); // {key=30}
 		
 		// Multiset 	Guava 	ImmutableMultiset
 		Multiset<Integer> multiset = ImmutableMultiset.<Integer>of(1, 2, 3, 1, 3);
-		System.out.println(multiset);
+		System.out.println(multiset); // [1 x 2, 2, 3 x 2]
 		
 		// SortedMultiset 	Guava 	ImmutableSortedMultiset 有序
 		SortedMultiset<Integer> sortedMultiset = ImmutableSortedMultiset.<Integer>of(4, 1, 2, 3, 1, 3);
-		System.out.println(sortedMultiset);
+		System.out.println(sortedMultiset); // [1 x 2, 2, 3 x 2, 4]
 		
 		// Multimap 	Guava 	ImmutableMultimap
 		Multimap<Integer, Integer> multimap = ImmutableMultimap.<Integer, Integer>of(4, 1, 2, 3, 4, 0);
-		System.out.println(multimap);
+		System.out.println(multimap); // {4=[1, 0], 2=[3]}
 		
 		// ListMultimap 	Guava 	ImmutableListMultimap //List
 		ListMultimap<Integer, Integer> listMultimap = ImmutableListMultimap.<Integer, Integer>of(4, 1, 2, 3, 4, 0, 4, 0);
-		System.out.println(listMultimap);
+		System.out.println(listMultimap); // {4=[1, 0, 0], 2=[3]}
 		
 		// SetMultimap 	Guava 	ImmutableSetMultimap set构造去重
 		SetMultimap<Integer, Integer> setMultimap = ImmutableSetMultimap.<Integer, Integer>of(4, 1, 2, 3, 4, 0, 4, 0);
-		System.out.println(setMultimap);
+		System.out.println(setMultimap); // {4=[1, 0], 2=[3]}
 		
 		// BiMap 	Guava 	ImmutableBiMap
 		BiMap<Integer, Integer> bimap = ImmutableBiMap.<Integer, Integer>of(4, 1, 2, 3, 5, 0);
-		System.out.println(bimap);
+		System.out.println(bimap); // {4=1, 2=3, 5=0}
 		
 		// ClassToInstanceMap 	Guava 	ImmutableClassToInstanceMap
 		ClassToInstanceMap<String> instanceMap = ImmutableClassToInstanceMap.of(String.class, "--");
-		System.out.println(instanceMap);
+		System.out.println(instanceMap); // {class java.lang.String=--}
 		
 		// Table 	Guava 	ImmutableTable
 		Table<String, String, Integer> table = ImmutableTable.<String, String, Integer>builder().put(Tables.immutableCell("2", "3", 2)).build();
 		Table<String, String, Integer> table2 = ImmutableTable.<String, String, Integer>of("2", "3", 2).of("2", "3", 2);
-		System.out.println(table);
-		System.out.println(table2);
+		System.out.println(table); // {2={3=2}}
+		System.out.println(table2); // {2={3=2}}
 	}
 }

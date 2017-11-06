@@ -126,11 +126,11 @@ public class OrderingTest {
 		List<Integer> list = Lists.newArrayList(1, 3, 2, 7, 5, 4);
 		
 		try {
-			System.out.println(list);
+			System.out.println(list); // [1, 3, 2, 7, 5, 4]
 			
 			list.sort(Ordering.natural());
 			
-			System.out.println(list);
+			System.out.println(list); //[1, 2, 3, 4, 5, 7]
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -139,15 +139,13 @@ public class OrderingTest {
 		List<String> list2 = Lists.newArrayList("aa", "abc", "word", "炸弹", "1limt", "3", "哈哈");
 		
 		try {
-			System.out.println(list2);
+			System.out.println(list2); //[aa, abc, word, 炸弹, 1limt, 3, 哈哈]
 			
 			list2.sort(Ordering.usingToString());
-			
-			System.out.println(list2);
+			System.out.println(list2); //[1limt, 3, aa, abc, word, 哈哈, 炸弹]
 			
 			list2.sort(Ordering.usingToString().reversed());
-			
-			System.out.println(list2);
+			System.out.println(list2); //[炸弹, 哈哈, word, abc, aa, 3, 1limt]
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -162,10 +160,10 @@ public class OrderingTest {
 			}
 		});
 		
-		System.out.println(list);
+		System.out.println(list); //[1, 3, 2, 7, 5, 4, null]
 		
 		list.sort(order.nullsFirst());
-		System.out.println(list);
+		System.out.println(list); //[null, 1, 2, 3, 4, 5, 7]
 	}
 	
 	@Test

@@ -119,13 +119,20 @@ public class ExtendedOtherCollectionsTest {
 		list.addAll(Arrays.asList(1, 5, null, 3, 3, 2, null));
 		
 		System.out.println(list); // [1, 5, null, 3, 3, 2, null]
-		System.out.println(list.iterator().hasNext()); // 1
-		System.out.println(list.myGuavaIter().peek()); // true
+		System.out.println(list.iterator().hasNext()); // true
+		System.out.println(list.myGuavaIter().peek()); // 1
 		
 		Iterator<Integer> iter = list.iterator(); // filter Null element
 		while (iter.hasNext()) {
 			System.out.println("elements: " + iter.next());
 		}
+		/*
+			elements: 1
+			elements: 5
+			elements: 3
+			elements: 3
+			elements: 2
+		 */
 	}
 	
 	/**
@@ -164,10 +171,20 @@ public class ExtendedOtherCollectionsTest {
 			}
 		};
 		
-		System.out.println(list);
+		System.out.println(list); // [1, 5, null, 3, 3, 2, null]
 		while (iter2.hasNext()) {
 			iter2.next();
 		}
+		
+		/*
+			前一个元素: 1, 当前元素: 1, 结果：1
+			前一个元素: 1, 当前元素: 5, 结果：5
+			前一个元素: 5, 当前元素: null, 结果：5
+			前一个元素: 5, 当前元素: 3, 结果：15
+			前一个元素: 15, 当前元素: 3, 结果：45
+			前一个元素: 45, 当前元素: 2, 结果：90
+			前一个元素: 90, 当前元素: null, 结果：90
+		 */
 		
 		System.out.println("---------------------------------");
 		Iterator<Integer> powersOfTwo = new AbstractSequentialIterator<Integer>(1) { // note the initial value!

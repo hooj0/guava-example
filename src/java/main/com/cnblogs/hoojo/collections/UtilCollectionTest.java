@@ -109,39 +109,43 @@ import com.google.common.primitives.Ints;
  */
 public class UtilCollectionTest {
 
+	private static void print(Object text) {
+		System.out.println(text);
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testUtils() {
 		/** FluentIterable （链式调用）语法 */
 		// 转换为 List
-		System.out.println(FluentIterable.of(3, 5).append(6).toList());
+		print(FluentIterable.of(3, 5).append(6).toList());	//[3, 5, 6]
 		// 转换为 Multiset
-		System.out.println(FluentIterable.of(3, 5).append(6).toMultiset());
+		print(FluentIterable.of(3, 5).append(6).toMultiset());	//[3, 5, 6]
 		// 转换为 Set
-		System.out.println(FluentIterable.of(3, 5).append(6).toSet());
+		print(FluentIterable.of(3, 5).append(6).toSet());	//[3, 5, 6]
 		
 		// from 构造
-		System.out.println(FluentIterable.from(new Integer[] { 3, 4, 5 }).join(Joiner.on(";")));
+		print(FluentIterable.from(new Integer[] { 3, 4, 5 }).join(Joiner.on(";")));	//3;4;5
 		
 		Set<Integer> sets = Sets.newHashSet();
 		// copyInto 拷贝
-		System.out.println(FluentIterable.concat(Lists.newArrayList(2, 3, 4, 5)).copyInto(sets));
-		System.out.println(sets);
+		print(FluentIterable.concat(Lists.newArrayList(2, 3, 4, 5)).copyInto(sets)); //[2, 3, 4, 5]
+		print(sets);	//[2, 3, 4, 5]
 		
 		// 转为不可变map
-		System.out.println(FluentIterable.of(3, 5).uniqueIndex(x -> "key_" + x));
-		System.out.println(FluentIterable.of(3, 5).stream().distinct().count());
+		print(FluentIterable.of(3, 5).uniqueIndex(x -> "key_" + x)); //{key_3=3, key_5=5}
+		print(FluentIterable.of(3, 5, 3, 1).stream().distinct().count()); //3
 	}
 	
 	@Test
 	public void testLists() {
 		/** Lists */
 		// 分组、分片、分块
-		System.out.println(Lists.partition(Lists.newArrayList(2, 3, 5, 6, 7), 2)); 
+		print(Lists.partition(Lists.newArrayList(2, 3, 5, 6, 7), 2)); //[[2, 3], [5, 6], [7]]
 		// 反转排序
-		System.out.println(Lists.reverse(Lists.newArrayList(2, 3, 5, 6, 7)));
+		print(Lists.reverse(Lists.newArrayList(2, 3, 5, 6, 7))); //[7, 6, 5, 3, 2]
 		// list 进行交叉组合，笛卡尔
-		System.out.println(Lists.cartesianProduct(Lists.newArrayList(2, 3, 5), Lists.newArrayList(12, 13)));
+		print(Lists.cartesianProduct(Lists.newArrayList(2, 3, 5), Lists.newArrayList(12, 13))); //[[2, 12], [2, 13], [3, 12], [3, 13], [5, 12], [5, 13]]
 		// 并发集合类
 		Lists.newCopyOnWriteArrayList().add(2);
 	}
@@ -151,29 +155,51 @@ public class UtilCollectionTest {
 	public void testSets() {
 		/** Sets */
 		// 集合1和集合2的差集、比较不同
-		System.out.println(Sets.difference(Sets.newHashSet(2, 3, 4), Sets.newHashSet(2, 4, 6)));
+		print(Sets.difference(Sets.newHashSet(2, 3, 4), Sets.newHashSet(2, 4, 6))); //[3]
 		// 并集
-		System.out.println(Sets.union(Sets.newHashSet(2, 3, 4), Sets.newHashSet(2, 4, 6)));
+		print(Sets.union(Sets.newHashSet(2, 3, 4), Sets.newHashSet(2, 4, 6))); //[2, 3, 4, 6]
 		// 交集
-		System.out.println(Sets.intersection(Sets.newHashSet(2, 3, 4), Sets.newHashSet(2, 4, 6)));
+		print(Sets.intersection(Sets.newHashSet(2, 3, 4), Sets.newHashSet(2, 4, 6))); //[2, 4]
 		// 两个集合差集的并集
-		System.out.println(Sets.symmetricDifference(Sets.newHashSet(2, 3, 4), Sets.newHashSet(2, 4, 6))); 
+		print(Sets.symmetricDifference(Sets.newHashSet(2, 3, 4), Sets.newHashSet(2, 4, 6))); //[3, 6]
 		
 		// 单集合内部自由组合，size是组合的元素数量
-		Sets.combinations(Sets.newHashSet(1, 3, 2), 2).forEach(x -> System.out.println("combinations: " + x));
-		Sets.combinations(Sets.newHashSet(1, 3, 2, 5), 3).forEach(x -> System.out.println("combinations: " + x));
+		Sets.combinations(Sets.newHashSet(1, 3, 2), 2).forEach(x -> print("combinations-2: " + x));
+		/*
+		 	combinations-2: [1, 2]
+			combinations-2: [1, 3]
+			combinations-2: [2, 3]
+		 */
+		
+		Sets.combinations(Sets.newHashSet(1, 3, 2, 5), 3).forEach(x -> print("combinations-3: " + x));
+		/*
+			combinations-3: [1, 2, 3]
+			combinations-3: [1, 2, 5]
+			combinations-3: [1, 3, 5]
+			combinations-3: [2, 3, 5]
+		 */
 		
 		//返回所有集合的笛卡儿积
-		System.out.println(Sets.cartesianProduct(Sets.newHashSet(1, 3), Sets.newHashSet(2, 4)));
+		print(Sets.cartesianProduct(Sets.newHashSet(1, 3), Sets.newHashSet(2, 4))); //[[1, 4], [1, 2], [3, 4], [3, 2]]
 		
 		// PowerSet 密集集合 （将每个元素进行交叉组合成子集）
 		Sets.powerSet(Sets.newHashSet("a", "z", 4)).forEach(System.out::println);
+		/*
+			[]
+			[a]
+			[z]
+			[a, z]
+			[4]
+			[a, 4]
+			[z, 4]
+			[a, z, 4]
+		*/
 	}
 	
 	@Test
 	public void testMaps() {
 		/** Maps **/
-		System.out.println(Maps.asMap(Sets.newHashSet("a", "b"), x -> x + "-cache"));
+		print(Maps.asMap(Sets.newHashSet("a", "b"), x -> x + "-cache")); //{a=a-cache, b=b-cache}
 		
 		Map<String, Integer> a = Maps.newHashMap();
 		a.put("a", 1);
@@ -186,13 +212,13 @@ public class UtilCollectionTest {
 		
 		MapDifference<String, Integer> diff = Maps.difference(a, b);
 		// 键相同但是值不同值映射项。返回的Map的值类型为MapDifference.ValueDifference，以表示左右两个不同的值
-		System.out.println(diff.entriesDiffering());
+		print(diff.entriesDiffering()); //{d=(2, 4)}
 		// 两个Map中都有的映射项，包括匹配的键与值
-		System.out.println(diff.entriesInCommon());
+		print(diff.entriesInCommon()); //{a=1}
 		// 键只存在于左边Map的映射项
-		System.out.println(diff.entriesOnlyOnLeft());
+		print(diff.entriesOnlyOnLeft()); //{b=2}
 		// 键只存在于右边Map的映射项
-		System.out.println(diff.entriesOnlyOnRight());
+		print(diff.entriesOnlyOnRight()); //{c=3}
 		
 	}
 	
@@ -205,24 +231,24 @@ public class UtilCollectionTest {
 		Multiset<String> bar = HashMultiset.create();
 		bar.add("a", 5);
 
-		System.out.println(foo.containsAll(bar)); //返回true；因为包含了所有不重复元素，
+		print(foo.containsAll(bar)); //返回true；因为包含了所有不重复元素，
 		//虽然foo实际上包含2个"a"，而bar包含5个"a"
-		System.out.println(Multisets.containsOccurrences(foo, bar)); // returns false
-		System.out.println(Multisets.removeOccurrences(bar, foo)); // bar 现在包含3个"a"
-		System.out.println(Multisets.retainOccurrences(bar, foo));
+		print(Multisets.containsOccurrences(foo, bar)); // returns false
+		print(Multisets.removeOccurrences(bar, foo)); // true bar 现在包含3个"a"
+		print(Multisets.retainOccurrences(bar, foo)); //true
 		
-		System.out.println(foo);
-		System.out.println(bar);
+		print(foo); //[a x 2]
+		print(bar); //[a x 2]
 		
 		bar.removeAll(foo);//bar移除所有"a"，虽然foo只有2个"a"
-		System.out.println(bar);
-		System.out.println(bar.isEmpty()); // returns true
+		print(bar); // []
+		print(bar.isEmpty()); // returns true
 
 		foo.add("b", 9);
 		foo.add("c", 3);
 		foo.add("d", 1);
 		// 按count数量进行降序排序
-		System.out.println(Multisets.copyHighestCountFirst(foo));
+		print(Multisets.copyHighestCountFirst(foo)); // [b x 9, c x 3, a x 2, d]
 	}
 	
 	/**
@@ -272,7 +298,8 @@ public class UtilCollectionTest {
 		
 		// 场景是：有一组对象，它们有共同的特定属性，我们希望按照这个属性的值查询对象，但属性值不一定是独一无二的
 		// 对集合进行分组，转换ImmutableListMultimap
-		System.out.println(Multimaps.index(Arrays.asList("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"), x -> x.length() ));
+		print(Multimaps.index(Arrays.asList("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"), x -> x.length() ));
+		//{4=[zero, four, five, nine], 3=[one, two, six], 5=[three, seven, eight]}
 		
 		// 反转map，将value作为key进行反转
 		HashMultimap<String, Integer> hash = HashMultimap.create();
@@ -281,29 +308,29 @@ public class UtilCollectionTest {
 		hash.putAll("c", Ints.asList(8, 2, 1, 5));
 		
 		HashMultimap<Integer, String> result = Multimaps.invertFrom(hash, HashMultimap.create());
-		System.out.println(result);
+		print(result); //{1=[a, c], 2=[b, c], 3=[a, b], 5=[a, c], 6=[b], 8=[c]}
 		
 		// 反转 不可变集合map
 		try {
 			ImmutableListMultimap<Integer, String> result2 = Multimaps.invertFrom(hash, ImmutableListMultimap.of());
-			System.out.println(result2);
+			print(result2); //{5=[a, c], 1=[a, c], 3=[a, b], 2=[b, c], 6=[b], 8=[c]}
 		} catch (UnsupportedOperationException e) {
-			System.out.println(ImmutableListMultimap.copyOf(hash).inverse());
+			print(ImmutableListMultimap.copyOf(hash).inverse());
 		}
 		
 		// forMap 将Map对象转换为 Multimap
 		ImmutableMap<String, Object> map = ImmutableMap.of("a", 1, "b", 1, "c", 2, "e", "z");
-		System.out.println(map);
+		print(map); //{a=1, b=1, c=2, e=z}
 		// 多对一
 		SetMultimap<String, Object> multimap = Multimaps.forMap(map);
-		System.out.println(multimap);
+		print(multimap); //{a=[1], b=[1], c=[2], e=[z]}
 		// 一对多
-		System.out.println(Multimaps.invertFrom(multimap, HashMultimap.create()));
+		print(Multimaps.invertFrom(multimap, HashMultimap.create())); //{1=[a, b], 2=[c], z=[e]}
 		
 		Multimap<String, String> result1 = Multimaps.newListMultimap(Maps.newIdentityHashMap(), new Supplier<LinkedList<String>>() {
 			@Override
 			public LinkedList<String> get() {
-				System.out.println("get");
+				print("get");
 				return Lists.newLinkedList();
 			}
 		});
@@ -311,9 +338,9 @@ public class UtilCollectionTest {
 		result1.put("22", "33");
 		result1.put("dd", "123");
 		
-		System.out.println(result1.get("aa").add("333"));
-		System.out.println(result1.get("aa"));
-		System.out.println(result1.keys());
+		print(result1.get("aa").add("333"));
+		print(result1.get("aa")); // [333]
+		print(result1.keys()); // [dd, aa, 22]
 	}
 	
 	@Test
@@ -333,22 +360,21 @@ public class UtilCollectionTest {
 
 		table.put("2017", "5", 1999);
 		
-		System.out.println(table);
+		print(table); //{2000={1=18900, 2=56000, 3=55000, 4=15000}, 2015={2=11111, 3=20025, 4=400025, 5=20025}, 2017={5=1999}}
 		
 		// 使用LinkedHashMaps替代HashMaps，将key定义成TreeMap有序排列，Val定义TreeMap
 		Table<String, String, Integer> table2 = Tables.newCustomTable(
-			Maps.<String, Map<String, Integer>>newTreeMap(),
-			new Supplier<Map<String, Integer>> () {
+			Maps.<String, Map<String, Integer>>newTreeMap(), new Supplier<Map<String, Integer>> () {
 				public Map<String, Integer> get() {
 					return new TreeMap<>();
 				}
 		});
 		table2.putAll(table);
 		
-		System.out.println(table2);
+		print(table2); //{2000={1=18900, 2=56000, 3=55000, 4=15000}, 2015={2=11111, 3=20025, 4=400025, 5=20025}, 2017={5=1999}}
 		
 		// 将column和rowKey进行转换
-		System.out.println(Tables.transpose(table));
+		print(Tables.transpose(table)); //{1={2000=18900}, 2={2000=56000, 2015=11111}, 3={2000=55000, 2015=20025}, 4={2000=15000, 2015=400025}, 5={2015=20025, 2017=1999}}
 		
 		// 对table的value进行类型或数据转换
 		Table<String, String, String> table3 = Tables.transformValues(table, new Function<Integer, String>() {
@@ -358,6 +384,6 @@ public class UtilCollectionTest {
 				return input + "元";
 			}
 		});
-		System.out.println(table3);
+		print(table3); //{2000={1=18900元, 2=56000元, 3=55000元, 4=15000元}, 2015={2=11111元, 3=20025元, 4=400025元, 5=20025元}, 2017={5=1999元}}
 	}
 }

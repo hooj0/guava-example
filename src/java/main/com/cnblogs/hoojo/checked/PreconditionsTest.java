@@ -69,21 +69,21 @@ public class PreconditionsTest {
 		
 		try {
 			// 检查参数，不满足条件就抛出默认异常
-			checkArgument(3 == 2);			
+			checkArgument(3 == 2);	// exception		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
 			// 检查参数，不满足条件就抛出指定异常
-			checkArgument(3 == 2, "条件不匹配");
+			checkArgument(3 == 2, "条件不匹配");		// exception
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
 			// 检查参数，不满足条件就抛出指定带参数异常
-			checkArgument(3 == 2, "条件不匹配 %s == %s", 3, 2);
+			checkArgument(3 == 2, "条件不匹配 %s == %s", 3, 2);	// exception
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -96,21 +96,21 @@ public class PreconditionsTest {
 		
 		try {
 			// 检查对象是否为空，为空就发出默认异常信息
-			checkNotNull(a);
+			checkNotNull(a);	// NullPointerException
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
 			// 检查对象是否为空，为空就发出指定异常信息
-			a = checkNotNull(a, "数据为空");
+			a = checkNotNull(a, "数据为空");		// NullPointerException: 数据为空
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
 			// 检查对象是否为空，为空就发出指定带参数异常信息
-			checkNotNull(a, "数据：%s 为空", a);
+			checkNotNull(a, "数据：%s 为空", a);	// NullPointerException: 数据：null 为空
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -123,19 +123,19 @@ public class PreconditionsTest {
 		
 		// 状态检查，多用于枚举、数据状态的校验
 		try {
-			checkState(a != null);
+			checkState(a != null);	//IllegalStateException
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			checkState(a != null, "对象为空");
+			checkState(a != null, "对象为空");	//IllegalStateException: 对象为空
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			checkState(a != null, "数据：%s 为空", a);
+			checkState(a != null, "数据：%s 为空", a); //IllegalStateException: 数据：null 为空
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -150,21 +150,21 @@ public class PreconditionsTest {
 		// 元素索引开始位置 0，结束位置是长度  (size - 1)
 		try {
 			// 索引越界抛出异常
-			checkElementIndex(5, list.size());
+			checkElementIndex(5, list.size()); //IndexOutOfBoundsException: index (5) must be less than size (5)
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
 			// 索引越界抛出异常
-			checkElementIndex(15, list.size());
+			checkElementIndex(15, list.size()); //IndexOutOfBoundsException: index (15) must be less than size (5)
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
 			// 索引越界抛出指定信息异常
-			checkElementIndex(15, list.size(), "索引越界");
+			checkElementIndex(15, list.size(), "索引越界"); //IndexOutOfBoundsException: 索引越界 (15) must be less than size (5)
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -176,19 +176,19 @@ public class PreconditionsTest {
 		// 0~size
 		// 元素索引开始位置 0，结束位置是长度  (size)
 		try {
-			checkPositionIndex(3, 3);
+			checkPositionIndex(3, 3);	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			checkPositionIndex(3, 2);
+			checkPositionIndex(3, 2);	//IndexOutOfBoundsException: index (3) must not be greater than size (2)
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			checkPositionIndex(-15, 8, "下标越界");
+			checkPositionIndex(-15, 8, "下标越界"); //IndexOutOfBoundsException: 下标越界 (-15) must not be negative
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -204,13 +204,13 @@ public class PreconditionsTest {
 		}
 		
 		try {
-			checkPositionIndexes(-2, 5, 10);
+			checkPositionIndexes(-2, 5, 10); // IndexOutOfBoundsException: start index (-2) must not be negative
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			checkPositionIndexes(2, 50, 10);
+			checkPositionIndexes(2, 50, 10); //IndexOutOfBoundsException: end index (50) must not be greater than size (10)
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

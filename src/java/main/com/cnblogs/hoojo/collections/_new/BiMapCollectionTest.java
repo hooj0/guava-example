@@ -59,46 +59,47 @@ public class BiMapCollectionTest {
 		hash.put("a", 3);
 		hash.put("b", 4);
 		
-		System.out.println(hash);
-		System.out.println(hash.inverse());
-		System.out.println(hash.inverse().get(3));
+		System.out.println(hash); // {a=3, b=4}
+		System.out.println(hash.inverse()); // {3=a, 4=b}
+		System.out.println(hash.inverse().get(3)); // a
 		
 		hash.put("b", 55);
+		System.out.println(hash); // {a=3, b=55}
+		
+		hash.forcePut("b", 23); // {a=3, b=23}
 		System.out.println(hash);
 		
-		hash.forcePut("b", 23);
-		System.out.println(hash);
+		System.out.println(hash.containsKey("a")); // true
+		System.out.println(hash.containsValue(4)); // false
+		System.out.println(hash.entrySet()); // [a=3, b=23]
+		System.out.println(hash.get("b")); // 23
+		System.out.println(hash.getOrDefault("c", 11)); // 11
 		
-		System.out.println(hash.containsKey("a"));
-		System.out.println(hash.containsValue(4));
-		System.out.println(hash.entrySet());
-		System.out.println(hash.get("b"));
-		System.out.println(hash.getOrDefault("c", 11));
-		
-		System.out.println(hash.putIfAbsent("99", 100));
-		System.out.println(hash);
+		System.out.println(hash.putIfAbsent("99", 100)); // null
+		System.out.println(hash.putIfAbsent("99", 5)); // 100
+		System.out.println(hash); // {a=3, b=23, 99=100}
 		
 	}
 	
 	@Test
 	public void testBiMap() {
 		ImmutableBiMap<String, Integer> immu = ImmutableBiMap.of("z", 22, "b", 33);
-		System.out.println(immu);
-		System.out.println(immu.inverse());
+		System.out.println(immu); // {z=22, b=33}
+		System.out.println(immu.inverse()); // {22=z, 33=b}
 		
 	 	EnumBiMap<KeyEnum, ValEnum> enums = EnumBiMap.create(KeyEnum.class, ValEnum.class);
 	 	enums.put(KeyEnum.A, ValEnum._1);
 	 	//enums.put(KeyEnum.B, ValEnum._1); // exception，相同的值已经存在，不能直接用put方法，改用  forcePut
 	 	enums.forcePut(KeyEnum.B, ValEnum._1);
 	 	
-	 	System.out.println(enums);
-	 	System.out.println(enums.inverse());
+	 	System.out.println(enums); // {B=_1}
+	 	System.out.println(enums.inverse()); // {_1=B}
 	 	
 	 	EnumHashBiMap<KeyEnum, String> hash = EnumHashBiMap.create(KeyEnum.class);
 	 	hash.put(KeyEnum.A, "china");
 	 	hash.put(KeyEnum.B, "jap");
 	 	
-	 	System.out.println(hash);
+	 	System.out.println(hash); // {A=china, B=jap}
 	}
 	
 	enum KeyEnum {

@@ -119,28 +119,28 @@ public class MultimapCollectionsTest {
 		hash.putAll("b", Arrays.asList(2, 4, 2, 3));
 		hash.putAll(hash);
 		
-		System.out.println(hash);
-		System.out.println(hash.get("b")); // 获取b的值，返回Set集合
+		System.out.println(hash); // {a=[1], b=[4, 2, 3]}
+		System.out.println(hash.get("b")); // [4, 2, 3] 获取b的值，返回Set集合
 		
-		System.out.println(hash.containsValue(2));
-		System.out.println(hash.containsKey("a"));
-		System.out.println(hash.containsEntry("b", 4));
-		System.out.println(hash.containsEntry("b", 5));
+		System.out.println(hash.containsValue(2)); // true
+		System.out.println(hash.containsKey("a")); // true
+		System.out.println(hash.containsEntry("b", 4)); // true
+		System.out.println(hash.containsEntry("b", 5)); // false
 		
-		System.out.println(hash.asMap()); // 转换顶级Java集合对象
+		System.out.println(hash.asMap()); // {a=[1], b=[4, 2, 3]} 转换顶级Java集合对象
 		
-		System.out.println(hash.size()); // 总元素数量
-		System.out.println(hash.entries()); // 所有键值对
+		System.out.println(hash.size()); // 4 总元素数量
+		System.out.println(hash.entries()); // [a=1, b=4, b=2, b=3] 所有键值对
 		
-		System.out.println(hash.keys()); // Multiset 键值统计数量
-		System.out.println(hash.keySet()); // 所有主键
-		System.out.println(hash.values()); // 所有值
+		System.out.println(hash.keys()); // [a, b x 3] Multiset 键值统计数量
+		System.out.println(hash.keySet()); // [a, b] 所有主键
+		System.out.println(hash.values()); // [1, 4, 2, 3] 所有值
 		
-		System.out.println(hash.remove("b", 2));
-		System.out.println(hash);
+		System.out.println(hash.remove("b", 2)); // true
+		System.out.println(hash); // {a=[1], b=[4, 3]}
 		
-		System.out.println(hash.replaceValues("a", Arrays.asList(33, 44)));
-		System.out.println(hash);
+		System.out.println(hash.replaceValues("a", Arrays.asList(33, 44))); // [1]
+		System.out.println(hash); // {a=[44, 33], b=[4, 3]}
 	}
 	
 	@Test
@@ -150,46 +150,46 @@ public class MultimapCollectionsTest {
 		list.put("a", 1);
 		list.putAll("b", Arrays.asList(2, 4, 2, 3));
 		
-		System.out.println(list);
+		System.out.println(list); // {a=[1], b=[2, 4, 2, 3]}
 		
 		// HashSet
 		HashMultimap<String, Integer> hash = HashMultimap.<String, Integer>create();
 		hash.put("a", 1);
 		hash.putAll("b", Arrays.asList(2, 4, 2, 3));
 		
-		System.out.println(hash);
+		System.out.println(hash); // {a=[1], b=[4, 2, 3]}
 		
 		// linkedList
 		LinkedListMultimap<String, Integer> linkedList = LinkedListMultimap.<String, Integer>create();
 		linkedList.put("a", 1);
 		linkedList.putAll("b", Arrays.asList(2, 4, 2, 3));
 		
-		System.out.println(linkedList);
+		System.out.println(linkedList); // {a=[1], b=[2, 4, 2, 3]}
 		
 		// LinkedHashMap
 		LinkedHashMultimap<String, Integer> linkedhash = LinkedHashMultimap.<String, Integer>create();
 		linkedhash.put("a", 1);
 		linkedhash.putAll("b", Arrays.asList(2, 4, 2, 3));
 		
-		System.out.println(linkedhash);
+		System.out.println(linkedhash); // {a=[1], b=[2, 4, 3]}
 		
 		// tree
 		TreeMultimap<String, Integer> tree = TreeMultimap.<String, Integer>create();
 		tree.put("a", 1);
 		tree.putAll("b", Arrays.asList(2, 4, 2, 3));
 		
-		System.out.println(tree);
+		System.out.println(tree); // {a=[1], b=[2, 3, 4]}
 		
 		// 不可变集合
 		ImmutableListMultimap<String, Integer> immulist = ImmutableListMultimap.<String, Integer>builder().put("a", 1).putAll("c", 2, 2, 4, 5).build();
-		System.out.println(immulist);
+		System.out.println(immulist); // {a=[1], c=[2, 2, 4, 5]}
 		
-		System.out.println(immulist.inverse()); // 反转，用值做Key、源Key作Value
+		System.out.println(immulist.inverse()); // {1=[a], 2=[c, c], 4=[c], 5=[c]} 反转，用值做Key、源Key作Value
 		
 		ImmutableSetMultimap<String, Integer> immuset = ImmutableSetMultimap.<String, Integer>of("d", 1, "c", 2);
-		System.out.println(immuset);
+		System.out.println(immuset); // {d=[1], c=[2]}
 		
-		System.out.println(immuset.inverse()); // 反转，用值做Key、源Key作Value
+		System.out.println(immuset.inverse()); // {1=[d], 2=[c]} 反转，用值做Key、源Key作Value
 		
 		// Multimaps
 	}

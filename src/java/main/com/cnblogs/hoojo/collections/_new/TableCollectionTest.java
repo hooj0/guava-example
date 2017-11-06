@@ -203,22 +203,24 @@ public class TableCollectionTest {
 		table.put("America", "Los Angeles", 20025);
 		table.put("America", "San Francisco", 400025);
 		
-		System.out.println(table);
+		//{china={guangzhou=18900, beijin=56000, shanghai=55000, wuhan=15000}, America={New York=11111, Los Angeles=20025, San Francisco=400025}}
+		System.out.println(table); 
 		
-		System.out.println(table.rowMap().get("china")); // Map<String, Map<String, Integer>> 
-		System.out.println(table.rowKeySet());
-		System.out.println(table.cellSet());
+		// Map<String, Map<String, Integer>>
+		System.out.println(table.rowMap().get("china")); // {guangzhou=18900, beijin=56000, shanghai=55000, wuhan=15000} 
+		System.out.println(table.rowKeySet()); //[china, America]
+		System.out.println(table.cellSet()); // [(china,guangzhou)=18900, (china,beijin)=56000, (china,shanghai)=55000, (china,wuhan)=15000, (America,New York)=11111, (America,Los Angeles)=20025, (America,San Francisco)=400025]
 		
-		System.out.println(table.contains("china", "beijin"));
-		System.out.println(table.containsColumn("wuhan"));
-		System.out.println(table.containsValue(55000));
+		System.out.println(table.contains("china", "beijin")); // true
+		System.out.println(table.containsColumn("wuhan")); // true
+		System.out.println(table.containsValue(55000)); // true
 		
-		System.out.println(table.size());
-		System.out.println(table.column("beijin"));
-		System.out.println(table.columnKeySet());
-		System.out.println(table.columnMap());
+		System.out.println(table.size()); // 7
+		System.out.println(table.column("beijin")); // {china=56000}
+		System.out.println(table.columnKeySet()); // [guangzhou, beijin, shanghai, wuhan, New York, Los Angeles, San Francisco]
+		System.out.println(table.columnMap()); // {guangzhou={china=18900}, beijin={china=56000}, shanghai={china=55000}, wuhan={china=15000}, New York={America=11111}, Los Angeles={America=20025}, San Francisco={America=400025}}
 		
-		System.out.println(table.row("china"));
+		System.out.println(table.row("china")); // {guangzhou=18900, beijin=56000, shanghai=55000, wuhan=15000}
 	}
 	
 	@Test
@@ -233,7 +235,8 @@ public class TableCollectionTest {
 		tree.put("America", "Los Angeles", 20025);
 		tree.put("America", "San Francisco", 400025);
 		
-		System.out.println(tree.rowMap()); // SortedMap<String, Map<String, Integer>> 
+		// SortedMap<String, Map<String, Integer>> 
+		System.out.println(tree.rowMap()); // {America={Los Angeles=20025, New York=11111, San Francisco=400025}, china={beijin=56000, guangzhou=18900, shanghai=55000, wuhan=15000}}
 		
 		ImmutableTable<String, String, Integer> immu = ImmutableTable.<String, String, Integer>builder().put("china", "guangzhou", 18900)
 		.put("china", "beijin", 56000)
@@ -244,9 +247,10 @@ public class TableCollectionTest {
 		.put("America", "Los Angeles", 20025)
 		.put("America", "San Francisco", 400025).build();
 		
-		System.out.println(immu.rowMap()); // ImmutableMap<String, Map<String, Integer>>
+		// ImmutableMap<String, Map<String, Integer>>
+		System.out.println(immu.rowMap()); // {china={guangzhou=18900, beijin=56000, shanghai=55000, wuhan=15000}, America={New York=11111, Los Angeles=20025, San Francisco=400025}}
 		
 		RowSortedTable<String, String, Integer> row = Tables.unmodifiableRowSortedTable(tree);
-		System.out.println(row);
+		System.out.println(row); // {America={Los Angeles=20025, New York=11111, San Francisco=400025}, china={beijin=56000, guangzhou=18900, shanghai=55000, wuhan=15000}}
 	}
 }

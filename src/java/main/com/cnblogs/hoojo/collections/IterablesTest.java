@@ -81,21 +81,21 @@ public class IterablesTest {
 		// 集合拼接合并
 		Iterable<Integer> iter = Iterables.concat(Ints.asList(2, 3, 5), Ints.asList(1, 7, 4, 2));
 		
-		System.out.println(iter);
+		System.out.println(iter); //[2, 3, 5, 1, 7, 4, 2]
 		// 获取 最后一个元素
-		System.out.println(Iterables.getLast(iter));
+		System.out.println(Iterables.getLast(iter)); //2
 		// 获取唯一，仅有一个元素
-		System.out.println(Iterables.getOnlyElement(Ints.asList(2)));
+		System.out.println(Iterables.getOnlyElement(Ints.asList(2))); //2
 		//System.out.println(Iterables.getOnlyElement(Ints.asList(2, 3, 5)));
 		// 获取前 4个 元素
-		System.out.println(Iterables.limit(iter, 4)); 
+		System.out.println(Iterables.limit(iter, 4)); //[2, 3, 5, 1]
 		// 分组
-		System.out.println(Iterables.partition(iter, 2)); 
+		System.out.println(Iterables.partition(iter, 2)); //[[2, 3], [5, 1], [7, 4], [2]]
 		
 		Iterable<Integer> temp = Iterables.cycle(3, 5, 22, 66);
 		//temp.forEach(x -> System.out.println("cycle: " + x));
 		//temp.iterator().hasNext();
-		System.out.println(temp);
+		System.out.println(temp); //[3, 5, 22, 66] (cycled)
 		
 		// 全部满足条件 为 true，否则为 false
 		System.out.println(Iterables.all(iter, new Predicate<Integer>() {
@@ -106,57 +106,57 @@ public class IterablesTest {
 				}
 				return false;
 			}
-		}));
+		})); // false
 		
-		System.out.println(Iterables.all(iter, (input) -> input > 0));
+		System.out.println(Iterables.all(iter, (input) -> input > 0)); // true
 		
 		// 任意满足 就返回 true， 没有一个元素满足就为 false
-		System.out.println(Iterables.any(iter, (x) -> x > 3));
-		System.out.println(Iterables.any(iter, (x) -> x > 13));
-		System.out.println(Iterables.any(iter, (x) -> { return x > 13; }));
+		System.out.println(Iterables.any(iter, (x) -> x > 3)); // true
+		System.out.println(Iterables.any(iter, (x) -> x > 13)); // false
+		System.out.println(Iterables.any(iter, (x) -> { return x > 13; })); // false
 
 		// 包含指定元素
-		System.out.println(Iterables.contains(iter, 3));
+		System.out.println(Iterables.contains(iter, 3)); // true
 		
 		// 比较两个集合元素是否全部相同
-		System.out.println(Iterables.elementsEqual(Lists.newArrayList(2, 3), Lists.newArrayList(2, 3)));
-		System.out.println(Iterables.elementsEqual(Lists.newArrayList(2, 3), Lists.newArrayList(2, 4)));
+		System.out.println(Iterables.elementsEqual(Lists.newArrayList(2, 3), Lists.newArrayList(2, 3))); // true
+		System.out.println(Iterables.elementsEqual(Lists.newArrayList(2, 3), Lists.newArrayList(2, 4))); // false
 		
 		// 查询元素出现的次数
-		System.out.println(Iterables.frequency(iter, 3));
-		System.out.println(Iterables.frequency(iter, 2));
+		System.out.println(Iterables.frequency(iter, 3)); // 1
+		System.out.println(Iterables.frequency(iter, 2)); // 2
 		
 		// 查询元素索引，只返回第一个满足条件元素索引，没找到返回 -1
-		System.out.println(Iterables.indexOf(iter, x -> x >= 1));
+		System.out.println(Iterables.indexOf(iter, x -> x >= 1)); // 0
 		
 		// 获取指定索引位置元素
-		System.out.println(Iterables.get(iter, 5));
-		System.out.println(Iterables.get(iter, 30, -1));
+		System.out.println(Iterables.get(iter, 5)); // 4
+		System.out.println(Iterables.get(iter, 30, -1)); // -1
 		
 		// 转换为Quque队列，遍历完后将删除所有内部元素
 		temp = Iterables.consumingIterable(Lists.newArrayList(2, 3));
-		System.out.println(temp.iterator().hasNext());
-		temp.forEach(x -> System.out.println("consumingIterable: " + x));
-		System.out.println(temp.iterator().hasNext());
+		System.out.println(temp.iterator().hasNext()); // true
+		temp.forEach(x -> System.out.println("consumingIterable: " + x)); // 2、3
+		System.out.println(temp.iterator().hasNext()); // false
 		
 		// 过滤匹配条件的元素
-		System.out.println(Iterables.filter(iter, x -> x >= 5));
+		System.out.println(Iterables.filter(iter, x -> x >= 5)); //[5, 7]
 		// 查找满足条件的元素并立即返回
-		System.out.println(Iterables.find(iter, x -> x >= 5, -1));
+		System.out.println(Iterables.find(iter, x -> x >= 5, -1)); // 5
 		// 获取首个元素
-		System.out.println(Iterables.getFirst(iter, -1));
+		System.out.println(Iterables.getFirst(iter, -1)); // 2
 		
 		// 将集合中的元素集合合并成单集合
 		Iterable<List<Integer>> iters = Lists.<List<Integer>>newArrayList(Lists.newArrayList(1, 2, 3), Lists.newArrayList(3, 5, 4));
-		System.out.println(iters);
-		System.out.println(Iterables.mergeSorted(iters, Ordering.natural()));
+		System.out.println(iters); //[[1, 2, 3], [3, 5, 4]]
+		System.out.println(Iterables.mergeSorted(iters, Ordering.natural())); //[1, 2, 3, 3, 5, 4]
 		
 		// 将集合拆分为指定个数子集合
-		System.out.println(Iterables.paddedPartition(iter, 2));
-		System.out.println(Iterables.paddedPartition(iter, 4));
+		System.out.println(Iterables.paddedPartition(iter, 2)); // [[2, 3], [5, 1], [7, 4], [2, null]]
+		System.out.println(Iterables.paddedPartition(iter, 4)); // [[2, 3, 5, 1], [7, 4, 2, null]]
 		
 		// 跳过前 3 个元素，取下标3后的元素，和limit相反
-		System.out.println(Iterables.skip(iter, 3));
+		System.out.println(Iterables.skip(iter, 3)); // [1, 7, 4, 2]
 		
 		// 转换对象数据，将集合Integer 转换为 String
 		System.out.println(Iterables.transform(iter, new Function<Integer, String>() {
@@ -164,15 +164,15 @@ public class IterablesTest {
 			public String apply(Integer input) {
 				return "s-" + input;
 			}
-		}));
+		})); // [s-2, s-3, s-5, s-1, s-7, s-4, s-2]
 		
-		System.out.println(Iterables.transform(iter, x -> x + 2));
+		System.out.println(Iterables.transform(iter, x -> x + 2)); // [4, 5, 7, 3, 9, 6, 4]
 		
 		// 查找对象，返回Optional 类型
-		System.out.println(Iterables.tryFind(iter, x -> x == 8).isPresent());
-		System.out.println(Iterables.tryFind(iter, x -> x == 3).isPresent());
+		System.out.println(Iterables.tryFind(iter, x -> x == 8).isPresent()); // false
+		System.out.println(Iterables.tryFind(iter, x -> x == 3).isPresent()); // true
 
 		// 不可变集合
-		System.out.println(Iterables.unmodifiableIterable(Arrays.asList(1, 2, 3)));
+		System.out.println(Iterables.unmodifiableIterable(Arrays.asList(1, 2, 3))); // [1, 2, 3]
 	}
 }

@@ -25,8 +25,8 @@ public class ClassToInstanceMapTest {
 		map.put(Object.class, "str");
 		map.put(Integer.class, 2);
 		
-		System.out.println(map);
+		System.out.println(map); // {class java.lang.Object=str, class java.lang.Integer=2}
 		
-		System.out.println(map.getInstance(Integer.class));
+		System.out.println(map.getInstance(Integer.class)); // 2
 	}
 }
