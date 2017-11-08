@@ -2,12 +2,13 @@ package com.cnblogs.hoojo.cache;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.LongAdder;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.base.Joiner;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -15,6 +16,8 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.cache.Weigher;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.ImmutableSortedSet;
 
 /**
  * <b>function:</b> 【基于容量回收-权重】缓存回收策略 超出指定weights后回收
@@ -64,21 +67,22 @@ import com.google.common.collect.ImmutableMap;
  */
 public class WeigherBasedEvictionCacheTest {
 
-	private LoadingCache<String, Integer> cache; 
+	private LoadingCache<Integer, Integer> cache; 
+	private LongAdder adder = new LongAdder();
 	
 	@Before
 	public void init() {
 
-		Map<String, Integer> map = ImmutableMap.of("a", 10, "b", 20, "c", 30);
+		Map<Integer, Integer> map = ImmutableMap.of(11, 10, 12, 20, 13, 30);
 
 		cache = CacheBuilder.newBuilder()
 				//.concurrencyLevel(Runtime.getRuntime().availableProcessors() - 1)  
                 //.initialCapacity(10240)
 				// 删除长时间没被访问过的对象或者根据配置的被释放的对象
-				.maximumWeight(10000) // 最大权重，不能和 maximumSize 并用
-				.weigher(new Weigher<String, Integer>() {
+				.maximumWeight(20) // 最大权重，不能和 maximumSize 并用
+				.weigher(new Weigher<Integer, Integer>() {
 					@Override
-					public int weigh(String key, Integer value) {
+					public int weigh(Integer key, Integer value) {
 						// 基于key的字节数量
 						// 在正常业务上，key->byte的转换也许需要占用一定的时间，所以返回指定权重值的需要慎重考虑
 						/**
@@ -88,22 +92,34 @@ public class WeigherBasedEvictionCacheTest {
 						 *  	value.length
 						 *  	value.bytes.length
 						 */
-						int size = key.getBytes().length;
-						System.out.println(size);
-						return size;
+						adder.add(value);
+						
+						Map<Integer, Integer> cacheView = new TreeMap<Integer, Integer>(cache.asMap());
+						cacheView.put(key, value);
+						
+						System.out.println("put cache: " + key + "=" + value + ", weigh: " + adder.sum() + ", cache view: " + cacheView.keySet());
+						
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						return value.intValue();
 					}
 				})
 				.recordStats() // 开启缓存统计数据
-				.removalListener(new RemovalListener<String, Integer>() { // 删除缓存给予监听通知
+				.removalListener(new RemovalListener<Integer, Integer>() { // 删除缓存给予监听通知
 					@Override
-					public void onRemoval(RemovalNotification<String, Integer> notification) {
-						System.out.println(notification.wasEvicted());
-						System.out.println("remove cache key: " + notification.getKey() + ", value: " + notification.getValue());
+					public void onRemoval(RemovalNotification<Integer, Integer> notification) {
+						long size = adder.sum() + notification.getValue();
+						System.out.println("remove cache: " + notification.getKey() + "=" + notification.getValue() + ", weigh: " + size + ", wasEvicted: " + notification.wasEvicted() + ", cache view: " + ImmutableSortedSet.copyOf(cache.asMap().keySet()) + "\n");
+						
+						adder.add(-notification.getValue());
 					}
-				}).build(new CacheLoader<String, Integer>() { // 缓存加载方式
+				}).build(new CacheLoader<Integer, Integer>() { // 缓存加载方式
 					@Override
-					public Integer load(String key) throws RuntimeException {
-						System.out.println("loading......");
+					public Integer load(Integer key) throws RuntimeException {
+						System.out.println("load: " + key);
 						return map.get(key);
 					}
 				});
@@ -112,40 +128,56 @@ public class WeigherBasedEvictionCacheTest {
 	// 测试 超出最大缓存数量回收
 	@Test
 	public void testWriteEvictionCacheGC() throws InterruptedException {
-		
 		System.gc();
 		
 		System.out.println("cache init value: " + cache.asMap());
 		
 		// 默认最先被缓存的数据被回收，后面的缓存会挤走最前面的
 		for (int i = 1; i < 15; i++) {
-			cache.put("weight-cache-" + i, i);
-			Thread.sleep(1000);
-
-			System.out.println("keys bytes length: " + Joiner.on("").join(cache.asMap().keySet()).getBytes().length + ", cache view: " + cache.asMap());
+			int size = (int) (Math.random() * 9 + 1L);
+			cache.put(i, size);
+			
+			//System.out.println("keys bytes length: " + cache.asMap().keySet().size() * 2 + ", cache view: " + cache.asMap());
+			//Thread.sleep(1000);
 		}
 		System.out.println("cache size: " + cache.size());
-		System.out.println("cache final view: " + cache.asMap());
+		System.out.println("cache final view: " + ImmutableSortedMap.copyOf(cache.asMap()));
+	}
+	
+	@Test
+	public void testWriteEvictionCacheGC2() throws InterruptedException, ExecutionException {
+		
+		System.out.println("cache init value: " + cache.asMap());
+		
+		// 默认最先被缓存的数据被回收，后面的缓存会挤走最前面的
+		for (int i = 1; i <= 10; i++) {
+			cache.put(i, 2);
+		}
+		System.out.println("put 1-10 limit cache：" + ImmutableSortedMap.copyOf(cache.asMap()) + "\n");
+
+		for (int i = 11; i <= 15; i++) {
+			cache.put(i, 1); // 再次put cache，之前的cache会被回收
+		}
+		System.out.println("put 11-15 limit cache：" + ImmutableSortedMap.copyOf(cache.asMap()));
 	}
 	
 	@Test
 	public void testReadWriteEvictionCacheGC() throws InterruptedException, ExecutionException {
 		
-		System.out.println("cache size: " + cache.size());
 		System.out.println("cache init value: " + cache.asMap());
 		
 		// 默认最先被缓存的数据被回收，后面的缓存会挤走最前面的
 		for (int i = 1; i <= 10; i++) {
-			cache.put("cache-" + i, i);
+			cache.put(i, 2);
 		}
-		System.out.println("put 1-10 limit cache：" + cache.asMap());
-		
-		// 访问特定的某些cache，这些访问的cache将没有被系统回收
-		cache.getAll(Arrays.asList("cache-1", "cache-2", "cache-3", "cache-4"));
+		System.out.println("put 1-10 limit cache：" + ImmutableSortedMap.copyOf(cache.asMap()) + "\n");
 
 		for (int i = 11; i <= 15; i++) {
-			cache.put("cache-" + i, i); // 再次put cache，之前的cache会被回收
+			// 访问特定的某些cache，这些访问的cache将没有被系统回收
+			cache.getAllPresent(Arrays.asList(1, 2, 3, 4));
+
+			cache.put(i, 2); // 再次put cache，之前的cache会被回收
 		}
-		System.out.println("put 11-15 limit cache：" + cache.asMap());
+		System.out.println("put 11-15 limit cache：" + ImmutableSortedMap.copyOf(cache.asMap()));
 	}
 }

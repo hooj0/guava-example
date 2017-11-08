@@ -1,17 +1,25 @@
 package com.cnblogs.hoojo.cache;
 
+import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSortedSet;
 
 /**
  * <b>function:</b> 【基于容量回收-数量】缓存回收策略 超出指定size后回收
@@ -60,129 +68,115 @@ import com.google.common.collect.ImmutableMap;
  */
 public class ReferenceBasedEvictionCacheTest {
 
-	private LoadingCache<String, Integer> cache; 
+	private LoadingCache<String, User> cache; 
+	private static Long sleepTimed = null;
+	
+	class User {
+		private int index;
+		private byte[] buff;
+		
+		public User(int index) {
+			this.index = index;
+			buff = new byte[1024 * 1024 * 2];
+		}
+		
+		@Override
+		public String toString() {
+			return this.index + "#" + buff.length;
+		}
+	}
 	
 	@Before
 	public void init() {
 
-		Map<String, Integer> map = ImmutableMap.of("a", 10, "b", 20, "c", 30);
+		Map<String, User> map = ImmutableMap.of();
 
 		cache = CacheBuilder.newBuilder()
-				.weakKeys() 
+				//.weakKeys()
+				//.weakValues()
+				.softValues()
 				.recordStats() // 开启缓存统计数据
-				.removalListener(new RemovalListener<String, Integer>() { // 删除缓存给予监听通知
+				.removalListener(new RemovalListener<String, User>() { // 删除缓存给予监听通知
 					@Override
-					public void onRemoval(RemovalNotification<String, Integer> notification) {
-						System.out.println(notification.wasEvicted());
-						System.out.println("remove cache key: " + notification.getKey() + ", value: " + notification.getValue());
+					public void onRemoval(RemovalNotification<String, User> notification) {
+						sleepTimed = 10L;
+						String key = "";//Optional.fromNullable(notification.getKey()).or(notification.getValue().index + "");
+						System.out.println("remove cache: " + notification.getKey() + "=" + notification.getValue() + ", wasEvicted: " + notification.wasEvicted() + ", cache view: " + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 					}
-				}).build(new CacheLoader<String, Integer>() { // 缓存加载方式
+				}).build(new CacheLoader<String, User>() { // 缓存加载方式
 					@Override
-					public Integer load(String key) throws RuntimeException {
-						System.out.println("loading......");
+					public User load(String key) throws RuntimeException {
+						System.out.println("load:" + key);
 						return map.get(key);
 					}
 				});
 	}
 	
 	/**
-	 * expireAfterWrite
-	 * 测试 缓存项在给定时间内没有被写访问（创建或覆盖），则回收 
+	 * weakKeys:
+	 * 		1、 当添加到缓存的对象，foo/bar 还被引用（key）的时候，系统并没有进行回收该资源
+	 * 		2、而key = "myKey" 也被引用，没有被回收
+	 * weakValues：
+	 * 		1、由于foo/bar 还被引用（User）的时候，系统没有回收该资源
+	 * 		2、key = "myKey" 是key，在value引用的情况下被回收
+	 * softValues：
+	 * 		1、由于foo/bar 还被引用（User）的时候，系统没有回收该资源
+	 * 		2、key = "myKey" 是key，在value引用的情况下被回收
 	 */
 	@Test
 	public void testWriteEvictionCacheGC() throws InterruptedException {
 		
 		System.out.println("cache size: " + cache.size());
-		System.out.println("cache init value: " + cache.asMap());
 		
-		// expireAfterWrite 默认没有被创建的缓存
-		for (int i = 1; i <= 15; i++) {
-			cache.put("cache-" + i, i);
-			System.out.println(cache.asMap());
-		}
-
-		// 开启独立线程进行回收操作
-		new Thread(new Runnable() {
-			int i = 0;
-
-			@Override
-			public void run() {
-				
-				while (true) {
-					i++;
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-					}
-					
-					if (i == 8) {
-						/** 1/2 没有被回收，3/4虽然被读取过还是被回收  */
-						cache.put("cache-1", 23);
-						cache.put("cache-2", 55);
-						
-						// 没有被写访问（创建或覆盖），则回收 
-						cache.getIfPresent("cache-3");
-						cache.getIfPresent("cache-4");
-					}
-					
-					// 清理缓存
-					cache.cleanUp();
-					System.out.println(i + "-cleanUp...");
-				}
+		User foo = new User(0);
+		User bar = new User(-1);
+		cache.put("-1", foo);
+		cache.put("-0", bar);
+		
+		String key = "myKey";
+		
+		for (int i = 1; i < 1030; i++) { // 20
+			if (i == 3) {
+				cache.put(key, new User(i));
+			} else {
+				cache.put("cache-" + i, new User(i));
 			}
-		}).start();
+			
+			if (sleepTimed != null) {
+				Thread.sleep(sleepTimed);
+			}
+		}
 		
-		Thread.sleep(1000 * 15);
+		System.out.println("size:" + cache.size() + ", cache view:" + cache.asMap().keySet());
 		System.out.println("finish...");
 	}
 	
 	/**
-	 * expireAfterAccess(long, TimeUnit)：缓存项在给定时间内没有被读/写访问，则回收。
-	 * 请注意这种缓存的回收顺序和基于大小回收一样：基于使用的次数和加入缓存的顺序进行回收
+	 * weakKeys：
+	 *  	1、当不断进行访问缓存资源 "cache-2" 的情况下，发现并不能阻止资源被回收
+	 * weakValues:
+	 * 		1、当在push缓存的时候，系统有User对象被其他对象赋值（key/tmp 还被引用），并且长时间hold住，导致值引用的对象没有被回收
+	 * softValues：
+	 * 		1、由于key/tmp 还被引用（User）的时候，系统没有回收该资源
 	 */
 	@Test
 	public void testReadWriteEvictionCacheGC() throws InterruptedException, ExecutionException {
 		
-		System.out.println("cache size: " + cache.size());
-		System.out.println("cache init value: " + cache.asMap());
-		
-		// expireAfterAccess 默认没有被读/写访问，则回收
-		for (int i = 1; i <= 15; i++) {
-			cache.put("cache-" + i, i);
-			System.out.println(cache.asMap());
-		}
-
-		// 开启独立线程进行回收操作
-		new Thread(new Runnable() {
-			int i = 0;
-
-			@Override
-			public void run() {
-				
-				while (true) {
-					i++;
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-					}
-					
-					// 1/2/3/4 都没有被回收
-					if (i == 8) {
-						cache.put("cache-1", 23);
-						cache.put("cache-2", 55);
-						
-						cache.getIfPresent("cache-3");
-						cache.getIfPresent("cache-4");
-					}
-					
-					// 清理缓存
-					cache.cleanUp();
-					System.out.println(i + "-cleanUp...");
-				}
+		Object key = null;
+		User tmp = null;
+		for (int i = 1; i <= 1080; i++) { // 20
+			cache.put("cache-" + i, new User(i));
+			
+			key = cache.getIfPresent("cache-2");
+			tmp = cache.getIfPresent("cache-3");
+			if (tmp != null) {
+				tmp.buff.hashCode();
 			}
-		}).start();
+			cache.getIfPresent("cache-1");
+		}
+		System.out.println(tmp + "#" + key);
 		
-		Thread.sleep(1000 * 15);
+		System.out.println("size:" + cache.size() + ", cache view:" + cache.asMap().keySet());
 		System.out.println("finish...");
 	}
 }
