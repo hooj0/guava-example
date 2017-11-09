@@ -21,7 +21,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListenableFutureTask;
 
 /**
- * <b>function:</b> 刷新缓存与自动加载缓存
+ * 刷新缓存与自动加载缓存
  * @author hoojo
  * @createDate 2017年11月9日 下午1:53:10
  * @file RefreshCacheTest.java
