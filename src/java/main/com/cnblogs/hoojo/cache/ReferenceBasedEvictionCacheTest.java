@@ -1,18 +1,11 @@
 package com.cnblogs.hoojo.cache;
 
-import java.lang.ref.Reference;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -56,6 +49,7 @@ import com.google.common.collect.ImmutableSortedSet;
  * 考虑到使用软引用的性能影响，我们通常建议使用更有性能预测性的缓存大小限定（见上文，基于容量回收）。
  * 使用软引用值的缓存同样用==而不是equals比较值。<br/>
  * </p>
+ * 参考：http://blog.csdn.net/aitangyong/article/details/53115044
  * 
  * @author hoojo
  * @createDate 2017年10月25日 上午11:09:30
@@ -70,6 +64,7 @@ public class ReferenceBasedEvictionCacheTest {
 
 	private LoadingCache<String, User> cache; 
 	private static Long sleepTimed = null;
+	private static final Long BUFF_SIZE = 1024 * 1024 * 2L;
 	
 	class User {
 		private int index;
@@ -77,7 +72,7 @@ public class ReferenceBasedEvictionCacheTest {
 		
 		public User(int index) {
 			this.index = index;
-			buff = new byte[1024 * 1024 * 2];
+			buff = new byte[BUFF_SIZE.intValue()];
 		}
 		
 		@Override
@@ -100,7 +95,11 @@ public class ReferenceBasedEvictionCacheTest {
 					@Override
 					public void onRemoval(RemovalNotification<String, User> notification) {
 						sleepTimed = 10L;
-						String key = "";//Optional.fromNullable(notification.getKey()).or(notification.getValue().index + "");
+						
+						/**
+						 *  weakKeys 回收模式情况下，notification.getKey() 会为空。因为避免对一些key进行引用导致无法回收缓存
+						 *  weakValues、softValues 回收模式下，
+						 */
 						System.out.println("remove cache: " + notification.getKey() + "=" + notification.getValue() + ", wasEvicted: " + notification.wasEvicted() + ", cache view: " + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 					}
 				}).build(new CacheLoader<String, User>() { // 缓存加载方式
@@ -130,12 +129,12 @@ public class ReferenceBasedEvictionCacheTest {
 		
 		User foo = new User(0);
 		User bar = new User(-1);
-		cache.put("-1", foo);
-		cache.put("-0", bar);
+		cache.put("myKey-1", foo);
+		cache.put("myKey-0", bar);
 		
-		String key = "myKey";
+		String key = "myKey-3";
 		
-		for (int i = 1; i < 1030; i++) { // 20
+		for (int i = 1; i < 1080; i++) { // 20
 			if (i == 3) {
 				cache.put(key, new User(i));
 			} else {
@@ -178,5 +177,21 @@ public class ReferenceBasedEvictionCacheTest {
 		
 		System.out.println("size:" + cache.size() + ", cache view:" + cache.asMap().keySet());
 		System.out.println("finish...");
+	}
+	
+	/**
+	 * 取决于jvm运行内存，当内存不足jvm进行垃圾回收的情况下，会将一些没有引用的缓存数据清理掉
+	 */
+	@Test
+	public void testJvmRefEvictionCacheGC() throws InterruptedException, ExecutionException {
+		
+		for (int i = 1; i <= 1080; i++) { // 20
+			cache.put("cache-" + i, new User(i));
+			if (i % 8 == 0) {
+				System.gc(); // 手动gc情况下，缓存的数据比系统自动gc的数据要多。结论：证明手动gc数据量多，和内存大小有关
+			}
+		}
+		
+		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 }

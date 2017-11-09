@@ -7,13 +7,13 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.base.Ticker;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSortedSet;
 
 /**
  * <b>function:</b> 【基于容量回收-数量】缓存回收策略 超出指定size后回收
@@ -73,37 +73,27 @@ public class TimeBasedEvictionCacheTest {
 				//.expireAfterWrite(10, TimeUnit.SECONDS)  // 缓存项在给定时间内没有被写访问（创建或覆盖），则回收。
 				.expireAfterAccess(10, TimeUnit.SECONDS) // 缓存项在给定时间内没有被读/写访问，则回收。
 				.recordStats() // 开启缓存统计数据
-				.ticker(new Ticker() {
-					@Override
-					public long read() {
-						System.out.println("ticker...");
-						return 1000L;
-					}
-				})
 				.removalListener(new RemovalListener<String, Integer>() { // 删除缓存给予监听通知
 					@Override
 					public void onRemoval(RemovalNotification<String, Integer> notification) {
-						System.out.println(notification.wasEvicted());
-						System.out.println("remove cache key: " + notification.getKey() + ", value: " + notification.getValue());
+						System.out.println("==> size:" + cache.size() + ", remove cache: " + notification.getKey() + "=" + notification.getValue() + ", wasEvicted: " + notification.wasEvicted());
 					}
 				}).build(new CacheLoader<String, Integer>() { // 缓存加载方式
 					@Override
 					public Integer load(String key) throws RuntimeException {
-						System.out.println("loading......");
+						//System.out.println("load: " + key);
+						//return Optional.fromNullable(map.get(key)).or(System.identityHashCode(key));
 						return map.get(key);
 					}
 				});
 	}
 	
 	/**
-	 * expireAfterWrite
-	 * 测试 缓存项在给定时间内没有被写访问（创建或覆盖），则回收 
+	 * expireAfterWrite(10, TimeUnit.SECONDS)
+	 * 手动清理缓存：测试 缓存项在给定时间内没有被写访问（创建或覆盖），则回收
 	 */
 	@Test
 	public void testWriteEvictionCacheGC() throws InterruptedException {
-		
-		System.out.println("cache size: " + cache.size());
-		System.out.println("cache init value: " + cache.asMap());
 		
 		// expireAfterWrite 默认没有被创建的缓存
 		for (int i = 1; i <= 15; i++) {
@@ -135,26 +125,32 @@ public class TimeBasedEvictionCacheTest {
 						cache.getIfPresent("cache-4");
 					}
 					
-					// 清理缓存
+					// 手动清理缓存：由于长时间没有写入或读取操作，系统不能顺手帮忙清理过期的缓存
 					cache.cleanUp();
 					System.out.println(i + "-cleanUp...");
 				}
 			}
 		}).start();
 		
-		Thread.sleep(1000 * 15);
+		Thread.sleep(1000 * 60);
 		System.out.println("finish...");
+		
+		cache.put("cache-1", 23);
+		cache.put("cache-2", 55);
+		
+		// 没有被写访问（创建或覆盖），则回收 
+		cache.getIfPresent("cache-3");
+		cache.getIfPresent("cache-4");
+		
+		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 	
 	/**
-	 * expireAfterAccess(long, TimeUnit)：缓存项在给定时间内没有被读/写访问，则回收。
+	 * expireAfterAccess(10, TimeUnit)：缓存项在给定时间内没有被读/写访问，则回收。
 	 * 请注意这种缓存的回收顺序和基于大小回收一样：基于使用的次数和加入缓存的顺序进行回收
 	 */
 	@Test
 	public void testReadWriteEvictionCacheGC() throws InterruptedException, ExecutionException {
-		
-		System.out.println("cache size: " + cache.size());
-		System.out.println("cache init value: " + cache.asMap());
 		
 		// expireAfterAccess 默认没有被读/写访问，则回收
 		for (int i = 1; i <= 15; i++) {
@@ -185,14 +181,141 @@ public class TimeBasedEvictionCacheTest {
 						cache.getIfPresent("cache-4");
 					}
 					
-					// 清理缓存
-					//cache.cleanUp();
+					// 手动清理缓存
+					cache.cleanUp();
 					System.out.println(i + "-cleanUp...");
 				}
 			}
 		}).start();
 		
-		Thread.sleep(1000 * 15);
+		Thread.sleep(1000 * 60);
 		System.out.println("finish...");
+		
+		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+	}
+	
+	/**
+	 * 测试：
+	 * 1、模拟写入一部分缓存
+	 * 2、超过指定缓存时间后
+	 * 3、间隔一段时间不去读写缓存
+	 * 4、读写缓存
+	 */
+	@Test
+	public void testPeriodEvictionCacheGC() throws InterruptedException {
+		
+		// 1、模拟写入一部分缓存
+		System.out.println("init");
+		for (int i = 1; i <= 15; i++) {
+			cache.put("cache-" + i, i);
+			System.out.println(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		}
+
+		/*new Thread(new Runnable() {
+			@Override
+			public void run() {
+				
+				while (true) {
+					try {
+						Thread.sleep(100);
+						System.out.println("==> size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+					} catch (InterruptedException e) {
+					}
+				}
+			}
+		}).start();*/
+		
+		// 2、超过指定缓存时间后
+		Thread.sleep(1000 * 12);
+		System.out.println("expired");
+		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		
+		Thread.sleep(1000);
+		System.out.println("read/write");
+		
+		// 由于之前的缓存过期，在访问之前的缓存的时候，系统顺带清理下其他缓存 
+		try {
+			// 访问会导致缓存回收，但有可能不触发 RemovalListener
+			//cache.getIfPresent("cache-3");
+			// 回收部分过期的资源，触发RemovalListener
+			//cache.getUnchecked("cache-" + 4);
+			// 回收部分过期资源，必触发RemovalListener
+			//cache.get("cache-" + 5);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+
+		// 回收部分过期的资源，触发RemovalListener
+		//cache.put("cache-1", 23);
+		//cache.put("cache-2", 55);
+
+		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		System.out.println("read");
+		for (int i = 4; i <= 8; i++) {
+			// 访问会导致缓存回收，但有可能不触发 RemovalListener
+			cache.getIfPresent("cache-" + i);
+			
+			try {
+				// 回收过期资源，触发RemovalListener
+				//cache.getUnchecked("cache-" + i);
+				// 回收过期资源，必触发RemovalListener
+				//cache.get("cache-" + i);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		
+		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		
+		Thread.sleep(1000);
+		System.out.println("finish");
+		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+	}
+	
+	/**
+	 * expireAfterAccess：系统自动回收超过指定时间没有被访问或写入的缓存数据
+	 * expireAfterWrite：没有被写入过的被回收
+	 */
+	@Test
+	public void testPushEvictionCacheGC() throws InterruptedException, ExecutionException {
+		
+		for (int i = 1; i <= 200; i++) { 
+			cache.put("cache-" + i, i);
+			
+			if (i % 20 == 0 && i <= 140) { 
+				cache.put("cache-1", 23);
+				cache.put("cache-2", 55);
+				
+				cache.getIfPresent("cache-3");
+				cache.getIfPresent("cache-4");
+			}
+			
+			Thread.sleep(100);
+		}
+		
+		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+	}
+	
+	/**
+	 * expireAfterAccess：系统自动回收超过指定时间没有被访问或写入的缓存数据
+	 * expireAfterWrite：没有被写入过的被回收
+	 */
+	@Test
+	public void testPullEvictionCacheGC() throws InterruptedException, ExecutionException {
+		
+		for (int i = 1; i <= 200; i++) { 
+			cache.get("cache-" + i);
+			
+			if (i % 20 == 0 && i <= 140) { 
+				cache.put("cache-1", 23);
+				cache.put("cache-2", 55);
+				
+				cache.getIfPresent("cache-3");
+				cache.getIfPresent("cache-4");
+			}
+			Thread.sleep(100);
+		}
+		
+		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 }
