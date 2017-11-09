@@ -20,7 +20,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 /**
- * <b>function:</b> 测试模拟时间
+ * 模拟时间测试
  * @author hoojo
  * @createDate 2017年11月9日 下午3:42:50
  * @file TickerTest.java
