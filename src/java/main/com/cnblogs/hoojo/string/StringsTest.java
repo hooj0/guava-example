@@ -7,7 +7,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
 /**
- * <b>function:</b> 字符串工具类
+ * 字符串工具类
  * @author hoojo
  * @createDate 2017年11月9日 下午5:03:34
  * @file StringsTest.java
