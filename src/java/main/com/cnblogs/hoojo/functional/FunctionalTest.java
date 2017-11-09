@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ordering;
 
 /**
- * <b>function:</b> 函数式编程
+ * 函数式编程
  * @author hoojo
  * @createDate 2017年11月9日 下午5:50:01
  * @file FunctionalTest.java
