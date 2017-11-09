@@ -2,6 +2,8 @@ package com.cnblogs.hoojo.string;
 
 import org.junit.Test;
 
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
 /**
@@ -50,5 +52,23 @@ public class StringsTest {
 		
 		// 复制本身
 		System.out.println(Strings.repeat("go", 3)); // gogogo
+	}
+	
+	@Test
+	public void testCharset() {
+		
+		System.out.println(Charsets.ISO_8859_1);
+		System.out.println(new String("".getBytes(Charsets.UTF_8)));
+	}
+	
+	@Test
+	public void testCaseFormat() {
+		
+		// 字符串格式转换
+		System.out.println(CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, "CONSTANT_NAME")); // constantName
+		System.out.println(CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_HYPHEN, "CONSTANT_NAME")); // constant-name
+		System.out.println(CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_UNDERSCORE, "CONSTANT_NAME")); // constant_name
+		System.out.println(CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, "CONSTANT_NAME")); // ConstantName
+		System.out.println(CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_UNDERSCORE, "CONSTANT_NAME")); // CONSTANT_NAME
 	}
 }
