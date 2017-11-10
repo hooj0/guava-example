@@ -14,7 +14,7 @@ import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
 
 /**
- * <b>function:</b> 集合查找
+ * 集合查找
  * @author hoojo
  * @createDate 2017年11月10日 下午4:44:17
  * @file CollectFindFunctinalTest.java
