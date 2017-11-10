@@ -18,7 +18,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Maps.EntryTransformer;
 
 /**
- * <b>function:</b> 集合函数式编程
+ * 集合函数式编程
  * @author hoojo
  * @createDate 2017年11月10日 下午3:15:56
  * @file CollectTransformFunctionalTest.java
