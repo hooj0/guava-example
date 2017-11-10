@@ -23,7 +23,7 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 
 /**
- * <b>function:</b> 集合函数式编程
+ * 集合函数式编程
  * @author hoojo
  * @createDate 2017年11月10日 下午3:15:56
  * @file CollectFilterFunctionalTest.java
