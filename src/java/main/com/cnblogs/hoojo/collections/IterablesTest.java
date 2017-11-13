@@ -1,6 +1,8 @@
 package com.cnblogs.hoojo.collections;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -8,6 +10,7 @@ import org.junit.Test;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.primitives.Ints;
@@ -75,7 +78,6 @@ import com.google.common.primitives.Ints;
  */
 public class IterablesTest {
 
-	
 	@Test
 	public void testIterables() {
 		// 集合拼接合并
@@ -174,5 +176,15 @@ public class IterablesTest {
 
 		// 不可变集合
 		System.out.println(Iterables.unmodifiableIterable(Arrays.asList(1, 2, 3))); // [1, 2, 3]
+	}
+	
+	@Test
+	public void testIterators() {
+		
+		Collection<Integer> collect = Lists.newArrayList(1, 2, 0);
+		Iterators.addAll(collect, Ints.asList(2, 3, 5).iterator());
+		System.out.println(collect); // [1, 2, 0, 2, 3, 5]
+		
+		
 	}
 }
