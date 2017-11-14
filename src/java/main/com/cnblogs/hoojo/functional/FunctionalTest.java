@@ -1,7 +1,6 @@
 package com.cnblogs.hoojo.functional;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -274,7 +273,6 @@ public class FunctionalTest {
 		System.out.println(Predicates.notNull().test("")); // true
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testFunctionalExample() {
 		
@@ -305,5 +303,7 @@ public class FunctionalTest {
 				return "cast-" + input;
 			}
 		}).equivalent(1, 2);
+		
+		Equivalence.equals().equivalent('a', 'b');
 	}
 }
