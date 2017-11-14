@@ -15,7 +15,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
 /**
- * <b>function:</b>
+ * 任务调度服务示例
  * @author hoojo
  * @createDate 2017年11月13日 下午4:51:55
  * @file ApplicationTest.java
