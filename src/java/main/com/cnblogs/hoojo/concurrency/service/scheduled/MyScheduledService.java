@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.util.concurrent.AbstractScheduledService;
 
 /**
- * <b>function:</b> 固定频率任务，固定延迟任务
+ * 固定频率任务，固定延迟任务
  * fixedRate: 固定频率任务，
  * 		任务两次执行时间间隔是任务的开始点，固定在某个点运行。
  * 		是以固定频率来执行线程任务，固定频率的含义就是可能设定的固定时间不足以完成线程任务，
