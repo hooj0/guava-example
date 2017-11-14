@@ -3,7 +3,7 @@ package com.cnblogs.hoojo.concurrency.service.execution;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 
 /**
- * <b>function:</b> 通过单线程处理启动、运行、和关闭等操作
+ * 通过单线程处理启动、运行、和关闭等操作
  * 
  * @author hoojo
  * @createDate 2017年11月14日 上午11:33:03
