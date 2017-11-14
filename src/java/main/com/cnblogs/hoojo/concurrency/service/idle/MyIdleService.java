@@ -3,7 +3,7 @@ package com.cnblogs.hoojo.concurrency.service.idle;
 import com.google.common.util.concurrent.AbstractIdleService;
 
 /**
- * <b>function:</b> 状态切换监控
+ * 状态切换监控
  * 
  * @author hoojo
  * @createDate 2017年11月14日 上午11:29:56
