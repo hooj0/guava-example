@@ -12,7 +12,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 
 /**
- * <b>function:</b> 自定义的线程管理
+ * 自定义的线程管理
  * 
  * doStart和doStop方法的实现需要考虑下性能，尽可能的低延迟。
  * 如果初始化的开销较大，如读文件，打开网络连接，
