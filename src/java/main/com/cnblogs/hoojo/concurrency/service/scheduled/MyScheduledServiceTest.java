@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 /**
- * <b>function:</b> 定时任务线程测试
+ * 定时任务线程测试
  * 
  * @author hoojo
  * @createDate 2017年11月15日 下午4:38:53
