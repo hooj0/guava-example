@@ -5,7 +5,7 @@ import org.junit.Test;
 import com.cnblogs.hoojo.concurrency.service.idle.MyIdleService;
 
 /**
- * <b>function:</b> MyIdeService Test
+ * MyIdeService Test
  * @author hoojo
  * @createDate 2017年11月15日 下午3:29:46
  * @file MyIdeServiceTest.java
