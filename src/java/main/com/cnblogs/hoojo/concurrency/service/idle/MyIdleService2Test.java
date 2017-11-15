@@ -10,7 +10,7 @@ import com.cnblogs.hoojo.concurrency.service.idle.MyIdleService2;
 import com.google.common.util.concurrent.Service;
 
 /**
- * <b>function:</b> MyIdeService Test
+ * MyIdeService Test
  * @author hoojo
  * @createDate 2017年11月15日 下午3:29:46
  * @file MyIdeServiceTest.java
