@@ -12,7 +12,8 @@ import com.google.common.util.concurrent.ServiceManager;
 import com.google.common.util.concurrent.ServiceManager.Listener;
 
 /**
- * 
+服务管理器示例：
+
     startAsync()  ： 将启动所有被管理的服务。如果当前服务的状态都是NEW的话、那么你只能调用该方法一次、这跟 Service#startAsync()是一样的。
     stopAsync() ：将停止所有被管理的服务。
     addListener ：会添加一个ServiceManager.Listener，在服务状态转换中会调用该Listener
