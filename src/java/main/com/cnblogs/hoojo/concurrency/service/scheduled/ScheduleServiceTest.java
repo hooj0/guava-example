@@ -13,7 +13,7 @@ import org.junit.Test;
 import com.google.common.util.concurrent.AbstractScheduledService;
 
 /**
- * <b>function:</b> ScheduleService
+ * ScheduleService
  * 
  * @author hoojo
  * @createDate 2017年11月16日 下午5:56:57
