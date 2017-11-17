@@ -28,6 +28,7 @@ import com.google.common.util.concurrent.Service.Listener;
 import com.google.common.util.concurrent.Service.State;
 
 /**
+抽象服务，可以完成异步线程任务调度，提供开始和停止的方法。
 继承AbstractService方法必须实现两个方法.
     doStart():  首次调用startAsync()时会同时调用doStart(),
     			doStart()内部需要处理所有的初始化工作、如果启动成功则调用notifyStarted()方法；启动失败则调用notifyFailed()
