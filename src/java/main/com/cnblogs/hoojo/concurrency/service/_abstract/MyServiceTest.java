@@ -5,7 +5,7 @@ import org.junit.Test;
 import com.cnblogs.hoojo.concurrency.service._abstract.MyService.RecordingListener;
 
 /**
- * <b>function:</b>
+ * AbstractService 运行流程用例示例
  * @author hoojo
  * @createDate 2017年11月22日 下午4:32:27
  * @file MyServiceTest.java
