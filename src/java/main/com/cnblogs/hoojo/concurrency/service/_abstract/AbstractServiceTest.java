@@ -1,4 +1,4 @@
-package com.cnblogs.hoojo.concurrency.service;
+package com.cnblogs.hoojo.concurrency.service._abstract;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -378,6 +378,92 @@ public class AbstractServiceTest {
 			Thread.interrupted(); // clear interrupt for future tests
 		}
 	}
+	
+	@Test
+	public void testAwaitTerminated() throws Exception {
+		System.out.println("--------new--------");
+		final NoOpService service = new NoOpService();
+		System.out.println(service.state()); // State.NEW
+		System.out.println(service.isRunning()); // false
+		System.out.println(service.running); // false
+		
+		// 在stopAsync后，未调用awaitTerminated 结束线程，会导致长时间等待阻塞
+		Thread waiter = new Thread() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+				// 阻塞
+				service.awaitTerminated();
+			}
+		};
+		waiter.start();
+		
+		// 一直等待 waiter执行完成，由于没有调用stopAsync，导致awaitTerminated长时间等待阻塞
+		//waiter.join();
+		
+		System.out.println("--------startAsync.awaitRunning--------");
+		service.startAsync().awaitRunning();
+		assertEquals(State.RUNNING, service.state());
+		System.out.println(service.state()); // State.RUNNING
+		System.out.println(service.isRunning()); // true
+		System.out.println(service.running); // true
+		
+		System.out.println("--------stopAsync--------");
+		service.stopAsync();
+		
+		// 正常调用awaitTerminated
+		// service.awaitTerminated();
+		
+		// waiter.start() 后调用 service.awaitTerminated()后，waiter进入阻塞状态
+		System.out.println("waiter state:" + waiter.getState()); // TIMED_WAITING
+		
+		// 正常情况下waiter启动后立即运行就结束， waiter.start() 后调用 service.awaitTerminated()后，waiter进入阻塞状态
+		// 由于waiter.join主线程会等待执行完成
+		// 同时，由于主线程调用service.stopAsync()后，才能运行awaitTerminated() ，故上面代码可以顺利执行
+		waiter.join(LONG_TIMEOUT_MILLIS); // ensure that the await in the other thread is triggered
+		System.out.println("waiter state:" + waiter.getState()); // TERMINATED
+		assertFalse(waiter.isAlive());
+		
+		System.out.println(service.state()); // State.TERMINATED
+		System.out.println(service.isRunning()); // false
+		System.out.println(service.running); // false
+	}
+	
+	/**
+	 * The user of this service should call {@link #notifyStarted} and {@link #notifyStopped} after calling
+	 * {@link #startAsync} and {@link #stopAsync}.
+	 */
+	private static class ManualSwitchedService extends AbstractService {
+		boolean doStartCalled = false;
+		boolean doStopCalled = false;
+
+		@Override
+		protected void doStart() {
+			assertFalse(doStartCalled);
+			doStartCalled = true;
+		}
+
+		@Override
+		protected void doStop() {
+			assertFalse(doStopCalled);
+			doStopCalled = true;
+		}
+
+		public void notifyStarted2() {
+			super.notifyStarted();
+		}
+
+		public void notifyStopped2() {
+			super.notifyStopped();
+		}
+
+		public void notifyFailed2(Throwable cause) {
+			super.notifyFailed(cause);
+		}
+	}
 
 	public void testManualServiceStartStop() throws Exception {
 		ManualSwitchedService service = new ManualSwitchedService();
@@ -400,8 +486,7 @@ public class AbstractServiceTest {
 		service.notifyStopped2(); // usually this would be invoked by another thread
 		assertEquals(State.TERMINATED, service.state());
 		assertFalse(service.isRunning());
-		assertEquals(ImmutableList.of(State.STARTING, State.RUNNING, State.STOPPING, State.TERMINATED),
-				listener.getStateHistory());
+		assertEquals(ImmutableList.of(State.STARTING, State.RUNNING, State.STOPPING, State.TERMINATED), listener.getStateHistory());
 
 	}
 
@@ -519,55 +604,6 @@ public class AbstractServiceTest {
 		assertEquals(State.TERMINATED, service.state());
 		assertFalse(service.isRunning());
 		assertFalse(service.doStopCalled);
-	}
-
-	/**
-	 * The user of this service should call {@link #notifyStarted} and {@link #notifyStopped} after calling
-	 * {@link #startAsync} and {@link #stopAsync}.
-	 */
-	private static class ManualSwitchedService extends AbstractService {
-		boolean doStartCalled = false;
-		boolean doStopCalled = false;
-
-		@Override
-		protected void doStart() {
-			assertFalse(doStartCalled);
-			doStartCalled = true;
-		}
-
-		@Override
-		protected void doStop() {
-			assertFalse(doStopCalled);
-			doStopCalled = true;
-		}
-
-		public void notifyStarted2() {
-			super.notifyStarted();
-		}
-
-		public void notifyStopped2() {
-			super.notifyStopped();
-		}
-
-		public void notifyFailed2(Throwable cause) {
-			super.notifyFailed(cause);
-		}
-	}
-
-	public void testAwaitTerminated() throws Exception {
-		final NoOpService service = new NoOpService();
-		Thread waiter = new Thread() {
-			@Override
-			public void run() {
-				service.awaitTerminated();
-			}
-		};
-		waiter.start();
-		service.startAsync().awaitRunning();
-		assertEquals(State.RUNNING, service.state());
-		service.stopAsync();
-		waiter.join(LONG_TIMEOUT_MILLIS); // ensure that the await in the other thread is triggered
-		assertFalse(waiter.isAlive());
 	}
 
 	public void testAwaitTerminated_FailedService() throws Exception {

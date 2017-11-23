@@ -1,8 +1,8 @@
-package com.cnblogs.hoojo.concurrency.service;
+package com.cnblogs.hoojo.concurrency.service._abstract;
 
 import org.junit.Test;
 
-import com.cnblogs.hoojo.concurrency.service.MyService.RecordingListener;
+import com.cnblogs.hoojo.concurrency.service._abstract.MyService.RecordingListener;
 
 /**
  * <b>function:</b>
@@ -15,13 +15,13 @@ import com.cnblogs.hoojo.concurrency.service.MyService.RecordingListener;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class MyServiceTest {
+public class MyServiceTest2 {
 
 	@Test
 	public void test() {
 
 		System.out.println("--------new--------");
-		MyService service = new MyService();
+		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 
 		System.out.println(service.state()); // State.NEW
@@ -32,11 +32,6 @@ public class MyServiceTest {
 		System.out.println(service.state()); // State.STARTING
 		System.out.println(service.isRunning()); // false
 		
-		System.out.println("--------notifyStarted--------");
-		service._notifyStarted();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
-		
 		System.out.println("--------awaitRunning--------");
 		service.awaitRunning();
 		System.out.println(service.state()); // State.RUNNING
@@ -45,11 +40,6 @@ public class MyServiceTest {
 		System.out.println("--------stopAsync--------");
 		service.stopAsync();
 		System.out.println(service.state()); // State.STOPPING
-		System.out.println(service.isRunning()); // false
-		
-		System.out.println("--------notifyStopped--------");
-		service._notifyStopped();
-		System.out.println(service.state()); // State.TERMINATED
 		System.out.println(service.isRunning()); // false
 		
 		System.out.println("--------awaitTerminated--------");
@@ -62,14 +52,14 @@ public class MyServiceTest {
 	public void test2() {
 
 		System.out.println("--------new--------");
-		MyService service = new MyService();
+		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 
 		System.out.println(service.state()); // State.NEW
 		System.out.println(service.isRunning()); // false
 
 		System.out.println("--------startAsync--------");
-		service.startAsync();
+		service.startAsync().awaitRunning();
 		System.out.println(service.state()); // State.STARTING
 		System.out.println(service.isRunning()); // false
 		
@@ -81,7 +71,7 @@ public class MyServiceTest {
 	public void test3() {
 
 		System.out.println("--------new--------");
-		MyService service = new MyService();
+		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 
 		System.out.println(service.state()); // State.NEW
@@ -92,24 +82,13 @@ public class MyServiceTest {
 		System.out.println(service.state()); // State.STARTING
 		System.out.println(service.isRunning()); // false
 		
-		System.out.println("--------notifyStarted--------");
-		service._notifyStarted();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
-
-		System.out.println("--------notifyStarted--------");
-		// State != STARTING
-		service._notifyStarted(); // Exception，Cannot notifyStarted() when the service is RUNNING
-		
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
 	}
 	
 	@Test
 	public void test4() {
 
 		System.out.println("--------new--------");
-		MyService service = new MyService();
+		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 
 		System.out.println(service.state()); // State.NEW
@@ -119,11 +98,6 @@ public class MyServiceTest {
 		service.startAsync();
 		System.out.println(service.state()); // State.STARTING
 		System.out.println(service.isRunning()); // false
-		
-		System.out.println("--------notifyStarted--------");
-		service._notifyStarted();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
 		
 		System.out.println("--------awaitRunning--------");
 		service.awaitRunning();
@@ -140,11 +114,6 @@ public class MyServiceTest {
 		System.out.println(service.state()); // State.STOPPING
 		System.out.println(service.isRunning()); // false
 		
-		System.out.println("--------notifyStopped--------");
-		service._notifyStopped();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
-		
 		System.out.println("--------awaitTerminated--------");
 		service.awaitTerminated();
 		System.out.println(service.state()); // State.TERMINATED
@@ -155,7 +124,7 @@ public class MyServiceTest {
 	public void test5() {
 
 		System.out.println("--------new--------");
-		MyService service = new MyService();
+		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 
 		System.out.println(service.state()); // State.NEW
@@ -165,11 +134,6 @@ public class MyServiceTest {
 		service.startAsync();
 		System.out.println(service.state()); // State.STARTING
 		System.out.println(service.isRunning()); // false
-		
-		System.out.println("--------notifyStarted--------");
-		service._notifyStarted();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
 		
 		System.out.println("--------awaitRunning--------");
 		service.awaitRunning();
@@ -186,11 +150,6 @@ public class MyServiceTest {
 		System.out.println(service.state()); // State.STOPPING
 		System.out.println(service.isRunning()); // false
 		
-		System.out.println("--------notifyStopped--------");
-		service._notifyStopped();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
-		
 		System.out.println("--------awaitTerminated--------");
 		service.awaitTerminated();
 		System.out.println(service.state()); // State.TERMINATED
@@ -201,7 +160,7 @@ public class MyServiceTest {
 	public void test6() {
 		
 		System.out.println("--------new--------");
-		MyService service = new MyService();
+		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 		
 		System.out.println(service.state()); // State.NEW
@@ -212,11 +171,6 @@ public class MyServiceTest {
 		System.out.println(service.state()); // State.STARTING
 		System.out.println(service.isRunning()); // false
 		
-		System.out.println("--------notifyStarted--------");
-		service._notifyStarted();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
-		
 		System.out.println("--------awaitRunning--------");
 		service.awaitRunning();
 		System.out.println(service.state()); // State.RUNNING
@@ -225,17 +179,6 @@ public class MyServiceTest {
 		System.out.println("--------stopAsync--------");
 		service.stopAsync();
 		System.out.println(service.state()); // State.STOPPING
-		System.out.println(service.isRunning()); // false
-		
-		System.out.println("--------notifyStopped--------");
-		service._notifyStopped();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
-		
-		System.out.println("--------notifyStopped--------");
-		// previous != STOPPING && previous != RUNNING
-		service._notifyStopped(); // Exception，Cannot notifyStopped() when the service is TERMINATED
-		System.out.println(service.state()); // State.TERMINATED
 		System.out.println(service.isRunning()); // false
 		
 		System.out.println("--------awaitTerminated--------");
@@ -248,7 +191,7 @@ public class MyServiceTest {
 	public void test7() {
 
 		System.out.println("--------new--------");
-		MyService service = new MyService();
+		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 
 		System.out.println(service.state()); // State.NEW
@@ -259,11 +202,6 @@ public class MyServiceTest {
 		System.out.println(service.state()); // State.STARTING
 		System.out.println(service.isRunning()); // false
 		
-		System.out.println("--------notifyStarted--------");
-		service._notifyStarted();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
-		
 		System.out.println("--------awaitRunning--------");
 		service.awaitRunning();
 		System.out.println(service.state()); // State.RUNNING
@@ -272,11 +210,6 @@ public class MyServiceTest {
 		System.out.println("--------stopAsync--------");
 		service.stopAsync();
 		System.out.println(service.state()); // State.STOPPING
-		System.out.println(service.isRunning()); // false
-		
-		System.out.println("--------notifyStopped--------");
-		service._notifyStopped();
-		System.out.println(service.state()); // State.TERMINATED
 		System.out.println(service.isRunning()); // false
 		
 		System.out.println("--------awaitTerminated--------");
@@ -345,9 +278,7 @@ public class MyServiceTest {
 		// doStop--->state: STOPPING, isRunning: false
 		// Listener.stopping: FAILED, from:RUNNING, isRunning: false
 		// Listener.failed: FAILED, from:STOPPING, isRunning: false
-		
 		System.out.println(service.state()); // State.FAILED
 		System.out.println(service.isRunning()); // false
-		
 	}
 }

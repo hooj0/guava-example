@@ -1,4 +1,4 @@
-package com.cnblogs.hoojo.concurrency.service;
+package com.cnblogs.hoojo.concurrency.service._abstract;
 
 import java.util.List;
 
@@ -19,8 +19,16 @@ import com.google.common.util.concurrent.Service;
  * 或者其他任何可能引起阻塞的操作，建议移到另外一个单独的线程去处理。
  * <br/>
  * 注意：
- * 		1、不允许重复启动<br/>
- * 		2、_notifyStarted 不能重复调用；若重复调用时，State = STARTING 才可以
+ * 		1、不允许重复启动，启动前会检查启动状态，若已启动会抛出异常IllegalStateException <br/>
+ * 		2、_notifyStarted 不能重复调用；若重复调用时，State = STARTING 才可以；
+ * 			// State != STARTING
+			// Exception，Cannot notifyStarted() when the service is RUNNING
+ * 		3、awaitRunning 可以重复调用
+ * 		4、重复关闭，底层不做任何业务，不触发 Listener.stopping
+ * 		5、notifyStopped 不能重复调用；
+ * 			// previous != STOPPING && previous != RUNNING
+			// Exception，Cannot notifyStopped() when the service is TERMINATED
+		6、awaitTerminated 可重复调用
  * 
  * @author hoojo
  * @createDate 2017年11月14日 下午5:35:50
