@@ -26,8 +26,7 @@ import com.google.common.util.concurrent.Service.Listener;
 import com.google.common.util.concurrent.Service.State;
 
 /**
- * <b>function:</b>
- * 
+ * AbstractExecutionThreadService 异步线程任务执行器示例
  * @author hoojo
  * @createDate 2017年11月24日 下午4:14:04
  * @file AbstractExecutionThreadServiceTest.java
