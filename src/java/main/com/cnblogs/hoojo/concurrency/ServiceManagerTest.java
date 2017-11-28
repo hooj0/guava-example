@@ -3,8 +3,8 @@ package com.cnblogs.hoojo.concurrency;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cnblogs.hoojo.concurrency.service.MyExecutionThreadService;
 import com.cnblogs.hoojo.concurrency.service._abstract.MyService;
+import com.cnblogs.hoojo.concurrency.service.execution.MyExecutionThreadService;
 import com.cnblogs.hoojo.concurrency.service.idle.MyIdleService;
 import com.cnblogs.hoojo.concurrency.service.scheduled.MyScheduledService;
 import com.google.common.util.concurrent.Service;

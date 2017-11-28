@@ -60,6 +60,7 @@ public class MyExecutionThreadServiceTest {
 		service.stopAsync();
 	}
 
+	@Test
 	public void testListenerDoesntDeadlockOnStopAndWaitFromTerminated() throws Exception {
 		final NoOpThreadedService service = new NoOpThreadedService();
 		service.addListener(new Listener() {

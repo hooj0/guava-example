@@ -1,4 +1,4 @@
-package com.cnblogs.hoojo.concurrency.service;
+package com.cnblogs.hoojo.concurrency.service.execution;
 
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 
@@ -18,16 +18,11 @@ public class MyExecutionThreadService extends AbstractExecutionThreadService {
 
 	@Override
 	protected void run() throws Exception {
-		if (isRunning()) {
-
-		}
-		
 		System.out.println("MyExecutionThreadService.run...");
 	}
 
 	// start()内部会调用startUp()方法，创建一个线程、然后在线程内调用run()方法
 	protected void startUp() throws InterruptedException {
-		//dispatcher.listenForConnections(port, queue);
 		System.out.println("MyExecutionThreadService.startUp...");
 		
 		Thread.sleep(10);
@@ -36,9 +31,6 @@ public class MyExecutionThreadService extends AbstractExecutionThreadService {
 	// 让run()方法结束返回
 	// stop()会调用 triggerShutdown()方法并且等待线程终止。
 	protected void triggerShutdown() {
-		//dispatcher.stopListeningForConnections(queue);
-		//queue.put(POISON);
-		
 		System.out.println("MyExecutionThreadService.triggerShutdown...");
 	}
 }
