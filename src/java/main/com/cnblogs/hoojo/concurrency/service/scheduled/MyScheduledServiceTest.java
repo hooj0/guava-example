@@ -38,7 +38,7 @@ public class MyScheduledServiceTest {
 		try {
 			System.out.println("get:" + service.future.get());
 		} catch (Exception e) {
-			System.out.println(service.runException);
+			System.out.println(e);
 		}
 		
 		System.out.println("state: " + service.state());
