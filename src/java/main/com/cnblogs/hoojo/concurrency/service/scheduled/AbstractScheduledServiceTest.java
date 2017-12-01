@@ -71,7 +71,9 @@ public class AbstractScheduledServiceTest extends TestCase {
 	final ScheduledExecutorService executor = new ScheduledThreadPoolExecutor(10) {
 		@Override
 		public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
-			return future = super.scheduleWithFixedDelay(command, initialDelay, delay, unit);
+			future = super.scheduleWithFixedDelay(command, initialDelay, delay, unit);
+			System.out.println(future);
+			return future;
 		}
 	};
 	
@@ -137,8 +139,12 @@ public class AbstractScheduledServiceTest extends TestCase {
 			assertFalse(shutDownCalled);
 			numberOfTimesRunCalled.incrementAndGet();
 			assertEquals(State.RUNNING, state());
+			
+			System.out.println("----runFirstBarrier.await----");
+			System.out.println("----runSecondBarrier.await----");
 			runFirstBarrier.await();
 			runSecondBarrier.await();
+			
 			if (runException != null) {
 				System.out.println("runOneIteration exception");
 				throw runException;
@@ -237,15 +243,15 @@ public class AbstractScheduledServiceTest extends TestCase {
 		
 		System.out.println("isRunning: " + service.isRunning());
 		System.out.println("state: " + service.state());
-		System.out.println("isCancelled: " + future.isCancelled()); // false
 		
 		assertEquals(0, service.numberOfTimesRunCalled.get());
 		assertEquals(Service.State.FAILED, service.state());
 	}
 
 	public void testFailOnErrorFromStartUpListener() throws InterruptedException {
-		final Error error = new Error();
+		final Error error = new Error("running error");
 		final CountDownLatch latch = new CountDownLatch(1);
+		
 		TestService service = new TestService();
 		service.addListener(new Service.Listener() {
 			@Override
@@ -260,6 +266,9 @@ public class AbstractScheduledServiceTest extends TestCase {
 				latch.countDown();
 			}
 		}, directExecutor());
+		
+		// startAsync -> doStart & dispatch Listener.starting
+		// doStart -> executor & startUp & scheduler & notifyStarted
 		service.startAsync();
 		latch.await();
 
@@ -269,50 +278,94 @@ public class AbstractScheduledServiceTest extends TestCase {
 
 	public void testFailOnExceptionFromShutDown() throws Exception {
 		TestService service = new TestService();
-		service.shutDownException = new Exception();
+		service.shutDownException = new Exception("shutDown Exception");
+		
 		service.startAsync().awaitRunning();
 		service.runFirstBarrier.await();
+		
+		// stopAsync -> doStop -> cancel -> if (state() == State.STOPPING) { shutDown & notifyStop }
+		// shutDown -> exception -> notifyFailed
 		service.stopAsync();
 		service.runSecondBarrier.await();
+		
 		try {
+			// notifyFailed -> state = failed -> exception 
 			service.awaitTerminated();
 			fail();
 		} catch (IllegalStateException e) {
 			assertEquals(service.shutDownException, e.getCause());
+
+			System.out.println(e); // IllegalStateException: Expected the service TestService [FAILED] to be TERMINATED, but the service has FAILED
+			System.out.println(service.failureCause()); // Exception: shutDown Exception
 		}
+		
 		assertEquals(Service.State.FAILED, service.state());
 	}
 
 	public void testRunOneIterationCalledMultipleTimes() throws Exception {
 		TestService service = new TestService();
+		RecordingListener.record(service);
+		
 		service.startAsync().awaitRunning();
+		
+		// runFirstBarrier每到2次就可以触发运行 runOneIteration
+		// 因为runFirstBarrier.wait导致程序阻塞，底层线程运行被进行等待
+		// 当程序恢复不再阻塞，底层线程尝试重新运行runOneIteration
+		// 直到底层线程顺利运行完runOneIteration方法终止
 		for (int i = 1; i < 10; i++) {
-			service.runFirstBarrier.await();
-			assertEquals(i, service.numberOfTimesRunCalled.get());
-			service.runSecondBarrier.await();
+			System.out.println(service.runFirstBarrier.await());
+			System.out.println(i + "->" + service.numberOfTimesRunCalled.get());
+			System.out.println(service.runSecondBarrier.await());
 		}
+		
 		service.runFirstBarrier.await();
+		
 		service.stopAsync();
+		
 		service.runSecondBarrier.await();
 		service.stopAsync().awaitTerminated();
 	}
 
 	public void testExecutorOnlyCalledOnce() throws Exception {
 		TestService service = new TestService();
+		
 		service.startAsync().awaitRunning();
+		
+		// numberOfTimesExecutorCalled 被执行一次，runOneIteration 却可以执行多次
 		// It should be called once during startup.
 		assertEquals(1, service.numberOfTimesExecutorCalled.get());
 		for (int i = 1; i < 10; i++) {
-			service.runFirstBarrier.await();
-			assertEquals(i, service.numberOfTimesRunCalled.get());
-			service.runSecondBarrier.await();
+			System.out.println(service.runFirstBarrier.await());
+			System.out.println(i + "->" + service.numberOfTimesRunCalled.get());
+			System.out.println(service.runSecondBarrier.await());
 		}
 		service.runFirstBarrier.await();
+		
 		service.stopAsync();
 		service.runSecondBarrier.await();
 		service.stopAsync().awaitTerminated();
 		// Only called once overall.
-		assertEquals(1, service.numberOfTimesExecutorCalled.get());
+		assertEquals(1, service.numberOfTimesExecutorCalled.get());//1
+	}
+	
+	public void testSchedulerOnlyCalledOnce() throws Exception {
+		TestService service = new TestService();
+		service.startAsync().awaitRunning();
+		
+		// It should be called once during startup.
+		assertEquals(1, service.numberOfTimesSchedulerCalled.get());
+		for (int i = 1; i < 10; i++) {
+			System.out.println(service.runFirstBarrier.await());
+			System.out.println(i + "->" + service.numberOfTimesRunCalled.get());
+			System.out.println(service.runSecondBarrier.await());
+		}
+		service.runFirstBarrier.await();
+		service.stopAsync();
+		service.runSecondBarrier.await();
+		service.awaitTerminated();
+		
+		// Only called once overall.
+		assertEquals(1, service.numberOfTimesSchedulerCalled.get());//1
 	}
 
 	public void testDefaultExecutorIsShutdownWhenServiceIsStopped() throws Exception {
@@ -321,29 +374,39 @@ public class AbstractScheduledServiceTest extends TestCase {
 		AbstractScheduledService service = new AbstractScheduledService() {
 			@Override
 			protected void runOneIteration() throws Exception {
+				System.out.println("runOneIteration........");
 			}
 
 			@Override
 			public ScheduledExecutorService executor() {
+				System.out.println("executor........");
+				
 				executor.set(super.executor());
 				return executor.get();
 			}
 
 			@Override
 			protected Scheduler scheduler() {
+				System.out.println("scheduler........");
+				
 				return newFixedDelaySchedule(0, 1, TimeUnit.MILLISECONDS);
 			}
-			
-			
 		};
 
+		
 		service.startAsync();
-		//assertFalse(service.executor().isShutdown());
+		System.out.println("isShutdown: " + executor.get().isShutdown()); // false
 		
 		service.awaitRunning();
 		service.stopAsync();
+		System.out.println("isShutdown: " + executor.get().isShutdown()); // false
 		service.awaitTerminated();
-		assertTrue(executor.get().awaitTermination(100, TimeUnit.MILLISECONDS));
+		
+		System.out.println("isShutdown: " + executor.get().isShutdown()); // true
+		
+		// 阻塞，直到所有任务在关闭请求之后完成执行，或发生超时，或当前线程中断，以先发生者为准。
+		// 程序调度终止完成
+		System.out.println(executor.get().awaitTermination(100, TimeUnit.MILLISECONDS)); // true
 	}
 
 	public void testDefaultExecutorIsShutdownWhenServiceFails() throws Exception {
@@ -351,50 +414,43 @@ public class AbstractScheduledServiceTest extends TestCase {
 		AbstractScheduledService service = new AbstractScheduledService() {
 			@Override
 			protected void startUp() throws Exception {
-				throw new Exception("Failed");
+				System.out.println("startUp...........");
+				throw new Exception("startUp Failed");
 			}
 
 			@Override
 			protected void runOneIteration() throws Exception {
+				System.out.println("runOneIteration...........");
 			}
 
 			@Override
 			protected ScheduledExecutorService executor() {
+				System.out.println("executor...........");
 				executor.set(super.executor());
 				return executor.get();
 			}
 
 			@Override
 			protected Scheduler scheduler() {
+				System.out.println("scheduler...........");
 				return newFixedDelaySchedule(0, 1, TimeUnit.MILLISECONDS);
 			}
 		};
 
 		try {
+			// startAsync -> doStart -> executor & startUp & scheduler & notifyStarted
+			// startUp -> throw Exception -> notifyFailed & runningTask.cancel -> failed
 			service.startAsync().awaitRunning();
 			fail("Expected service to fail during startup");
 		} catch (IllegalStateException expected) {
+			System.out.println(expected); // IllegalStateException: Expected the service  [FAILED] to be RUNNING, but the service has FAILED
+			System.out.println(service.failureCause());// Exception: startUp Failed
 		}
 
+		System.out.println(executor.get().isShutdown()); // true
+		
+		// 程序调度终止完成
 		assertTrue(executor.get().awaitTermination(100, TimeUnit.MILLISECONDS));
-	}
-
-	public void testSchedulerOnlyCalledOnce() throws Exception {
-		TestService service = new TestService();
-		service.startAsync().awaitRunning();
-		// It should be called once during startup.
-		assertEquals(1, service.numberOfTimesSchedulerCalled.get());
-		for (int i = 1; i < 10; i++) {
-			service.runFirstBarrier.await();
-			assertEquals(i, service.numberOfTimesRunCalled.get());
-			service.runSecondBarrier.await();
-		}
-		service.runFirstBarrier.await();
-		service.stopAsync();
-		service.runSecondBarrier.await();
-		service.awaitTerminated();
-		// Only called once overall.
-		assertEquals(1, service.numberOfTimesSchedulerCalled.get());
 	}
 
 	public void testTimeout() {
@@ -402,30 +458,39 @@ public class AbstractScheduledServiceTest extends TestCase {
 		Service service = new AbstractScheduledService() {
 			@Override
 			protected Scheduler scheduler() {
+				System.out.println("scheduler...........");
+				
 				return Scheduler.newFixedDelaySchedule(0, 1, TimeUnit.NANOSECONDS);
 			}
 
 			@Override
 			protected ScheduledExecutorService executor() {
+				System.out.println("executor...........");
+				
+				/** 没有执行线程任务，导致任务超时 */
 				return TestingExecutors.noOpScheduledExecutor();
 			}
 
 			@Override
 			protected void runOneIteration() throws Exception {
+				System.out.println("runOneIteration...........");
 			}
 
 			@Override
 			protected String serviceName() {
+				System.out.println("serviceName...........");
 				return "Foo";
 			}
 		};
 		
+		RecordingListener.record(service);
 		try {
 			service.startAsync().awaitRunning(1, TimeUnit.MILLISECONDS);
 			fail("Expected timeout");
 		} catch (TimeoutException e) {
 			System.out.println(e); //"Timed out waiting for Foo [STARTING] to reach the RUNNING state."
 		}
+		System.out.println(service.state()); // STARTING
 	}
 
 	public static class SchedulerTest extends TestCase {
@@ -449,51 +514,154 @@ public class AbstractScheduledServiceTest extends TestCase {
 			assertEquals(SchedulerTest.initialDelay, initialDelay);
 			assertEquals(SchedulerTest.delay, delay);
 			assertEquals(SchedulerTest.unit, unit);
-			assertEquals(testRunnable, command);
+			System.out.println(command);
 		}
 
 		public void testFixedRateSchedule() {
 			
-			/*Scheduler schedule = Scheduler.newFixedRateSchedule(initialDelay, delay, unit);
-			
-			Future<?> unused = schedule.schedule(new NullService(), new ScheduledThreadPoolExecutor(1) {
+			Service service = new AbstractScheduledService() {
 				@Override
-				public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
-					assertSingleCallWithCorrectParameters(command, initialDelay, delay, unit);
-					return null;
+				protected Scheduler scheduler() {
+					System.out.println("scheduler...........");
+					
+					return Scheduler.newFixedRateSchedule(initialDelay, delay, unit);
 				}
-			}, testRunnable);
-			assertTrue(called);*/
+
+				@Override
+				protected ScheduledExecutorService executor() {
+					System.out.println("executor...........");
+					
+					return new ScheduledThreadPoolExecutor(1) {
+						@Override
+						public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
+							assertSingleCallWithCorrectParameters(command, initialDelay, period, unit);
+							return null;
+						}
+					};
+				}
+
+				@Override
+				protected void runOneIteration() throws Exception {
+					System.out.println("runOneIteration...........");
+				}
+
+				@Override
+				protected String serviceName() {
+					System.out.println("serviceName...........");
+					return "Foo";
+				}
+			};
+			
+			service.startAsync().awaitRunning();
 		}
 
 		public void testFixedDelaySchedule() {
-			/*Scheduler schedule = newFixedDelaySchedule(initialDelay, delay, unit);
 			
-			Future<?> unused = schedule.schedule(null, new ScheduledThreadPoolExecutor(10) {
+			Service service = new AbstractScheduledService() {
 				@Override
-				public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay,
-						TimeUnit unit) {
-					assertSingleCallWithCorrectParameters(command, initialDelay, delay, unit);
-					return null;
+				protected Scheduler scheduler() {
+					System.out.println("scheduler...........");
+					
+					return Scheduler.newFixedDelaySchedule(initialDelay, delay, unit);
 				}
-			}, testRunnable);
-			assertTrue(called);*/
+
+				@Override
+				protected ScheduledExecutorService executor() {
+					System.out.println("executor...........");
+					
+					return new ScheduledThreadPoolExecutor(1) {
+						@Override
+						public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long period, TimeUnit unit) {
+							assertSingleCallWithCorrectParameters(command, initialDelay, period, unit);
+							return null;
+						}
+					};
+				}
+
+				@Override
+				protected void runOneIteration() throws Exception {
+					System.out.println("runOneIteration...........");
+				}
+
+				@Override
+				protected String serviceName() {
+					System.out.println("serviceName...........");
+					return "Foo";
+				}
+			};
+			
+			service.startAsync().awaitRunning();
+		}
+		
+		private static class TestAbstractScheduledCustomService extends AbstractScheduledService {
+			volatile boolean useBarriers = true;
+			final AtomicInteger numIterations = new AtomicInteger(0);
+			final CyclicBarrier firstBarrier = new CyclicBarrier(2);
+			final CyclicBarrier secondBarrier = new CyclicBarrier(2);
+
+			@Override
+			protected void runOneIteration() throws Exception {
+				System.out.println("runOneIteration...........");
+				numIterations.incrementAndGet();
+				if (useBarriers) {
+					System.out.println("runOneIteration.await...........");
+					System.out.println("firstBarrier: " + firstBarrier.await());
+					System.out.println("secondBarrier: " + secondBarrier.await());
+				}
+				
+				System.out.println("runOneIteration..........end");
+			}
+
+			@Override
+			protected ScheduledExecutorService executor() {
+				System.out.println("executor...........");
+				
+				// use a bunch of threads so that weird overlapping schedules are more likely to happen.
+				return Executors.newScheduledThreadPool(10);
+			}
+
+			@Override
+			protected Scheduler scheduler() {
+				System.out.println("scheduler...........");
+
+				return new CustomScheduler() {
+					@Override
+					protected Schedule getNextSchedule() throws Exception {
+						System.out.println("getNextSchedule...........");
+						return new Schedule(delay, unit);
+					}
+				};
+			}
 		}
 
 		public void testFixedDelayScheduleFarFuturePotentiallyOverflowingScheduleIsNeverReached() throws Exception {
 			TestAbstractScheduledCustomService service = new TestAbstractScheduledCustomService() {
 				@Override
 				protected Scheduler scheduler() {
+					System.out.println("@Override.scheduler......");
+
+					// 启动执行间隔Long最大值，导致程序等待，调度任务没有开始执行
 					return newFixedDelaySchedule(Long.MAX_VALUE, Long.MAX_VALUE, SECONDS);
 				}
 			};
+			
+			RecordingListener.record(service);
+			
+			// 程序启动运行 
+			// startAsync -> doStart -> executor & startUp & scheduler & notifyStarted
+			// scheduler -> 执行频率 导致
 			service.startAsync().awaitRunning();
+			
 			try {
+				// service.firstBarrier.await();
+				// 调度任务没有开始执行，导致runOneIteration方法没有运行，从而下面方法超时
 				service.firstBarrier.await(5, SECONDS);
 				fail();
 			} catch (TimeoutException expected) {
+				System.out.println(expected);//TimeoutException
 			}
-			assertEquals(0, service.numIterations.get());
+			
+			System.out.println(service.numIterations.get()); // 0
 			service.stopAsync();
 			service.awaitTerminated();
 		}
@@ -502,9 +670,12 @@ public class AbstractScheduledServiceTest extends TestCase {
 			TestAbstractScheduledCustomService service = new TestAbstractScheduledCustomService() {
 				@Override
 				protected Scheduler scheduler() {
+					System.out.println("@Override.scheduler..........");
 					return new AbstractScheduledService.CustomScheduler() {
+						
 						@Override
 						protected Schedule getNextSchedule() throws Exception {
+							System.out.println("getNextSchedule..........");
 							return new Schedule(Long.MAX_VALUE, SECONDS);
 						}
 					};
@@ -512,89 +683,101 @@ public class AbstractScheduledServiceTest extends TestCase {
 			};
 			service.startAsync().awaitRunning();
 			try {
+				// 由于 getNextSchedule 方法导致任务延迟运行，runOneIteration未运行，导致下面方法超时
 				service.firstBarrier.await(5, SECONDS);
 				fail();
 			} catch (TimeoutException expected) {
+				System.out.println(expected);
 			}
 			assertEquals(0, service.numIterations.get());
 			service.stopAsync();
 			service.awaitTerminated();
 		}
 
-		private class TestCustomScheduler extends AbstractScheduledService.CustomScheduler {
-			public AtomicInteger scheduleCounter = new AtomicInteger(0);
-
-			@Override
-			protected Schedule getNextSchedule() throws Exception {
-				scheduleCounter.incrementAndGet();
-				return new Schedule(0, TimeUnit.SECONDS);
-			}
-			
-			public Future<?> schedule(AbstractService service, ScheduledExecutorService executor, Runnable runnable) {
-				
-				return null;
-			}
-		}
-
-		public void testCustomSchedule_startStop() throws Exception {
-			final CyclicBarrier firstBarrier = new CyclicBarrier(2);
-			final CyclicBarrier secondBarrier = new CyclicBarrier(2);
-			final AtomicBoolean shouldWait = new AtomicBoolean(true);
-			Runnable task = new Runnable() {
-				@Override
-				public void run() {
-					try {
-						if (shouldWait.get()) {
-							firstBarrier.await();
-							secondBarrier.await();
-						}
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
-				}
-			};
-			
-			TestCustomScheduler scheduler = new TestCustomScheduler();
-			Future<?> future = scheduler.schedule(null, Executors.newScheduledThreadPool(10), task);
-			firstBarrier.await();
-			assertEquals(1, scheduler.scheduleCounter.get());
-			secondBarrier.await();
-			firstBarrier.await();
-			assertEquals(2, scheduler.scheduleCounter.get());
-			shouldWait.set(false);
-			secondBarrier.await();
-			future.cancel(false);
-		}
-
 		public void testCustomSchedulerServiceStop() throws Exception {
 			TestAbstractScheduledCustomService service = new TestAbstractScheduledCustomService();
+			RecordingListener.record(service);
+			
+			// startAsync -> doStart -> executor & startUp & scheduler & notifyStarted
+			// scheduler -> runOneIteration -> firstBarrier.await
 			service.startAsync().awaitRunning();
-			service.firstBarrier.await();
+			System.out.println("firstBarrier.await");
+			System.out.println(service.firstBarrier.await()); // 1，屏障抵达
 			assertEquals(1, service.numIterations.get());
 			service.stopAsync();
-			service.secondBarrier.await();
+			service.secondBarrier.await(); // 屏障抵达，runOneIteration 运行结束
 			service.awaitTerminated();
+			
 			// Sleep for a while just to ensure that our task wasn't called again.
 			Thread.sleep(unit.toMillis(3 * delay));
 			assertEquals(1, service.numIterations.get());
 		}
+		
+		public void testBig() throws Exception {
+			TestAbstractScheduledCustomService service = new TestAbstractScheduledCustomService() {
+				@Override
+				protected Scheduler scheduler() {
+					System.out.println("scheduler........");
+					
+					return new AbstractScheduledService.CustomScheduler() {
+						@Override
+						protected Schedule getNextSchedule() throws Exception {
+							System.out.println("getNextSchedule........");
+							
+							// Explicitly yield to increase the probability of a pathological scheduling.
+							Thread.yield();
+							
+							return new Schedule(5, TimeUnit.MILLISECONDS);
+						}
+					};
+				}
+			};
+			
+			service.useBarriers = false;
+			
+			// 重复调度开启
+			service.startAsync().awaitRunning();
+			Thread.sleep(50);
+			
+			// 开启等待屏障
+			service.useBarriers = true;
+			
+			System.out.println("-------firstBarrier.await--------");
+			service.firstBarrier.await(); //抵达屏障点1
+			int numIterations = service.numIterations.get();
+			
+			service.stopAsync();
+			System.out.println("-------secondBarrier.await--------");
+			service.secondBarrier.await();//抵达屏障点2，runOneIteration运行完毕
+			
+			service.awaitTerminated();
+			assertEquals(numIterations, service.numIterations.get());
+		}
 
 		public void testCustomScheduler_deadlock() throws InterruptedException, BrokenBarrierException {
 			final CyclicBarrier inGetNextSchedule = new CyclicBarrier(2);
+			
 			// This will flakily deadlock, so run it multiple times to increase the flake likelihood
-			for (int i = 0; i < 1000; i++) {
+			for (int i = 0; i < 1; i++) {
 				Service service = new AbstractScheduledService() {
 					@Override
 					protected void runOneIteration() {
+						System.out.println("runOneIteration........");
 					}
 
 					@Override
 					protected Scheduler scheduler() {
+						System.out.println("scheduler.........");
+						
 						return new CustomScheduler() {
 							@Override
 							protected Schedule getNextSchedule() throws Exception {
-								if (state() != State.STARTING) {
+								System.out.println("getNextSchedule.........");
+								System.out.println(state());
+								
+								if (state() != State.STARTING) { // 第二次running
 									inGetNextSchedule.await();
+									System.out.println("inGetNextSchedule.await------");
 									Thread.yield();
 									throw new RuntimeException("boom");
 								}
@@ -603,83 +786,34 @@ public class AbstractScheduledServiceTest extends TestCase {
 						};
 					}
 				};
+				
 				service.startAsync().awaitRunning();
-				inGetNextSchedule.await();
+				Thread.sleep(100);
+				
+				inGetNextSchedule.await();// 程序抛出异常终止
 				service.stopAsync();
-			}
-		}
-
-		public void testBig() throws Exception {
-			TestAbstractScheduledCustomService service = new TestAbstractScheduledCustomService() {
-				@Override
-				protected Scheduler scheduler() {
-					return new AbstractScheduledService.CustomScheduler() {
-						@Override
-						protected Schedule getNextSchedule() throws Exception {
-							// Explicitly yield to increase the probability of a pathological scheduling.
-							Thread.yield();
-							return new Schedule(0, TimeUnit.SECONDS);
-						}
-					};
-				}
-			};
-			service.useBarriers = false;
-			service.startAsync().awaitRunning();
-			Thread.sleep(50);
-			service.useBarriers = true;
-			service.firstBarrier.await();
-			int numIterations = service.numIterations.get();
-			service.stopAsync();
-			service.secondBarrier.await();
-			service.awaitTerminated();
-			assertEquals(numIterations, service.numIterations.get());
-		}
-
-		private static class TestAbstractScheduledCustomService extends AbstractScheduledService {
-			final AtomicInteger numIterations = new AtomicInteger(0);
-			volatile boolean useBarriers = true;
-			final CyclicBarrier firstBarrier = new CyclicBarrier(2);
-			final CyclicBarrier secondBarrier = new CyclicBarrier(2);
-
-			@Override
-			protected void runOneIteration() throws Exception {
-				numIterations.incrementAndGet();
-				if (useBarriers) {
-					firstBarrier.await();
-					secondBarrier.await();
-				}
-			}
-
-			@Override
-			protected ScheduledExecutorService executor() {
-				// use a bunch of threads so that weird overlapping schedules are more likely to happen.
-				return Executors.newScheduledThreadPool(10);
-			}
-
-			@Override
-			protected Scheduler scheduler() {
-				return new CustomScheduler() {
-					@Override
-					protected Schedule getNextSchedule() throws Exception {
-						return new Schedule(delay, unit);
-					}
-				};
 			}
 		}
 
 		public void testCustomSchedulerFailure() throws Exception {
 			TestFailingCustomScheduledService service = new TestFailingCustomScheduledService();
+			RecordingListener.record(service);
+			
 			service.startAsync().awaitRunning();
 			for (int i = 1; i < 4; i++) {
-				service.firstBarrier.await();
-				assertEquals(i, service.numIterations.get());
-				service.secondBarrier.await();
+				System.out.println(service.firstBarrier.await());
+				System.out.println(i + "->" + service.numIterations.get());
+				System.out.println(service.secondBarrier.await());
 			}
-			Thread.sleep(1000);
+			
+			Thread.sleep(2000);
+			
 			try {
 				service.stopAsync().awaitTerminated(100, TimeUnit.SECONDS);
 				fail();
 			} catch (IllegalStateException e) {
+				System.out.println(e);//IllegalStateException: Expected the service TestFailingCustomScheduledService [FAILED] to be TERMINATED, but the service has FAILED
+				System.out.println(service.failureCause());//IllegalStateException: Failed
 				assertEquals(State.FAILED, service.state());
 			}
 		}
@@ -691,23 +825,32 @@ public class AbstractScheduledServiceTest extends TestCase {
 
 			@Override
 			protected void runOneIteration() throws Exception {
+				System.out.println("runOneIteration______");
 				numIterations.incrementAndGet();
 				firstBarrier.await();
 				secondBarrier.await();
+				
+				System.out.println("runOneIteration______end");
 			}
 
 			@Override
 			protected ScheduledExecutorService executor() {
+				System.out.println("executor");
+				
 				// use a bunch of threads so that weird overlapping schedules are more likely to happen.
 				return Executors.newScheduledThreadPool(10);
 			}
 
 			@Override
 			protected Scheduler scheduler() {
+				System.out.println("scheduler");
+				
 				return new CustomScheduler() {
 					@Override
 					protected Schedule getNextSchedule() throws Exception {
+						System.out.println("getNextSchedule");
 						if (numIterations.get() > 2) {
+							System.out.println("Failed");
 							throw new IllegalStateException("Failed");
 						}
 						return new Schedule(delay, unit);
