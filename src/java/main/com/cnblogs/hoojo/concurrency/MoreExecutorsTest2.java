@@ -72,8 +72,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 
 /**
  * Tests for MoreExecutors.
- *
- * @author Kyle Littlefield (klittle)
+ * 多线程任务执行器示例
  */
 public class MoreExecutorsTest2 extends JSR166TestCase {
 
