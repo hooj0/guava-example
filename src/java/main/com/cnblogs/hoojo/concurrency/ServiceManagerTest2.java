@@ -51,10 +51,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import junit.framework.TestCase;
 
 /**
- * Tests for {@link ServiceManager}.
- *
- * @author Luke Sandberg
- * @author Chris Nokleberg
+ * 多线程服务管理器示例
  */
 public class ServiceManagerTest2 extends TestCase {
 	
