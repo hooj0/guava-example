@@ -24,6 +24,27 @@
 		  <version>4.12</version>
 		  <scope>test</scope>
 		</dependency>
+		
+		<dependency>
+	        <groupId>org.mockito</groupId>
+	        <artifactId>mockito-core</artifactId>
+	        <version>2.7.19</version>
+	        <scope>test</scope>
+		</dependency>
+		
+		<dependency>
+	        <groupId>com.google.truth</groupId>
+	        <artifactId>truth</artifactId>
+	        <version>0.35</version>
+	        <scope>test</scope>
+	        <exclusions>
+	          <exclusion>
+	            <!-- use the guava we're building. -->
+	            <groupId>com.google.guava</groupId>
+	            <artifactId>guava</artifactId>
+	          </exclusion>
+	        </exclusions>
+		</dependency>
 	</dependencies>
 
 	<build>

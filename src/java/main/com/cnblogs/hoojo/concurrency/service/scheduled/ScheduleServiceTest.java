@@ -2,12 +2,10 @@ package com.cnblogs.hoojo.concurrency.service.scheduled;
 
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -283,49 +281,5 @@ public class ScheduleServiceTest {
 		System.out.println("--second-await: " + service.secondBarrier.await());
 		service.awaitTerminated();
 		System.out.println("--get:" + service.numIterations.get());
-	}
-	
-	private class TestCustomScheduler extends AbstractScheduledService.CustomScheduler {
-		public AtomicInteger scheduleCounter = new AtomicInteger(0);
-
-		@Override
-		protected Schedule getNextSchedule() throws Exception {
-			scheduleCounter.incrementAndGet();
-			return new Schedule(0, TimeUnit.SECONDS);
-		}
-	}
-
-	@Test
-	public void testCustomSchedule_startStop() throws Exception {
-		final CyclicBarrier firstBarrier = new CyclicBarrier(2);
-		final CyclicBarrier secondBarrier = new CyclicBarrier(2);
-		final AtomicBoolean shouldWait = new AtomicBoolean(true);
-		
-		Runnable task = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					if (shouldWait.get()) {
-						firstBarrier.await();
-						secondBarrier.await();
-					}
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
-		
-		TestCustomScheduler scheduler = new TestCustomScheduler();
-		Future<?> future = null;//scheduler.schedule(null, Executors.newScheduledThreadPool(10), task);
-		
-		firstBarrier.await();
-		System.out.println(scheduler.scheduleCounter.get());
-		secondBarrier.await();
-		
-		firstBarrier.await();
-		System.out.println(scheduler.scheduleCounter.get());
-		shouldWait.set(false);
-		secondBarrier.await();
-		future.cancel(false);
 	}
 }

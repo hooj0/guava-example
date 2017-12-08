@@ -37,9 +37,11 @@ public class MoreExecutorsTest {
 		service.submit(() -> {
 			System.out.println("exec...");
 		});
+		System.out.println("----------------");
 		// 在JVM关闭之前，保证线程服务中的任务执行完成
 		MoreExecutors.addDelayedShutdownHook(service, 15, TimeUnit.SECONDS);
 		
+		System.out.println("-----------------");
 		BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>();
 		ThreadPoolExecutor pool = new ThreadPoolExecutor(5, 10, 1000 * 15, TimeUnit.SECONDS, workQueue);
 		
@@ -48,13 +50,13 @@ public class MoreExecutorsTest {
 		System.out.println(executorService);
 		
 		// 比其他的服务多了一些额外的锁的行为
-		MoreExecutors.newDirectExecutorService();
+		service = MoreExecutors.newDirectExecutorService();
 		
 		// 逐渐关闭给定的执行者服务，首先禁用新的提交，并在必要时取消剩余的任务。
 		MoreExecutors.shutdownAndAwaitTermination(service, 15, TimeUnit.SECONDS);
 		
 		MoreExecutors.platformThreadFactory().newThread(() -> {
-			
+			System.out.println("cancel");
 		});
 	}
 }

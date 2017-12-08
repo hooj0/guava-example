@@ -1,6 +1,7 @@
 package com.cnblogs.hoojo.concurrency;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -203,7 +204,50 @@ public class ListenableFutureTest {
 			}
 		}, executorService);
 		
+		System.out.println(result.isCancelled());
+		System.out.println(result.isDone());
+		
 		System.out.println("finished!");
+		Thread.sleep(1000 * 7);
+	}
+	
+	@Test
+	public void test1() throws InterruptedException {
+		
+		Long now = System.currentTimeMillis();
+
+		ExecutorService executorService = Executors.newFixedThreadPool(5);
+		Future<Integer> futrue = executorService.submit(new Callable<Integer>() {
+			@Override
+			public Integer call() throws Exception {
+				System.out.println("call...");
+				//Thread.sleep(1000 * 5);
+				
+				return now.intValue();
+			}
+		});
+		
+		ListenableFuture<Integer> result = JdkFutureAdapters.listenInPoolThread(futrue);
+		
+		ListenableFutureTester tester = new ListenableFutureTester(result);
+		tester.setUp();
+		result.cancel(true);
+		
+		try {
+			//tester.testCancelledFuture(); // CancellationException
+			
+			tester.tearDown();
+			tester.testCompletedFuture(now.intValue());
+			//tester.testFailedFuture("fail");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println(result.isCancelled());
+		System.out.println(result.isDone());
+		
+		System.out.println("finished!");
+		
 		Thread.sleep(1000 * 7);
 	}
 }
