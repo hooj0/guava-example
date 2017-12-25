@@ -20,10 +20,9 @@ import com.google.common.util.concurrent.ServiceManager.Listener;
     awaitStopped()：会等待所有服务达到终止状态
 
 	检测类的方法有：
-
-    isHealthy()  ：如果所有的服务处于Running状态、会返回True
-    servicesByState()：以状态为索引返回当前所有服务的快照
-    startupTimes() ：返回一个Map对象，记录被管理的服务启动的耗时、以毫秒为单位，同时Map默认按启动时间排序。
+    	isHealthy()  ：如果所有的服务处于Running状态、会返回True
+    	servicesByState()：以状态为索引返回当前所有服务的快照
+    	startupTimes() ：返回一个Map对象，记录被管理的服务启动的耗时、以毫秒为单位，同时Map默认按启动时间排序。
 
 	服务状态：
 	    Service.State.NEW
@@ -89,9 +88,11 @@ public class ServiceManagerTest {
 		
 		// 会等待所有的服务达到Running状态
 		manager.awaitHealthy();
+		
+		// 返回一个Map对象，记录被管理的服务启动的耗时、以毫秒为单位，同时Map默认按启动时间排序。
 		System.out.println(manager.servicesByState());
 		
-		// 判断所有服务是否都在运行
+		// 判断所有服务是否都在运行，如果所有的服务处于Running状态、会返回True
 		System.out.println(manager.isHealthy());
 
 		// 会等待所有服务达到终止状态

@@ -27,6 +27,37 @@ import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.Service.Listener;
 import com.google.common.util.concurrent.Service.State;
 
+/**
+继承AbstractService方法必须实现两个方法.
+    doStart():  首次调用startAsync()时会同时调用doStart(),
+    			doStart()内部需要处理所有的初始化工作、如果启动成功则调用notifyStarted()方法；启动失败则调用notifyFailed()
+    doStop():  首次调用stopAsync()会同时调用doStop(),
+    			doStop()要做的事情就是停止服务，如果停止成功则调用 notifyStopped()方法；停止失败则调用 notifyFailed()方法。
+    			
+	doStart和doStop方法的实现需要考虑下性能，尽可能的低延迟。
+	如果初始化的开销较大，如读文件，打开网络连接，或者其他任何可能引起阻塞的操作，建议移到另外一个单独的线程去处理。
+
+ 一个服务正常生命周期有：
+    Service.State.NEW
+    Service.State.STARTING
+    Service.State.RUNNING
+    Service.State.STOPPING
+    Service.State.TERMINATED
+    
+服务一旦被停止就无法再重新启动了。
+	如果服务在starting、running、stopping状态出现问题、会进入Service.State.FAILED.状态。
+	调用 startAsync()方法可以异步开启一个服务,同时返回this对象形成方法调用链。
+	注意：只有在当前服务的状态是NEW时才能调用startAsync()方法，因此最好在应用中有一个统一的地方初始化相关服务。
+	停止一个服务也是类似的、使用异步方法stopAsync() 。
+	但是不像startAsync(),多次调用这个方法是安全的。这是为了方便处理关闭服务时候的锁竞争问题。
+
+Service也提供了一些方法用于等待服务状态转换的完成:
+	通过 addListener()方法异步添加监听器。此方法允许你添加一个 Service.Listener 、它会在每次服务状态转换的时候被调用。
+	注意：最好在服务启动之前添加Listener（这时的状态是NEW）、否则之前已发生的状态转换事件是无法在新添加的Listener上被重新触发的。
+
+同步使用awaitRunning()。这个方法不能被打断、不强制捕获异常、一旦服务启动就会返回。如果服务没有成功启动，会抛出IllegalStateException异常。
+同样的， awaitTerminated() 方法会等待服务达到终止状态（TERMINATED 或者 FAILED）。两个方法都有重载方法允许传入超时时间。
+*/
 public class AbstractServiceTest {
 
 	private static final long LONG_TIMEOUT_MILLIS = 2500;

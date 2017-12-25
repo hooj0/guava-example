@@ -41,7 +41,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.google.common.util.concurrent.AbstractService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
+import com.google.common.util.concurrent.Service.State;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.common.util.concurrent.ServiceManager.Listener;
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -55,15 +57,81 @@ import junit.framework.TestCase;
  * @author Chris Nokleberg
  */
 public class ServiceManagerTest2 extends TestCase {
+	
+	public static class MyLisener extends com.google.common.util.concurrent.Service.Listener {
+		static MyLisener record(Service service) {
+			MyLisener listener = new MyLisener(service);
+			service.addListener(listener, MoreExecutors.directExecutor());
+			return listener;
+		}
 
+		final Service service;
+
+		MyLisener(Service service) {
+			this.service = service;
+		}
+
+		@Override
+		public synchronized void starting() {
+			System.out.println(service + " -> Listener.starting: " + service.state() + ", isRunning: " + service.isRunning());
+		}
+
+		@Override
+		public synchronized void running() {
+			System.out.println(service + " -> Listener.running: " + service.state() + ", isRunning: " + service.isRunning());
+		}
+
+		@Override
+		public synchronized void stopping(State from) {
+			System.out.println(service + " -> Listener.stopping: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
+		}
+
+		@Override
+		public synchronized void terminated(State from) {
+			System.out.println(service + " -> Listener.terminated: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
+		}
+
+		@Override
+		public synchronized void failed(State from, Throwable failure) {
+			System.out.println(service + " -> Listener.failed: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
+			System.out.println(service + " -> Listener.failed: " + failure.getMessage());
+		}
+	}
+
+	private static final class RecordingListener extends ServiceManager.Listener {
+		volatile boolean healthyCalled;
+		volatile boolean stoppedCalled;
+		final Set<Service> failedServices = Sets.newConcurrentHashSet();
+
+		@Override
+		public void healthy() {
+			System.out.println("RecordingListener.healthy___");
+			healthyCalled = true;
+		}
+
+		@Override
+		public void stopped() {
+			System.out.println("RecordingListener.stopped___");
+			stoppedCalled = true;
+		}
+
+		@Override
+		public void failure(Service service) {
+			System.out.println("RecordingListener.failure___");
+			failedServices.add(service);
+		}
+	}
+	
 	private static class NoOpService extends AbstractService {
 		@Override
 		protected void doStart() {
+			System.out.println("NoOpService.doStart...");
 			notifyStarted();
 		}
 
 		@Override
 		protected void doStop() {
+			System.out.println("NoOpService.doStop...");
 			notifyStopped();
 		}
 	}
@@ -80,15 +148,18 @@ public class ServiceManagerTest2 extends TestCase {
 
 		@Override
 		protected void doStart() {
-			System.out.println("doStart......");
+			System.out.println("NoOpDelayedService.doStart......");
 			
 			new Thread() {
 				@Override
 				public void run() {
-					System.out.println("doStart run......");
+					System.out.println("NoOpDelayedService.doStart run......");
 					
 					// 休眠
+					System.out.println("NoOpDelayedService.doStart run->sleep......");
 					Uninterruptibles.sleepUninterruptibly(delay, TimeUnit.MILLISECONDS);
+
+					System.out.println("NoOpDelayedService.doStart run->notifyStarted......");
 					notifyStarted();
 				}
 			}.start();
@@ -96,14 +167,17 @@ public class ServiceManagerTest2 extends TestCase {
 
 		@Override
 		protected void doStop() {
-			System.out.println("doStop......");
+			System.out.println("NoOpDelayedService.doStop......");
 			
 			new Thread() {
 				@Override
 				public void run() {
-					System.out.println("doStop run......");
+					System.out.println("NoOpDelayedService.doStop run......");
 					
+					System.out.println("NoOpDelayedService.doStop run->sleep......");
 					Uninterruptibles.sleepUninterruptibly(delay, TimeUnit.MILLISECONDS);
+
+					System.out.println("NoOpDelayedService.doStop run->notifyStopped......");
 					notifyStopped();
 				}
 			}.start();
@@ -113,22 +187,27 @@ public class ServiceManagerTest2 extends TestCase {
 	private static class FailStartService extends NoOpService {
 		@Override
 		protected void doStart() {
-			notifyFailed(new IllegalStateException("start failure"));
+			System.out.println("FailStartService.doStart...fail");
+			notifyFailed(new IllegalStateException("FailStartService.start failure"));
 		}
 	}
 
 	private static class FailRunService extends NoOpService {
 		@Override
 		protected void doStart() {
-			super.doStart();
-			notifyFailed(new IllegalStateException("run failure"));
+			System.out.println("FailRunService.doStart...super.doStart");
+			super.doStart(); // notifyStarted()
+			
+			System.out.println("FailRunService.doStart...fail");
+			notifyFailed(new IllegalStateException("FailStopService.run failure"));
 		}
 	}
 
 	private static class FailStopService extends NoOpService {
 		@Override
 		protected void doStop() {
-			notifyFailed(new IllegalStateException("stop failure"));
+			System.out.println("FailStopService.doStop...fail");
+			notifyFailed(new IllegalStateException("FailStopService.stop failure"));
 		}
 	}
 
@@ -137,11 +216,16 @@ public class ServiceManagerTest2 extends TestCase {
 		Service b = new NoOpDelayedService(353);
 		
 		ServiceManager serviceManager = new ServiceManager(asList(a, b));
+		System.out.println(serviceManager); //ServiceManager{services=[NoOpDelayedService [NEW], NoOpDelayedService [NEW]]}
 		
+		// 会循环遍历所有services, 调用service的startAsync方法
+		// forEach -> service.startAsync -> doStart
 		serviceManager.startAsync().awaitHealthy();
+		System.out.println(serviceManager); //ServiceManager{services=[NoOpDelayedService [RUNNING], NoOpDelayedService [RUNNING]]}
+		
 		ImmutableMap<Service, Long> startupTimes = serviceManager.startupTimes();
 		// 启动运行时间
-		System.out.println(startupTimes);
+		System.out.println(startupTimes); //{NoOpDelayedService [RUNNING]=151, NoOpDelayedService [RUNNING]=353}
 		
 		assertEquals(2, startupTimes.size());
 		// TODO(kak): Use assertThat(startupTimes.get(a)).isAtLeast(150);
@@ -172,7 +256,13 @@ public class ServiceManagerTest2 extends TestCase {
 		};
 		
 		ServiceManager serviceManager = new ServiceManager(asList(a, b));
+		System.out.println(serviceManager); // ServiceManager{services=[ [NEW],  [NEW]]}
+		
+		// 会循环遍历所有services, 调用service的startAsync方法
+		// service.startAsync -> doStart
+		// doStart -> b.startAsync 会重复启动，导致IllegalStateException: Service  [STARTING] has already been started
 		serviceManager.startAsync().awaitHealthy();
+		System.out.println(serviceManager); // ServiceManager{services=[ [RUNNING],  [RUNNING]]}
 		
 		ImmutableMap<Service, Long> startupTimes = serviceManager.startupTimes();
 		System.out.println(startupTimes);
@@ -192,25 +282,35 @@ public class ServiceManagerTest2 extends TestCase {
 		Service b = new NoOpService();
 		
 		ServiceManager manager = new ServiceManager(asList(a, b));
+		System.out.println(manager);//ServiceManager{services=[NoOpService [NEW], NoOpService [NEW]]}
 		
 		RecordingListener listener = new RecordingListener();
 		manager.addListener(listener);
 		
 		assertState(manager, Service.State.NEW, a, b);
 		assertFalse(manager.isHealthy());
+		
+		// startAsync -> for each service.startAsync -> service.doStart & dispatch event listener.starting
+		// 当services 遍历启动完所有的service，就触发Listener.healthy
+		// 会等待所有的服务达到Running状态
 		manager.startAsync().awaitHealthy();
+		System.out.println(manager);//ServiceManager{services=[NoOpService [RUNNING], NoOpService [RUNNING]]}
 		
 		assertState(manager, Service.State.RUNNING, a, b);
-		assertTrue(manager.isHealthy());
+		assertTrue(manager.isHealthy()); //如果所有的服务处于Running状态、会返回True
 		
 		assertTrue(listener.healthyCalled);
 		assertFalse(listener.stoppedCalled);
 		assertTrue(listener.failedServices.isEmpty());
 		
+		// stopAsync -> for each service.stopAsync -> service.doStop & dispatch event listener.stoping
+		// 当services 遍历停止完所有的service，就触发Listener.stopped
+		// 会等待所有服务达到终止状态
 		manager.stopAsync().awaitStopped();
+		System.out.println(manager);//ServiceManager{services=[NoOpService [TERMINATED], NoOpService [TERMINATED]]}
 		
 		assertState(manager, Service.State.TERMINATED, a, b);
-		assertFalse(manager.isHealthy());
+		assertFalse(manager.isHealthy()); //所有的服务达到Running状态，部分线程结束完成，所以False
 		assertTrue(listener.stoppedCalled);
 		assertTrue(listener.failedServices.isEmpty());
 	}
@@ -221,22 +321,37 @@ public class ServiceManagerTest2 extends TestCase {
 		Service c = new NoOpService();
 		Service d = new FailStartService();
 		Service e = new NoOpService();
+		
 		ServiceManager manager = new ServiceManager(asList(a, b, c, d, e));
+		
 		RecordingListener listener = new RecordingListener();
 		manager.addListener(listener);
+		System.out.println(manager);
+		
 		assertState(manager, Service.State.NEW, a, b, c, d, e);
+		
 		try {
+			// 在遍历时，调用service.startAsync -> doStart -> throw exception -> RecordingListener.failure
+			// 在遍历时，调用service.startAsync -> doStart -> services.running.count == services.count -> RecordingListener.healthy
+			// 当所有服务启动成功，触发 RecordingListener.healthy
+			// 当服务失败，触发RecordingListener.failure
+			// 当服务完成，触发RecordingListener.stopped
 			manager.startAsync().awaitHealthy();
 			fail();
 		} catch (IllegalStateException expected) {
+			System.out.println(expected); //IllegalStateException: Expected to be healthy after starting. 
+			//The following services are not running: {FAILED=[FailStartService [FAILED], FailStartService [FAILED]]}
 		}
+		
 		assertFalse(listener.healthyCalled);
 		assertState(manager, Service.State.RUNNING, a, c, e);
 		assertEquals(ImmutableSet.of(b, d), listener.failedServices);
 		assertState(manager, Service.State.FAILED, b, d);
 		assertFalse(manager.isHealthy());
 
+		// 当服务完成，触发RecordingListener.stopped
 		manager.stopAsync().awaitStopped();
+		
 		assertFalse(manager.isHealthy());
 		assertFalse(listener.healthyCalled);
 		assertTrue(listener.stoppedCalled);
@@ -244,20 +359,41 @@ public class ServiceManagerTest2 extends TestCase {
 
 	public void testFailRun() throws Exception {
 		Service a = new NoOpService();
+		MyLisener.record(a);
+
 		Service b = new FailRunService();
+		MyLisener.record(b);
+
+		
 		ServiceManager manager = new ServiceManager(asList(a, b));
+		System.out.println(manager); //ServiceManager{services=[NoOpService [NEW], FailRunService [NEW]]}
+		
 		RecordingListener listener = new RecordingListener();
 		manager.addListener(listener);
+		
 		assertState(manager, Service.State.NEW, a, b);
 		try {
-			manager.startAsync().awaitHealthy();
+			// 1. manager.startAsync -> service.startAsync -> doStart -> notifyStarted & notifyFailed
+			// 2. notifyStarted -> state=running & dispatch Listener.running
+			// 3. notifyFailed -> dispatch Listener.failed
+			manager.startAsync(); // 启动所有服务
+			System.out.println(manager);
+			
+			manager.awaitHealthy(); // 等待进入running状态
 			fail();
 		} catch (IllegalStateException expected) {
+			System.out.println(expected); // IllegalStateException: Expected to be healthy after starting. 
+			// The following services are not running: {FAILED=[FailRunService [FAILED]]}
 		}
+		
+		// running 状态触发notifyFailed 抛出 异常，listener.healthy 会被执行触发
 		assertTrue(listener.healthyCalled);
 		assertEquals(ImmutableSet.of(b), listener.failedServices);
+		System.out.println(manager.isHealthy());
 
 		manager.stopAsync().awaitStopped();
+		System.out.println(manager);
+		
 		assertState(manager, Service.State.FAILED, b);
 		assertState(manager, Service.State.TERMINATED, a);
 
@@ -268,14 +404,22 @@ public class ServiceManagerTest2 extends TestCase {
 		Service a = new NoOpService();
 		Service b = new FailStopService();
 		Service c = new NoOpService();
+		
 		ServiceManager manager = new ServiceManager(asList(a, b, c));
+		System.out.println(manager);
+		
 		RecordingListener listener = new RecordingListener();
 		manager.addListener(listener);
 
 		manager.startAsync().awaitHealthy();
+		System.out.println(manager);
+		
 		assertTrue(listener.healthyCalled);
 		assertFalse(listener.stoppedCalled);
+		
+		// stop 抛出异常
 		manager.stopAsync().awaitStopped();
+		System.out.println(manager);
 
 		assertTrue(listener.stoppedCalled);
 		assertEquals(ImmutableSet.of(b), listener.failedServices);
@@ -286,7 +430,10 @@ public class ServiceManagerTest2 extends TestCase {
 	public void testToString() throws Exception {
 		Service a = new NoOpService();
 		Service b = new FailStartService();
+		
 		ServiceManager manager = new ServiceManager(asList(a, b));
+		System.out.println(manager); // ServiceManager{services=[NoOpService [NEW], FailStartService [NEW]]}
+		
 		String toString = manager.toString();
 		assertThat(toString).contains("NoOpService");
 		assertThat(toString).contains("FailStartService");
@@ -295,36 +442,60 @@ public class ServiceManagerTest2 extends TestCase {
 	public void testTimeouts() throws Exception {
 		Service a = new NoOpDelayedService(50);
 		ServiceManager manager = new ServiceManager(asList(a));
+		
 		manager.startAsync();
 		try {
-			manager.awaitHealthy(1, TimeUnit.MILLISECONDS);
+			manager.awaitHealthy(1, TimeUnit.MILLISECONDS); // 超时，由于 NoOpDelayedService.doStart -> notifyStarted 有休眠延时，导致超时
 			fail();
 		} catch (TimeoutException expected) {
+			System.out.println(expected); // TimeoutException: Timeout waiting for the services to become healthy. 
+			// The following services have not started: {STARTING=[NoOpDelayedService [STARTING]]}
 		}
 		manager.awaitHealthy(5, SECONDS); // no exception thrown
 
 		manager.stopAsync();
 		try {
-			manager.awaitStopped(1, TimeUnit.MILLISECONDS);
+			manager.awaitStopped(1, TimeUnit.MILLISECONDS);// 超时，由于 NoOpDelayedService.doStop -> notifyStoped 有休眠延时，导致超时
 			fail();
 		} catch (TimeoutException expected) {
+			System.out.println(expected); // TimeoutException: Timeout waiting for the services to stop. 
+			// The following services have not stopped: {STOPPING=[NoOpDelayedService [STOPPING]]}
 		}
 		manager.awaitStopped(5, SECONDS); // no exception thrown
 	}
 
+	
 	/**
 	 * This covers a case where if the last service to stop failed then the stopped callback would never be called.
 	 */
 	public void testSingleFailedServiceCallsStopped() {
 		Service a = new FailStartService();
+		MyLisener.record(a);
+		
 		ServiceManager manager = new ServiceManager(asList(a));
+		System.out.println(manager);
+		
 		RecordingListener listener = new RecordingListener();
 		manager.addListener(listener);
+		
 		try {
+			// startAsync -> doStart -> throw exception -> event failure -> dispatcher Listener.failure
+			/*
+				if (states.count(TERMINATED) + states.count(FAILED) == numberOfServices) {
+          			enqueueStoppedEvent();
+        		}
+			 */
 			manager.startAsync().awaitHealthy();
 			fail();
 		} catch (IllegalStateException expected) {
+			System.out.println(expected); //IllegalStateException: Expected to be healthy after starting. 
+			//The following services are not running: {FAILED=[FailStartService [FAILED]]}
 		}
+		System.out.println(manager);
+		
+		// 由于startAsync 触发 doStart 抛出异常，导致执行  listener.failure，
+		// 执行完listener.failure后发现service数量迭代遍历完成，执行listener.stopped
+		// if (states.count(TERMINATED) + states.count(FAILED) == numberOfServices) { enqueueStoppedEvent(); }
 		assertTrue(listener.stoppedCalled);
 	}
 
@@ -335,13 +506,21 @@ public class ServiceManagerTest2 extends TestCase {
 	public void testFailStart_singleServiceCallsHealthy() {
 		Service a = new FailStartService();
 		ServiceManager manager = new ServiceManager(asList(a));
+		
 		RecordingListener listener = new RecordingListener();
 		manager.addListener(listener);
+		
 		try {
+			// startAsync -> doStart -> throw exception -> event failure -> dispatcher Listener.failure
+			// if (states.count(TERMINATED) + states.count(FAILED) == numberOfServices) { enqueueStoppedEvent }
 			manager.startAsync().awaitHealthy();
 			fail();
 		} catch (IllegalStateException expected) {
+			System.out.println(expected); //IllegalStateException: Expected to be healthy after starting. 
+			//The following services are not running: {FAILED=[FailStartService [FAILED]]}
 		}
+		
+		// 由于startAsync 触发 doStart 导致service没有 遍历完成，所以 listener.healthy 未被触发
 		assertFalse(listener.healthyCalled);
 	}
 
@@ -353,14 +532,37 @@ public class ServiceManagerTest2 extends TestCase {
 	public void testFailStart_stopOthers() throws TimeoutException {
 		Service a = new FailStartService();
 		Service b = new NoOpService();
-		final ServiceManager manager = new ServiceManager(asList(a, b));
+		Service c = new NoOpService();
+		Service d = new NoOpService();
+		
+		MyLisener.record(a);
+		MyLisener.record(b);
+		MyLisener.record(c);
+		MyLisener.record(d);
+		
+		final ServiceManager manager = new ServiceManager(asList(a, b, c, d));
 		manager.addListener(new Listener() {
 			@Override
 			public void failure(Service service) {
+				System.out.println("-----failure------>" + service);
 				manager.stopAsync();
+				System.out.println("-----failure------stop->" + service);
 			}
 		});
-		manager.startAsync();
+		
+		// 1、manager.startAsync -> forEach services -> service.startAsync
+		// 2、service.startAsync -> service.doStart & listener.starting
+		// 3、doStart -> throw exception -> manager.listener.failure
+		// 4、manager.listener.failure -> manager.stopAsync
+		// 5、manager.stopAsync -> service.doStop & listener.stopping
+		
+		// 由于 第一个service(FailStartService) 触发manager.listener.failure 
+		// 从而执行 manager.stopAsync，导致后面的service都从NEW状态进入 TERMINATED
+		// 因为后面的service都没有started(startAsync)，
+		// 所以Service被stopAsync后再运行startAsync会出现异常：IllegalStateException: Service NoOpService [TERMINATED] has already been started
+		System.out.println("-----startAsync----");
+		manager.startAsync(); // IllegalStateException: Service NoOpService [TERMINATED] has already been started
+		System.out.println("-----awaitStopped----");
 		manager.awaitStopped(10, TimeUnit.MILLISECONDS);
 	}
 
@@ -381,17 +583,27 @@ public class ServiceManagerTest2 extends TestCase {
 	public void testEmptyServiceManager() {
 		Logger logger = Logger.getLogger(ServiceManager.class.getName());
 		logger.setLevel(Level.FINEST);
+		
 		TestLogHandler logHandler = new TestLogHandler();
 		logger.addHandler(logHandler);
-		ServiceManager manager = new ServiceManager(Arrays.<Service> asList());
+		
+		ServiceManager manager = new ServiceManager(Arrays.<Service>asList());
+		System.out.println(manager);
+		
 		RecordingListener listener = new RecordingListener();
 		manager.addListener(listener);
+		
 		manager.startAsync().awaitHealthy();
+		System.out.println(manager);
+		
 		assertTrue(manager.isHealthy());
 		assertTrue(listener.healthyCalled);
 		assertFalse(listener.stoppedCalled);
 		assertTrue(listener.failedServices.isEmpty());
+		
 		manager.stopAsync().awaitStopped();
+		System.out.println(manager);
+		
 		assertFalse(manager.isHealthy());
 		assertTrue(listener.stoppedCalled);
 		assertTrue(listener.failedServices.isEmpty());
@@ -400,12 +612,14 @@ public class ServiceManagerTest2 extends TestCase {
 		assertEquals("ServiceManager{services=[]}", manager.toString());
 		assertTrue(manager.servicesByState().isEmpty());
 		assertTrue(manager.startupTimes().isEmpty());
+		
 		Formatter logFormatter = new Formatter() {
 			@Override
 			public String format(LogRecord record) {
 				return formatMessage(record);
 			}
 		};
+		
 		for (LogRecord record : logHandler.getStoredLogRecords()) {
 			assertThat(logFormatter.format(record)).doesNotContain("NoOpService");
 		}
@@ -420,6 +634,7 @@ public class ServiceManagerTest2 extends TestCase {
 		final CountDownLatch failEnter = new CountDownLatch(1);
 		final CountDownLatch failLeave = new CountDownLatch(1);
 		final CountDownLatch afterStarted = new CountDownLatch(1);
+		
 		Service failRunService = new AbstractService() {
 			@Override
 			protected void doStart() {
@@ -441,6 +656,7 @@ public class ServiceManagerTest2 extends TestCase {
 				notifyStopped();
 			}
 		};
+		
 		final ServiceManager manager = new ServiceManager(Arrays.asList(failRunService, new NoOpService()));
 		manager.addListener(new ServiceManager.Listener() {
 			@Override
@@ -451,6 +667,7 @@ public class ServiceManagerTest2 extends TestCase {
 			}
 		});
 		manager.startAsync();
+		
 		afterStarted.countDown();
 		// We do not call awaitHealthy because, due to races, that method may throw an exception. But
 		// we really just want to wait for the thread to be in the failure callback so we wait for that
@@ -615,26 +832,5 @@ public class ServiceManagerTest2 extends TestCase {
 	public void testNulls() {
 		ServiceManager manager = new ServiceManager(Arrays.<Service> asList());
 		new NullPointerTester().setDefault(ServiceManager.Listener.class, new RecordingListener()).testAllPublicInstanceMethods(manager);
-	}
-
-	private static final class RecordingListener extends ServiceManager.Listener {
-		volatile boolean healthyCalled;
-		volatile boolean stoppedCalled;
-		final Set<Service> failedServices = Sets.newConcurrentHashSet();
-
-		@Override
-		public void healthy() {
-			healthyCalled = true;
-		}
-
-		@Override
-		public void stopped() {
-			stoppedCalled = true;
-		}
-
-		@Override
-		public void failure(Service service) {
-			failedServices.add(service);
-		}
 	}
 }
