@@ -7,7 +7,6 @@ import org.junit.Test;
 import com.google.common.util.concurrent.Monitor;
 
 /**
-
 Monitor有几个常用的方法
 
     enter()：进入到当前Monitor，无限期阻塞。
@@ -46,6 +45,16 @@ Monitor有几个常用的方法
 	hasQueuedThreads()：返回是否有任何线程正在等待进入这个Monitor，注意，因为取消随时可能发生，所以返回true并不保证任何其他线程会进入这个Monitor。此方法设计用来检测系统状态。
 	hasQueuedThread(Thread thread)：返回给定线程是否正在等待进入这个Monitor，注意，因为取消随时可能发生，所以返回true并不保证给定线程会进入这个Monitor。此方法设计用来检测系统状态。
 	hasWaiters(Guard guard)：返回是否有任何线程正在等待给定Guard satisfied，注意，因为取消随时可能发生，所以返回true并不保证未来Guard变成satisfied时唤醒任意线程。此方法设计用来检测系统状态。
+ * 
+ * 多线程并发测试
+ * @author hoojo
+ * @createDate 2018年9月24日 下午5:14:52
+ * @file MonitorTestCase.java
+ * @package com.cnblogs.hoojo.concurrency.monitor
+ * @project guava-example
+ * @blog http://hoojo.cnblogs.com
+ * @email hoojo_@126.com
+ * @version 1.0
  */
 public class MonitorTestCase {
 
