@@ -15,6 +15,17 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 
+/**
+ * 多线程并发测试用例
+ * @author hoojo
+ * @createDate 2018年9月24日 下午5:13:46
+ * @file MonitorExampleTest.java
+ * @package com.cnblogs.hoojo.concurrency.monitor
+ * @project guava-example
+ * @blog http://hoojo.cnblogs.com
+ * @email hoojo_@126.com
+ * @version 1.0
+ */
 public class MonitorExampleTest {
 
 	private MonitorExample monitorExample;
