@@ -4,6 +4,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.util.concurrent.Monitor;
 
+/**
+ * 数据安全并发
+ * @author hoojo
+ * @createDate 2018年9月24日 下午5:12:57
+ * @file MonitorExample.java
+ * @package com.cnblogs.hoojo.concurrency.monitor
+ * @project guava-example
+ * @blog http://hoojo.cnblogs.com
+ * @email hoojo_@126.com
+ * @version 1.0
+ */
 public class MonitorExample {
 
 	private final Monitor monitor = new Monitor();
