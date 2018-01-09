@@ -13,18 +13,6 @@ import com.google.common.annotations.Beta;
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.collect.Lists;
 
-/**
- * <b>function:</b>
- * 
- * @author hoojo
- * @createDate 2017年11月24日 下午4:21:22
- * @file TearDownStack.java
- * @package com.cnblogs.hoojo.concurrency.service.execution
- * @project guava-example
- * @blog http://hoojo.cnblogs.com
- * @email hoojo_@126.com
- * @version 1.0
- */
 @Beta
 @GwtCompatible
 public class TearDownStack implements TearDownAccepter {
