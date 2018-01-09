@@ -24,6 +24,16 @@ import com.google.common.util.concurrent.RateLimiter;
 	tryAcquire(int permits)：判断是否可以立即获取相应数量的许可。
 	tryAcquire()：判断是否可以立即获取许可。
 	tryAcquire(int permits, long timeout, TimeUnit unit)：判断是否可以在超时时间内获取相应数量的许可。
+ * 
+ * 多线程并发漏斗测试
+ * @author hoojo
+ * @createDate 2018年9月24日 下午5:16:15
+ * @file RateLimiterTest.java
+ * @package com.cnblogs.hoojo.concurrency.ratelimiter
+ * @project guava-example
+ * @blog http://hoojo.cnblogs.com
+ * @email hoojo_@126.com
+ * @version 1.0
  */
 public class RateLimiterTest {
 
