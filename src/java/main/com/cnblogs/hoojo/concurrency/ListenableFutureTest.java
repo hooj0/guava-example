@@ -1,7 +1,9 @@
 package com.cnblogs.hoojo.concurrency;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -10,6 +12,7 @@ import org.junit.Test;
 
 import com.google.common.base.Function;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -17,17 +20,21 @@ import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.SettableFuture;
 
 /**
- * <b>function:</b> 并发编程
- * @author hoojo
- * @createDate 2017年11月13日 上午10:37:32
- * @file ListenableFutureTest.java
- * @package com.cnblogs.hoojo.concurrency
- * @project guava-example
- * @blog http://hoojo.cnblogs.com
- * @email hoojo_@126.com
- * @version 1.0
+	getExitingExecutorService( ThreadPoolExecutor executor, long terminationTimeout, TimeUnit timeUnit)：将给定的ThreadPoolExecutor转换成ExecutorService实例，在程序完成时退出， 它是通过使用守护线程和添加一个关闭钩子来等待他们完成。
+	getExitingScheduledExecutorService( ScheduledThreadPoolExecutor executor, long terminationTimeout, TimeUnit timeUnit)：将给定的ScheduledThreadPoolExecutor转换成ScheduledExecutorService实例，在程序完成时退出， 它是通过使用守护线程和添加一个关闭钩子来等待他们完成。
+	addDelayedShutdownHook( ExecutorService service, long terminationTimeout, TimeUnit timeUnit)：添加一个关闭的钩子来等待给定的ExecutorService中的线程完成。
+	getExitingExecutorService(ThreadPoolExecutor executor)：将给定的ThreadPoolExecutor转换成ExecutorService实例，在程序完成时退出， 它是通过使用守护线程和添加一个关闭钩子来等待他们完成。
+	getExitingScheduledExecutorService( ScheduledThreadPoolExecutor executor)：将给定的ThreadPoolExecutor转换成ScheduledExecutorService实例，在程序完成时退出， 它是通过使用守护线程和添加一个关闭钩子来等待他们完成。
+
+	sameThreadExecutor()：创建一个ExecutorService实例，运行线程中的每一个任务。
+
+	listeningDecorator( ExecutorService delegate)：创建一个ExecutorService实例，通过线程提交或者唤醒其他线程提交ListenableFutureTask到给定的ExecutorService实例。
+	listeningDecorator( ScheduledExecutorService delegate)：创建一个ScheduledExecutorService实例，通过线程提交或者唤醒其他线程提交ListenableFutureTask到给定的ExecutorService实例。
+	platformThreadFactory()：返回一个默认的线程工厂用于创建新的线程。
+	shutdownAndAwaitTermination( ExecutorService service, long timeout, TimeUnit unit)：逐渐关闭指定的ExecutorService，首先会禁用新的提交， 然后会取消现有的任务。
  */
 public class ListenableFutureTest {
 
@@ -65,6 +72,38 @@ public class ListenableFutureTest {
 				System.out.println("failure:" + Throwables.getStackTraceAsString(t));
 			}
 		});
+		
+		Futures.transformAsync(result, new AsyncFunction<Integer, String>() {
+			private ConcurrentMap<Integer, String> map = Maps.newConcurrentMap();
+			private ListeningExecutorService listeningExecutorService;
+			// 这里简单的模拟一个service
+			@SuppressWarnings("unchecked")
+			private Map<Integer, String> service = new HashMap() {
+				{
+					put(1, "retrieved");
+				}
+			};
+
+			@Override
+			public ListenableFuture<String> apply(Integer input) throws Exception {
+
+				if (map.containsKey(input)) {
+					SettableFuture<String> listenableFuture = SettableFuture.create();
+					listenableFuture.set(map.get(input));
+					return listenableFuture;
+				} else {
+					return listeningExecutorService.submit(new Callable<String>() {
+						@Override
+						public String call() throws Exception {
+							// service中通过input获取retrieved
+							String retrieved = service.get(input);
+							map.putIfAbsent(input, retrieved);
+							return retrieved;
+						}
+					});
+				}
+			}
+		}, Executors.newCachedThreadPool());
 		
 		System.out.println("finished!");
 		Thread.sleep(1000 * 7);

@@ -17,7 +17,6 @@
 package com.cnblogs.hoojo.concurrency;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -33,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.Runnables;
 
 /**
  * Used to test listenable future implementations.
