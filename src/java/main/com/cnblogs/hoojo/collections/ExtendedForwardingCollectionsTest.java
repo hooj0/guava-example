@@ -140,7 +140,7 @@ public class ExtendedForwardingCollectionsTest {
 		sets.add(2, 3, 4);
 		
 		sets.print();
-		System.out.println(sets.toString());
+		System.out.println(sets.toString()); // MyGuavaSet: [1, 2, 3, 4]
 	}
 	
 	@SuppressWarnings("all")

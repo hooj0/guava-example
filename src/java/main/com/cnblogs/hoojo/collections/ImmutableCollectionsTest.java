@@ -135,7 +135,7 @@ public class ImmutableCollectionsTest {
 		// copyOf 
 		try {
 			Set<String> sets = ImmutableSet.<String>copyOf(new String[] { "a", "b" });
-			System.out.println(sets);
+			System.out.println(sets); // [a, b]
 			
 			sets.add("d"); // throw UnsupportedOperationException 不可变不能添加对象
 		} catch (Exception e) {
@@ -145,7 +145,7 @@ public class ImmutableCollectionsTest {
 		// of
 		try {
 			Set<String> sets = ImmutableSet.of("a", "c");
-			System.out.println(sets);
+			System.out.println(sets); // [a, c]
 			
 			sets.add("d"); // throw UnsupportedOperationException 不可变不能添加对象
 		} catch (Exception e) {
@@ -155,7 +155,7 @@ public class ImmutableCollectionsTest {
 		// builder
 		try {
 			Set<String> sets = ImmutableSet.<String>builder().add("a").add("e", "f").addAll(Arrays.asList("1", "2")).build();
-			System.out.println(sets);
+			System.out.println(sets); // [a, e, f, 1, 2]
 			
 			sets.add("d"); // throw UnsupportedOperationException 不可变不能添加对象
 		} catch (Exception e) {
@@ -169,7 +169,7 @@ public class ImmutableCollectionsTest {
 		// 不可变集合不能排序
 		try {
 			List<String> list = ImmutableList.<String>copyOf(new String[] { "0", "a", "b", "1", "2" });
-			System.out.println(list);
+			System.out.println(list); // [0, a, b, 1, 2]
 			
 			Collections.sort(list, Ordering.<String>natural()); // throw UnsupportedOperationException 不可变集合不能排序
 		} catch (Exception e) {
@@ -178,7 +178,7 @@ public class ImmutableCollectionsTest {
 		
 		try {
 			List<String> list = ImmutableList.<String>copyOf(new String[] { "0", "a", "b", "1", "2" });
-			System.out.println(list);
+			System.out.println(list); // [0, a, b, 1, 2]
 			
 			// copy 不可变集合并进行排序
 			System.out.println(Ordering.<String>natural().immutableSortedCopy(list));
@@ -189,7 +189,7 @@ public class ImmutableCollectionsTest {
 		// 不可变集合不能排序
 		try {
 			ImmutableSet<String> sets = ImmutableSet.of("0", "a", "b", "1", "2");
-			System.out.println(sets);
+			System.out.println(sets); // [0, 1, 2, a, b]
 			
 			List<String> list = sets.asList();
 			Collections.sort(list, Ordering.<String>natural());

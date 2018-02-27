@@ -5,6 +5,8 @@ import org.junit.Test;
 import com.google.common.util.concurrent.RateLimiter;
 
 /**
+ * http://ifeve.com/guava-ratelimiter/
+ * 
  * RateLimiter 类与Java api中的semaphore信号量比较类似，
  * 主要用于限制对资源并发访问的线程数，RateLimiter类限制线程访问的时间，
  * 这就意味着可以限制每 秒中线程访问资源的数量。

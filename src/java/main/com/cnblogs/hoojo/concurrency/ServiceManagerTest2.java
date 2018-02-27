@@ -811,14 +811,15 @@ public class ServiceManagerTest2 extends TestCase {
 	 * <p>
 	 * Before the bug was fixed this test would fail at least 30% of the time.
 	 */
-
 	public void testTransitionRace() throws TimeoutException {
+		RecordingListener listener = new RecordingListener();
 		for (int k = 0; k < 1000; k++) {
 			List<Service> services = Lists.newArrayList();
 			for (int i = 0; i < 5; i++) {
 				services.add(new SnappyShutdownService(i));
 			}
 			ServiceManager manager = new ServiceManager(services);
+			manager.addListener(listener);
 			manager.startAsync().awaitHealthy();
 			manager.stopAsync().awaitStopped(1, TimeUnit.SECONDS);
 		}

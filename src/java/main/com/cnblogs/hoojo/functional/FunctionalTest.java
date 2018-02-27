@@ -3,6 +3,7 @@ package com.cnblogs.hoojo.functional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class FunctionalTest {
 			}
 		};
 		
-		System.out.println("fun result:" + fun.apply('a'));
+		System.out.println("fun result:" + fun.apply('a')); // fun result:97
 		System.out.println();
 		
 		System.out.println("andThen-result:" + fun.andThen(after).apply('A'));
@@ -285,24 +286,31 @@ public class FunctionalTest {
 				return false;
 			}
 		}).replaceFrom("abcdef", "#");
-		System.out.println(result);
+		System.out.println(result); // #bcdef
 		
 		Ordering<Integer> ordering = Ordering.<String>natural().onResultOf(new Function<Integer, String>() {
 			@Override
 			public String apply(Integer input) {
-				return "cast-" + input;
+				return "" + input + new Random(System.currentTimeMillis()).nextLong();
 			}
 		});
 		
-		List<Integer> list = Arrays.asList(1, 2, 5, 0);
-		System.out.println(ordering.sortedCopy(list));
+		List<Integer> list = Arrays.asList(1, 5, 2, 0);
+		System.out.println(ordering.sortedCopy(list)); // [0, 1, 2, 5]
 		
-		Equivalence.identity().onResultOf(new Function<Integer, String>() {
+		System.out.println(Equivalence.identity().onResultOf(new Function<Integer, String>() {
 			@Override
 			public String apply(Integer input) {
 				return "cast-" + input;
 			}
-		}).equivalent(1, 2);
+		}).equivalent(1, 2)); // false
+		
+		System.out.println(Equivalence.identity().onResultOf(new Function<Integer, String>() {
+			@Override
+			public String apply(Integer input) {
+				return "cast-" + input;
+			}
+		}).equivalent(1, 2)); // false
 		
 		Equivalence.equals().equivalent('a', 'b');
 	}

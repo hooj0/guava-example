@@ -328,7 +328,6 @@ public class MonitorTestCase {
 				super(name);
 				this.value = value;
 			}
-
 			
 			@Override
 			public void run() {
