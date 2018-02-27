@@ -20,7 +20,7 @@ import com.google.common.primitives.UnsignedLong;
 import com.google.common.primitives.UnsignedLongs;
 
 /**
- * <b>function:</b> 原生类型测试
+ * 原生类型测试
  * 
 List<Wrapper> asList(prim… backingArray) 	把数组转为相应包装类的List 	Arrays.asList 	符号无关*
 prim[] toArray(Collection<Wrapper> collection) 	把集合拷贝为数组，和collection.toArray()一样线程安全 	Collection.toArray() 	符号无关
