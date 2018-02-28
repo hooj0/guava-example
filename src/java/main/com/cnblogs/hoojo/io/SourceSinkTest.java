@@ -44,7 +44,7 @@ import com.google.common.io.LineProcessor;
 import com.google.common.io.Resources;
 
 /**
- * <b>function:</b> 源 与 汇 测试
+ * 源 与 汇 测试
 
 <table cellspacing="0" cellpadding="0" border="1">
 <tbody>
