@@ -9,7 +9,7 @@ import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
 
 /**
- * <b>function:</b> Range 区间测试
+ * Range 区间测试
  * 
  * 
     (a..b) = {x | a < x < b}
