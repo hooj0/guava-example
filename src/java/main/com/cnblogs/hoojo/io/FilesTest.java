@@ -19,7 +19,7 @@ import com.google.common.io.Files;
 import com.google.common.primitives.Bytes;
 
 /**
- * <b>function:</b> 文件操作
+ * 文件操作
  * @author hoojo
  * @createDate 2018年2月28日 下午6:06:53
  * @file FilesTest.java
