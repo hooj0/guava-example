@@ -30,7 +30,7 @@ import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 
 /**
- * <b>function:</b> 字符流、字节流测试
+ * 字符流、字节流测试
  * 
 
 <table cellspacing="0" cellpadding="0" border="1">
