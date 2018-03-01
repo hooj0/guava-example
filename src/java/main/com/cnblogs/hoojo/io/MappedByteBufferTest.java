@@ -13,10 +13,9 @@ import com.google.common.io.Files;
 
 /**
  * http://download.oracle.com/technetwork/java/javase/6/docs/zh/api/java/nio/class-use/ByteBuffer.html
- * 
  * https://www.cnblogs.com/chenpi/p/6475510.html
  * 
- * FileChannel提供了map方法来把文件影射为内存映像文件：MappedByteBuffer map(int mode,long position,long size); 
+ * FileChannel提供了map方法来把文件映射为内存映像文件：MappedByteBuffer map(int mode,long position,long size); 
 	  可以把文件的从position开始到size大小的区域映射为内存映像文件，
 	
 	模式： 
