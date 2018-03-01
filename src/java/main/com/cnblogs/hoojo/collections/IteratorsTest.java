@@ -233,14 +233,14 @@ public class IteratorsTest {
 		out(Iterators.getNext(iter, "not Found")); // not Found
 		
 		// 当iterator只有一个元素就返回该元素，否则将抛出异常
-		out(Iterators.getOnlyElement(Arrays.asList("2").iterator()));
+		out(Iterators.getOnlyElement(Arrays.asList("2").iterator())); // 2
 		out(Iterators.getOnlyElement(iter, "def")); // def
 		
 		// 匹配第一个符合条件的元素下标索引
-		out(Iterators.indexOf(objs.iterator(), pred));
+		out(Iterators.indexOf(objs.iterator(), pred)); // 2
 		
 		// 返回前2个元素
-		out(Iterators.toString(Iterators.limit(objs.iterator(), 2)));
+		out(Iterators.toString(Iterators.limit(objs.iterator(), 2))); // [x, z]
 		
 		// 尝试查找，返回Optional
 		out(Iterators.tryFind(list.iterator(), pred).get()); // 1
