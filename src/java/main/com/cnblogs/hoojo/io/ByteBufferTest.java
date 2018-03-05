@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import org.junit.Test;
 
 /**
- * <b>function:</b> nio byte buffer
+ * nio byte buffer
  * 
  * 1、capacicty：作为一个内存块，Buffer有一个固定的大小值，也叫“capacity”
  * 	你只能往里写capacity个byte、long，char等类型。一旦Buffer满了，需要将其清空（通过读数据或者清除数据）才能继续写数据往里写数据。
