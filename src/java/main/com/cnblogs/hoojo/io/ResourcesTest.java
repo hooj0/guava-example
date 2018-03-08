@@ -12,7 +12,7 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.Resources;
 
 /**
- * <b>function:</b> 
+ * 
  * @author hoojo
  * @createDate 2018年3月8日 下午4:58:08
  * @file ResourcesTest.java
