@@ -13,7 +13,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.hash.PrimitiveSink;
 
 /**
- * <b>function:</b> hash 散列算法
+ * hash 散列算法
  * @author hoojo
  * @createDate 2018年3月9日 下午3:21:30
  * @file HashTest.java
