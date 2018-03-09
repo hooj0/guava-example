@@ -85,7 +85,17 @@ public class FilesTest {
 	}
 	
 	@Test
-	public void testReadFiles() {
+	public void testReadWriteFiles() {
+		
+		// 读取文件内容到list
+		try {
+			Files.readLines(file, Charsets.UTF_8).forEach(line -> {
+				System.out.println(line);
+			});
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+					
 		// 读取文件到buffer
 		MappedByteBuffer buff;
 		try {
@@ -95,20 +105,28 @@ public class FilesTest {
 			buff = Files.map(file, MapMode.READ_ONLY);
 			out(buff);
 			
-			buff = Files.map(file, MapMode.READ_ONLY, 200);
+			buff = Files.map(file, MapMode.READ_WRITE, 200);
 			out(buff);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		} 
 		
-		
+		// 文件输入输出字符流
 		try {
 			BufferedReader reader = Files.newReader(file, Charsets.UTF_8);
 			out(reader);
 			
-			BufferedWriter writer = Files.newWriter(file, Charsets.UTF_8);
+			BufferedWriter writer = Files.newWriter(new File("c://c.txt"), Charsets.UTF_8);
 			out(writer);
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		// 写入byte到文件
+		try {
+			Files.write(Files.toByteArray(file), new File("c://new.txt"));
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -126,7 +144,7 @@ public class FilesTest {
 			// 如果给定的文件存在，不是目录，并且包含相同的字节，则返回true。
 			out(Files.equal(file, new File("c://c.txt"))); // true
 			
-			out(Files.fileTreeTraverser());
+			out(Files.fileTreeTraverser().children(new File("c://")));
 			
 			// 获取后缀名
 			out(Files.getFileExtension(file.getAbsolutePath())); // txt
@@ -145,13 +163,15 @@ public class FilesTest {
 				Files.move(new File("c://b.txt"), new File("c://a//tmp.txt"));
 			}
 			
-			// 读取文件内容到list
-			out(Files.readLines(file, Charsets.UTF_8).size());
 			// 返回合法的文件路径
 			out(Files.simplifyPath("../a/b/../c.exe")); // ../a/c.exe
 			
 			// 转换成byte
 			out(Bytes.asList(Files.toByteArray(file)));
+			
+			//创建一个空文件或更新最后更新的时间戳，与同名的unix命令相同。
+			Files.touch(file);
+			Files.touch(new File("c://empty.txt"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
