@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.google.common.base.Predicates;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
