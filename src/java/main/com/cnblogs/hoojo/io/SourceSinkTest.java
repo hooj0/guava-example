@@ -472,14 +472,9 @@ public class SourceSinkTest {
 		out(writer);
 		
 		out("-------------------------");
-		out("-------------------------");
-		out("-------------------------");
 		Writer appendable = CharStreams.nullWriter();
 		source.copyTo(appendable);
 		new BufferedWriter(appendable);
-		
-		out("-------------------------");
-		out("-------------------------");
 		out("-------------------------");
 	}
 	

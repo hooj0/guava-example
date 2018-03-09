@@ -637,6 +637,7 @@ public class ByteBufferTest {
 		out(buffer);
 	}
        
+	
 	private void out(ByteBuffer buff) {
 		for (int i = 0; i < buff.limit(); i++) {
 			System.out.print(buff.get(i) + ", ");

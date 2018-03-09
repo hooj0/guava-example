@@ -48,6 +48,7 @@ public class ResourcesTest {
 		
 		System.out.println(Resources.getResource(getClass(), "ResourcesTest.class"));
 		
+		
 		// 读取内容到集合
 		List<String> list = Resources.readLines(url, Charsets.UTF_8);
 		list.forEach(new Consumer<String>() {
