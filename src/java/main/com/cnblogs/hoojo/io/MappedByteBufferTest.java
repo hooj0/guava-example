@@ -70,37 +70,37 @@ public class MappedByteBufferTest {
 		try {
 			buff = Files.map(file, MapMode.READ_WRITE);
 			out(buff);
-			
+
 			/*
-			position：当前读取的位置 
-			mark：为某一读过的位置做标记，便于有时候回退到该位置 
-			capacity：初始化时候的容量 
-			limit：读写的上限，limit <= capacity 
-			*/
+			 * position：当前读取的位置 
+			 * mark：为某一读过的位置做标记，便于有时候回退到该位置 
+			 * capacity：初始化时候的容量 
+			 * limit：读写的上限，limit <= capacity
+			 */
 			out("初始化读取文件--------------------");
 			out("limit: " + buff.limit());
 			out("capacity: " + buff.capacity());
 			out("position: " + buff.position());
-			
+
 			// 缓冲区的内容是否在物理内存中
 			out(buff.isLoaded());
-			//out(buff.load().isLoaded());
-			
+			// out(buff.load().isLoaded());
+
 			// 读取buffer内容，将buffer 转换编码，改变position
 			String result = Charsets.UTF_8.decode(buff).toString();
-			//out(result);
+			// out(result);
 			out("读取输出文件内容--------------------");
 			out("limit: " + buff.limit());
 			out("capacity: " + buff.capacity());
 			out("position: " + buff.position());
-			
+
 			// get(index) 按指定位置读取内容，不改变position
 			out(buff.get(0));
 			out("按索引位置读取--------------------");
 			out("limit: " + buff.limit());
 			out("capacity: " + buff.capacity());
 			out("position: " + buff.position());
-			
+
 			buff.clear(); // clear会改变limit=capacity
 			out(buff.get());
 			out("clear 方法后读取一个字节--------------------");
@@ -114,16 +114,16 @@ public class MappedByteBufferTest {
 			out("limit: " + buff.limit());
 			out("capacity: " + buff.capacity());
 			out("position: " + buff.position());
-			
+
 			buff.clear();
-            while(buff.hasRemaining()) {
-            	System.out.print((char) buff.get());
-            }
+			while (buff.hasRemaining()) {
+				System.out.print((char) buff.get());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void testReadBigFile() {
 		MappedByteBuffer buff;
@@ -134,39 +134,39 @@ public class MappedByteBufferTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void testWriteFile() {
 		MappedByteBuffer buff;
 		try {
 			// 扩充1024字节空间，写入数据
 			buff = Files.map(file, MapMode.READ_WRITE, file.length() + 1024);
-			
+
 			// 将buffer 转换编码
 			String result = Charsets.UTF_8.decode(buff).toString();
 			out(result);
-			
+
 			// 写内容到内存副本
 			byte[] bytes = ("\n当前时间：" + System.currentTimeMillis()).getBytes();
 			int position = buff.limit() - bytes.length;
 			// 移动指针位置
-	        buff.position(position);
-	        // 写入文件内容
-	        buff.put(bytes);
-	        // 强行写入文件
-	        buff.force(); 
-	        
-	        buff.flip();  
-	        
-	        out(buff.limit());
+			buff.position(position);
+			// 写入文件内容
+			buff.put(bytes);
+			// 强行写入文件
+			buff.force();
+
+			buff.flip();
+
+			out(buff.limit());
 			out(buff.capacity());
-	        result = Charsets.UTF_8.decode(buff).toString();
+			result = Charsets.UTF_8.decode(buff).toString();
 			out(result);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void testWirte() {
 		MappedByteBuffer buff;
@@ -183,21 +183,21 @@ public class MappedByteBufferTest {
 			out("capacity: " + buff.capacity());
 			out("limit: " + buff.limit());
 			out("position: " + buff.position());
-			
+
 			// 将buffer 转换编码
 			String result = Charsets.UTF_8.decode(buff).toString();
 			out(result);
-			
+
 			out("capacity: " + buff.capacity());
-	        out("limit: " + buff.limit());
-	        out("position: " + buff.position());
-			
+			out("limit: " + buff.limit());
+			out("position: " + buff.position());
+
 			buff.clear(); // 转换为写入模式
-			//buff.position(0);
+			// buff.position(0);
 			out("capacity: " + buff.capacity());
-	        out("limit: " + buff.limit());
-	        out("position: " + buff.position());
-	        
+			out("limit: " + buff.limit());
+			out("position: " + buff.position());
+
 			// 写入一个byte
 			buff.put((byte) 'b');
 			// 写入一个byte数组
@@ -209,7 +209,7 @@ public class MappedByteBufferTest {
 			buff.putInt(12);
 			buff.putLong(System.currentTimeMillis());
 			buff.putShort(Short.MAX_VALUE);
-	        
+
 			int i = buff.position() + 5;
 			buff.position(i + 5);
 			buff.put("abcdefg".getBytes(), 0, "abcdefg".getBytes().length);
@@ -219,9 +219,9 @@ public class MappedByteBufferTest {
 			buff.putInt(i + 10);
 			buff.putLong(i + 10, System.currentTimeMillis());
 			buff.putShort(i + 100, Short.MAX_VALUE);
-			
+
 			buff.force();
-			
+
 			buff = Files.map(file, MapMode.READ_ONLY);
 			result = Charsets.UTF_8.decode(buff).toString();
 			out(result);
@@ -229,10 +229,10 @@ public class MappedByteBufferTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void testCopyFile() {
-		
+
 		try {
 			MappedByteBuffer fromBuff = Files.map(file, MapMode.READ_ONLY);
 
@@ -240,50 +240,50 @@ public class MappedByteBufferTest {
 			if (!temp.exists()) {
 				temp.createNewFile();
 			}
-			
+
 			MappedByteBuffer toBuff = Files.map(temp, MapMode.READ_WRITE, file.length());
-			
-	        // 写入文件内容
-	        toBuff.put(fromBuff);
-	        // 强行写入文件
-	        toBuff.force(); 
-	        
-	        toBuff.flip();  
+
+			// 写入文件内容
+			toBuff.put(fromBuff);
+			// 强行写入文件
+			toBuff.force();
+
+			toBuff.flip();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
-    public void testBuff() {
-        //创建Buffer
-        CharBuffer buffer = CharBuffer.allocate(8);
-        out("capacity: " + buffer.capacity());
-        out("limit: " + buffer.limit());
-        out("position: " + buffer.position());
-         
-        //添加元素
-        buffer.put("a");
-        buffer.put("b");
-        buffer.put("c");
-        
-        out("加入元素后的位置， position：" + buffer.position());
-        
-        buffer.flip();
-        out("执行flip方法后， position：" + buffer.position());
-        out("执行flip方法后， limit：" + buffer.limit());
-         
-        //取得第一个元素
-        out("第一个元素（position=0）：" + buffer.get());
-        out("获取第一个元素（position=0）：" + buffer.position());
-         
-        //调用clear
-        out("执行clear后的，limit：" + buffer.limit());
-        out("执行clear后的，position：" + buffer.position());
-        out("执行clear后的，缓冲区内容没有清除：" + buffer.get(2));
-        out("执行clear后的，limit：" + buffer.limit());
-        out("执行clear后的，position：" + buffer.position());
-    }
+	public void testBuff() {
+		// 创建Buffer
+		CharBuffer buffer = CharBuffer.allocate(8);
+		out("capacity: " + buffer.capacity());
+		out("limit: " + buffer.limit());
+		out("position: " + buffer.position());
+
+		// 添加元素
+		buffer.put("a");
+		buffer.put("b");
+		buffer.put("c");
+
+		out("加入元素后的位置， position：" + buffer.position());
+
+		buffer.flip();
+		out("执行flip方法后， position：" + buffer.position());
+		out("执行flip方法后， limit：" + buffer.limit());
+
+		// 取得第一个元素
+		out("第一个元素（position=0）：" + buffer.get());
+		out("获取第一个元素（position=0）：" + buffer.position());
+
+		// 调用clear
+		out("执行clear后的，limit：" + buffer.limit());
+		out("执行clear后的，position：" + buffer.position());
+		out("执行clear后的，缓冲区内容没有清除：" + buffer.get(2));
+		out("执行clear后的，limit：" + buffer.limit());
+		out("执行clear后的，position：" + buffer.position());
+	}
 	
 	private void out(Object o) {
 		System.out.println(o);
