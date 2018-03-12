@@ -11,7 +11,7 @@ import com.google.common.math.IntMath;
 import com.google.common.math.LongMath;
 
 /**
- * <b>function:</b> int math
+ * int math
  * 
  * <h3>有溢出检查的运算</h3>
  * <table cellspacing="0" cellpadding="0" border="1">
