@@ -165,7 +165,7 @@ import com.google.common.math.LongMath;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class IntMathTest {
+public class MathTest {
 
 	@Test
 	public void testCheck() {
@@ -214,7 +214,6 @@ public class IntMathTest {
 		out(IntMath.divide(31, 3, RoundingMode.HALF_EVEN)); // 10.333333333333334 //10
 		out(IntMath.divide(31, 2, RoundingMode.HALF_EVEN)); // 15.5 // 16
 		out(IntMath.divide(33, 5, RoundingMode.HALF_EVEN)); // 6.6 // 7
-
 	}
 	
 	@Test
