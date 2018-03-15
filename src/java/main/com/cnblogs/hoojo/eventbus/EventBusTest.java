@@ -6,7 +6,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 /**
- * <b>function:</b> 事件总线
+ * 事件总线
  * @author hoojo
  * @createDate 2018年3月15日 上午11:22:57
  * @file EventBusTest.java
