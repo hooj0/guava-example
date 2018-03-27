@@ -9,7 +9,7 @@ import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 
 /**
- * <b>function:</b> 事件总线，消息分发
+ * 事件总线，消息分发
  * @author hoojo
  * @createDate 2018年3月27日 下午6:28:20
  * @file EventBusMessageTest.java
