@@ -7,7 +7,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>jar</packaging>
 	<name>com.cnblogs.hoojo Maven Webapp</name>
-	<url>http://com.cnblogs.hoojo</url>
+	<url>http://hoojo.cnblogs.com</url>
 
 
 	<dependencies>
