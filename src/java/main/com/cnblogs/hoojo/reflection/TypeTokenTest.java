@@ -5,7 +5,7 @@ import org.junit.Test;
 import com.google.common.reflect.TypeToken;
 
 /**
- * <b>function:</b>
+ * 类型反射
  * @author hoojo
  * @createDate 2018年3月28日 下午6:37:46
  * @file TypeTokenTest.java
