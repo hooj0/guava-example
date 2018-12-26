@@ -8,7 +8,8 @@ import com.google.common.reflect.ClassPath;
 
 /**
  * 尽最大努力的类路径扫描
- * 
+ * ClassPath是一个尽力而为的工具。它只扫描jar文件中或者某个文件目录下的class文件。
+ * 也不能扫描非URLClassLoader的自定义class loader管理的class，所以不要将它用于关键任务生产任务。
  * @author hoojo
  * @createDate 2018年12月26日 下午5:12:19
  * @file ClassPathTest.java
