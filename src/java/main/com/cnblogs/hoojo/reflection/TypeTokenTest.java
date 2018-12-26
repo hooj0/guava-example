@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
@@ -118,6 +119,27 @@ public class TypeTokenTest {
 		
 		TypeToken<Map<Integer, Set<String>>> complexToken = mapToken(TypeToken.of(Integer.class), new TypeToken<Set<String>>() {
 		});
+	}
+	
+	@Test
+	@SuppressWarnings("serial")
+	public void testResolveType() throws NoSuchMethodException, SecurityException {
+		// 可以用来“替代” context token 中的类型参数的一个强大而复杂的查询操作。
+		TypeToken<Function<Integer, String>> funcToken = new TypeToken<Function<Integer,String>>() {
+		};
+		
+		TypeToken<?> result = funcToken.resolveType(Function.class.getTypeParameters()[1]);
+		out(result);	// java.lang.String
+
+		// TypeToken将Java提供的TypeVariables和context token中的类型变量统一起来。
+		// 这可以被用来一般性地推断出在一个类型相关方法的返回类型：
+		TypeToken<Map<String, Integer>> mapToken = new TypeToken<Map<String,Integer>>() {
+		};
+		
+		TypeToken<?> setToken = mapToken.resolveType(Map.class.getMethod("entrySet").getGenericReturnType());
+		out(setToken);	// java.util.Set<java.util.Map.java.util.Map$Entry<java.lang.String, java.lang.Integer>>
+		out(setToken.getRawType());
+		out(setToken.getType());
 	}
 	
 	private void out(Object o) {
