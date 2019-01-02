@@ -72,7 +72,7 @@ public class ListenableFutureTest {
 			public void onFailure(Throwable t) {
 				System.out.println("failure:" + Throwables.getStackTraceAsString(t));
 			}
-		});
+		}, Executors.newCachedThreadPool());
 		
 		Futures.transformAsync(result, new AsyncFunction<Integer, String>() {
 			private ConcurrentMap<Integer, String> map = Maps.newConcurrentMap();
