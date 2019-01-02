@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Booleans;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Chars;
@@ -226,12 +225,51 @@ public class PrimitivesTest {
 	
 	@Test
 	public void testShorts() {
+		out(Shorts.toArray(Arrays.asList(1, 3, 5))); // 1, 3, 5, 
+		out(Shorts.toByteArray((short) 21)); // 0, 21, 
+		out(Shorts.asList((short)2, (short)3, (short)5)); // [2, 3, 5]
 		
+		// 强制转换 long，并检查是否在合法范围
+		out(Shorts.checkedCast(5L)); // 5
+		out(Shorts.saturatedCast(255)); // 255
+		
+		out(Shorts.concat(new short[] { 1, 2 }, new short[] { 9, 10 })); //1, 2, 9, 10, 
+		
+		out(Shorts.compare((short) 3, (short) 2)); // 1
+		out(Shorts.contains(new short[] { 1, 2 }, (short) 3)); // false
+		
+		out(Shorts.max(new short[] { 3, 2, 4, 5 })); // 5
+		out(Shorts.min(new short[] { 3, 2, 4, 5 })); // 2
+		
+		out(Shorts.lastIndexOf(new short[] { 3, 2, 4, 5, 2 }, (short)2));	// 4
+		
+		// 返回合法区间值
+		out(Shorts.constrainToRange((short)8, (short)2, (short)7)); // 7
+		out(Shorts.constrainToRange((short)5, (short)2, (short)7)); // 5
+		out(Shorts.constrainToRange((short)1, (short)2, (short)7)); // 2
+		
+		// 返回一个新数组，新数组包含原始数组，并且长度不小于minLength，且长度等于minLength + paddingLength。
+		out(Shorts.ensureCapacity(new short[] { 1, 2 }, 3, 1)); // 1, 2, 0, 0, 
+		out(Shorts.ensureCapacity(new short[] { 1, 2 }, 3, 3)); // 1, 2, 0, 0, 0, 0, 
+		out(Shorts.ensureCapacity(new short[] { 1, 2 }, 0, 0)); // 1, 2, 
+		out(Shorts.ensureCapacity(new short[] { 1, 2 }, 0, 1)); // 1, 2,  
+		out(Shorts.ensureCapacity(new short[] { 1, 2 }, 3, 0)); // 1, 2, 0, 
+		
+		out(Shorts.join("|", new short[] { 3, 2, 4, 5 }));	// 3|2|4|5
+	}
+	
+	@Test
+	public void testBooleans() {
+		out(Booleans.asList(false, false, true, false)); // [false, false, true, false]
+		out(Booleans.compare(false, true)); // -1
+		
+		out(Booleans.countTrue(true, false, false)); // 1
+		out(Booleans.trueFirst());
+		out(Booleans.falseFirst());
 	}
 	
 	@Test
 	public void test1() {
-		out(Shorts.BYTES);
 		
 		// 是否在合法区间
 		out(Doubles.isFinite(-0xfff0000000000000L)); // true
@@ -241,9 +279,7 @@ public class PrimitivesTest {
 		// true 的数量
 		out(Booleans.countTrue(true, false, true)); // 2
 		out(Booleans.trueFirst());
-		
 	}
-	
 	
 	private void out(Object obj) {
 		System.out.println(obj);
@@ -271,6 +307,13 @@ public class PrimitivesTest {
 	}
 	
 	private void out(float[] obj) {
+		for (Object o : obj) {
+			System.out.print(o + ", ");
+		}
+		System.out.println();
+	}
+	
+	private void out(short[] obj) {
 		for (Object o : obj) {
 			System.out.print(o + ", ");
 		}
