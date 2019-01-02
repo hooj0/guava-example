@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
 import com.google.common.primitives.Booleans;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Chars;
@@ -191,9 +192,46 @@ public class PrimitivesTest {
 	}
 	
 	@Test
+	public void testFloats() {
+		out(Floats.toArray(Arrays.asList(1, 3, 5))); // 1.0, 3.0, 5.0, 
+		out(Floats.asList(1, 3, 6)); // [1.0, 3.0, 6.0]
+		
+		out(Floats.concat(new float[] { 1, 2 }, new float[] { 9, 10 })); //1.0, 2.0, 9.0, 10.0, 
+		
+		out(Floats.compare(3.0f, 2.0f)); // 1
+		out(Floats.contains(new float[] { 1, 2 }, 3)); // false
+		out(Floats.isFinite(2.0f)); // true
+		
+		out(Floats.max(new float[] { 3, 2, 4, 5 })); // 5.0
+		out(Floats.min(new float[] { 3, 2, 4, 5 })); // 2.0
+		
+		// 返回合法区间值
+		out(Floats.constrainToRange(8, 2, 7)); // 7.0
+		out(Floats.constrainToRange(5, 2, 7)); // 5.0
+		out(Floats.constrainToRange(1, 2, 7)); // 2.0
+		
+		// 返回一个新数组，新数组包含原始数组，并且长度不小于minLength，且长度等于minLength + paddingLength。
+		out(Floats.ensureCapacity(new float[] { 1, 2 }, 3, 1)); // 1.0, 2.0, 0.0, 0.0, 
+		out(Floats.ensureCapacity(new float[] { 1, 2 }, 3, 3)); // 1.0, 2.0, 0.0, 0.0, 0.0, 0.0,
+		out(Floats.ensureCapacity(new float[] { 1, 2 }, 0, 0)); // 1.0, 2.0, 
+		out(Floats.ensureCapacity(new float[] { 1, 2 }, 0, 1)); // 1.0, 2.0, 
+		out(Floats.ensureCapacity(new float[] { 1, 2 }, 3, 0)); // 1.0, 2.0, 0.0,
+		
+		out(Floats.join("|", new float[] { 3, 2, 4, 5 }));	// 3.0|2.0|4.0|5.0
+		out(Floats.lastIndexOf(new float[] { 3, 2, 4, 5, 2 }, 2));	// 4
+		
+		out(Floats.tryParse("2.3f"));  // 2.3
+		out(Floats.tryParse("2.32f")); // 2.32
+	}
+	
+	@Test
+	public void testShorts() {
+		
+	}
+	
+	@Test
 	public void test1() {
 		out(Shorts.BYTES);
-		out(Floats.BYTES);
 		
 		// 是否在合法区间
 		out(Doubles.isFinite(-0xfff0000000000000L)); // true
@@ -226,6 +264,13 @@ public class PrimitivesTest {
 	}
 	
 	private void out(long[] obj) {
+		for (Object o : obj) {
+			System.out.print(o + ", ");
+		}
+		System.out.println();
+	}
+	
+	private void out(float[] obj) {
 		for (Object o : obj) {
 			System.out.print(o + ", ");
 		}
