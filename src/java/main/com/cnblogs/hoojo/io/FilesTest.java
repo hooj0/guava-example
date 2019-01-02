@@ -144,7 +144,7 @@ public class FilesTest {
 			// 如果给定的文件存在，不是目录，并且包含相同的字节，则返回true。
 			out(Files.equal(file, new File("c://c.txt"))); // true
 			
-			out(Files.fileTreeTraverser().children(new File("c://")));
+			//out(Files.fileTreeTraverser().children(new File("c://")));
 			
 			// 获取后缀名
 			out(Files.getFileExtension(file.getAbsolutePath())); // txt
