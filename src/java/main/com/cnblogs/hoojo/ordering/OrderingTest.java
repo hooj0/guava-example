@@ -1,4 +1,4 @@
-package com.cnblogs.hoojo.compare;
+package com.cnblogs.hoojo.ordering;
 
 import java.util.Collections;
 import java.util.Comparator;
