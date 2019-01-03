@@ -1,4 +1,4 @@
-package com.cnblogs.hoojo.collections;
+package com.cnblogs.hoojo.collections.utility_classes;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -107,7 +107,7 @@ import com.google.common.primitives.Ints;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class UtilCollectionTest {
+public class CollectionTest {
 
 	private static void print(Object text) {
 		System.out.println(text);
