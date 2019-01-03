@@ -1,4 +1,4 @@
-package com.cnblogs.hoojo.collections;
+package com.cnblogs.hoojo.collections.utility_classes;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -183,6 +183,5 @@ public class IterablesTest {
 		Collection<Integer> collect = Lists.newArrayList(1, 2, 0);
 		Iterators.addAll(collect, Ints.asList(2, 3, 5).iterator());
 		System.out.println(collect); // [1, 2, 0, 2, 3, 5]
-		
 	}
 }
