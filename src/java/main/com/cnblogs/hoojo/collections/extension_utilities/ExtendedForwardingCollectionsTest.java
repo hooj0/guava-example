@@ -1,4 +1,4 @@
-package com.cnblogs.hoojo.collections;
+package com.cnblogs.hoojo.collections.extension_utilities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
