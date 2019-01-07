@@ -14,10 +14,8 @@ import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 
 /**
- * reflection type token
- * 
- * 使用了基于反射的技巧甚至让你在运行时都能够巧妙的操作和查询泛型类型。
  * TypeToken是创建，操作，查询泛型类型（以及，隐含的类）对象的方法。
+ * 使用了基于反射的技巧甚至让你在运行时都能够巧妙的操作和查询泛型类型。
  * 
  * @author hoojo
  * @createDate 2018年3月28日 下午6:37:46
