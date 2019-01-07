@@ -12,6 +12,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
 /**
+ * 文件映射为内存映像文件
  * http://download.oracle.com/technetwork/java/javase/6/docs/zh/api/java/nio/class-use/ByteBuffer.html
  * https://www.cnblogs.com/chenpi/p/6475510.html
  * 
