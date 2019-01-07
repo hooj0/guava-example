@@ -12,7 +12,7 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.Resources;
 
 /**
- * 
+ * 远程和本地文件资源读取
  * @author hoojo
  * @createDate 2018年3月8日 下午4:58:08
  * @file ResourcesTest.java
