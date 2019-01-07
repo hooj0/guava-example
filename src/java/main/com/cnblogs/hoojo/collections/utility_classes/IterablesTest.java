@@ -15,6 +15,7 @@ import com.google.common.collect.Ordering;
 import com.google.common.primitives.Ints;
 
 /**
+集合迭代工具类
 <table cellspacing="0" cellpadding="0" border="1">
 <tbody>
 <tr>
@@ -65,7 +66,6 @@ import com.google.common.primitives.Ints;
 </tr>
 </tbody>
 </table>
- * 集合工具类
  * @author hoojo
  * @createDate 2017年10月17日 下午3:55:32
  * @file IterablesTest.java
