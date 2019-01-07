@@ -6,7 +6,6 @@ import com.cnblogs.hoojo.BasedTest;
 import com.google.common.base.CaseFormat;
 
 /**
- * string case format
  * 字符串大小写转换和格式化 
  * @author hoojo
  * @createDate 2019年1月2日 下午5:11:57
