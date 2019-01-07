@@ -31,7 +31,7 @@ import com.google.common.collect.Tables;
 import com.google.common.primitives.Ints;
 
 /**
- * 集合工具类
+ * 原生集合工具类
 
 <table cellspacing="0" cellpadding="0" border="1">
 <tbody>
