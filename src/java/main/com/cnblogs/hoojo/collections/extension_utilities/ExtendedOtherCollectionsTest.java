@@ -15,7 +15,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.PeekingIterator;
 
 /**
- * 其他扩展
+ * 其他扩展工具类
  * @author hoojo
  * @createDate 2017年10月19日 下午6:04:37
  * @file ExtendedOtherCollectionsTest.java
