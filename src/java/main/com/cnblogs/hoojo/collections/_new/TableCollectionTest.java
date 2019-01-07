@@ -9,16 +9,11 @@ import com.google.common.collect.Tables;
 import com.google.common.collect.TreeBasedTable;
 
 /**
- * table
-
+ * table 集合
 HashBasedTable：本质上用HashMap<R, HashMap<C, V>>实现；
-
 TreeBasedTable：本质上用TreeMap<R, TreeMap<C,V>>实现；
-
 ImmutableTable：本质上用ImmutableMap<R, ImmutableMap<C, V>>实现；注：ImmutableTable对稀疏或密集的数据集都有优化。
-
 ArrayTable：要求在构造时就指定行和列的大小，本质上由一个二维数组实现，以提升访问速度和密集Table的内存利用率。
-
 
 <table class="src" style="box-sizing: border-box; border-collapse: collapse; border-spacing: 0px;  border-color: rgb(214, 214, 214); width: 603.333374023438px; vertical-align: top; margin-top: 8px; margin-bottom: 8px; color: rgb(49, 49, 49);    font-size: 14.4444446563721px; line-height: 22px; background-color: rgb(247, 247, 247);">
 	<tbody style="box-sizing: border-box;">
