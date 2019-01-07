@@ -6,7 +6,7 @@ import com.cnblogs.hoojo.BasedTest;
 import com.google.common.net.InternetDomainName;
 
 /**
- * networking test examples
+ * 网络域名链接测试
  * InternetDomainName是一个用于解析和操作域名的有用工具。它可以用作验证器，组件提取器，以及用于以类型安全的方式传递域名的值类型。
  * 
  * @author hoojo
