@@ -5,7 +5,7 @@ import org.junit.Test;
 import com.google.common.reflect.Reflection;
 
 /**
- * class loading
+ * 类加载
  * 工具方法Reflection.initialize(Class…)能够确保特定的类被初始化——执行任何静态初始化。
  * @author hoojo
  * @createDate 2018年12月26日 下午5:20:51
