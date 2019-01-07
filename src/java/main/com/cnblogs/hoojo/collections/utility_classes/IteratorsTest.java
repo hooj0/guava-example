@@ -15,7 +15,7 @@ import com.google.common.collect.Ordering;
 import com.google.common.collect.PeekingIterator;
 
 /**
- * Iterators
+ * 集合Iterators工具类
  * @author hoojo
  * @createDate 2018年1月10日 上午11:28:57
  * @file IteratorsTest.java
