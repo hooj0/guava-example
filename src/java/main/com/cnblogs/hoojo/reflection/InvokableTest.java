@@ -15,6 +15,7 @@ import com.google.common.reflect.Invokable;
 import com.google.common.reflect.TypeToken;
 
 /**
+ * 对象反射
  * Invokable是对java.lang.reflect.Method和java.lang.reflect.Constructor的流式包装。
  * 它简化了常见的反射代码的使用。
  * @author hoojo
