@@ -12,19 +12,25 @@
 	- **`endpoint` 端点**：边缘的节点称为端点(`endpoint`)
 	- **`directed` 有向边**: 定义了开始(`source`)和结束(`target`)，有向边适用于非对称的关系模型（起源、指向、作者）
 	- **`undirected` 无向边**: 没有定义了开始(`source`)或结束(`target`)，无向边适用于对称关系模型（折叠、距离、同级关系）
+	- **`source` 起点**: 边的起始点，用来连接边
+	- **`target` 终点**: 边的结束点，用来连接边
 
-示例：	
+**示例**：	
 ```java
 graph.addEdge(nodeU, nodeV, edgeUV);
 ```
-`nodeU`和`nodeV`是两个邻接点(`adjacent`)
-`edgeUV`是顶点`nodeU`到顶点`nodeV`的事件(`incident`)（反之亦然）	
+`nodeU`和`nodeV`是两个邻接点(`adjacent`)，`edgeUV`是顶点`nodeU`到顶点`nodeV`的事件(`incident`)
 	
-在有向图中，有如下定义：
-+ `nodeU`是`nodeV`的一个前趋(`predecessor`)
-+ `nodeV`是`nodeU`的一个后继(`successor`)
-+ `edgeUV`是`nodeU`的一条出度(`outgoing`)边
-+ `edgeUV`是`nodeV`的一条入度(`incoming`)边
-+ `nodeU`是边`edgeUV`的起点(`source`)
-+ `nodeV`是边`edgeUV`的终点(`target`)
+在**有向图**中，有如下定义：
++ `nodeU`是`nodeV`的一个**前趋**(`predecessor`)
++ `nodeV`是`nodeU`的一个**后继**(`successor`)
++ `edgeUV`是`nodeU`的一条**出度**(`outgoing`)边
++ `edgeUV`是`nodeV`的一条**入度**(`incoming`)边
++ `nodeU`是边`edgeUV`的**起点**(`source`)
++ `nodeV`是边`edgeUV`的**终点**(`target`)
 
+在**无向图**中，有如下定义：
++ `nodeU`既是`nodeV`的**前趋**也是`nodeV`的**后继**
++ `nodeV`既是`nodeU`的**前趋**也是`nodeU`的**后继**
++ `edgeUV`既是`nodeU`的**入度**也是`nodeU`的**出度**
++ `edgeUV`既是`nodeV`的**入度**也是`nodeV`的**出度**
