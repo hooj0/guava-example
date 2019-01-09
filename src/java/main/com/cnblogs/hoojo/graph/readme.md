@@ -14,11 +14,10 @@
 	- **`undirected` 无向边**: 没有定义了开始(`source`)或结束(`target`)，无向边适用于对称关系模型（折叠、距离、同级关系）
 
 示例：	
-
-`graph.addEdge(nodeU, nodeV, edgeUV);`
-
-`nodeU`和`nodeV`是两个邻接点(`adjacent`)。
-
+```java
+graph.addEdge(nodeU, nodeV, edgeUV);
+```
+`nodeU`和`nodeV`是两个邻接点(`adjacent`)
 `edgeUV`是顶点`nodeU`到顶点`nodeV`的事件(`incident`)（反之亦然）	
 	
 在有向图中，有如下定义：
