@@ -3,7 +3,7 @@
 
 ## 关系图
 
-![](D:\work_private\guava-example\src\java\main\com\cnblogs\hoojo\graph\draw.jpg)
+![uml](draw.jpg)
 
 ## 定义
 - **`graph` 的组成**，图中每一条边都是**有向**边的，则被称为**有向图**；每一条边都是**无向**的，则被称为**无向图**。
