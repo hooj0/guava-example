@@ -1,6 +1,10 @@
 # graph 图论
 `Guava`库的目录`common.graph`包含的模块是一个描述实体(`entity`)以及实体之间的关系的图数据结构模型库。例如：网页与超链接、科学家与他们写的论文、机场与其航线、人与其家族等。`Guava-Graph`模块的目的是提供一种通用以及可扩展的语言来描述类似上述的举例。
 
+## 关系图
+
+![](D:\work_private\guava-example\src\java\main\com\cnblogs\hoojo\graph\draw.jpg)
+
 ## 定义
 - **`graph` 的组成**，图中每一条边都是**有向**边的，则被称为**有向图**；每一条边都是**无向**的，则被称为**无向图**。
 	- **`node` 节点**：一组节点(`node`)（也称为**顶点**）
