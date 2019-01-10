@@ -52,3 +52,15 @@ undirectedGraph.addEdge(nodeU, nodeV, edgeUV_b);
 undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 ```
 在**有向图**`directedGraph`中，边`edgeUV_a`和边`edgeUV_b`是**相互平行边**，与边`edgeVU`是**逆平行边**；在**无向图**`undirectedGraph`中，边`edgeUV_a`、`edgeUV_b`和`edgeVU`是**两两相互逆平行边**。
+
+## 功能
+`common.graph`模块的核心是提供**图相关操作的接口和类**。另外，它**没有提供类似`I/O`或者可视化**的功能。如果选用这个模块将会有非常多的限制，具体详细信息可以查看下面`FAQ`的相关主题。
+
+总体来讲，它提供了如下几种类型的图：
++ 有向图
++ 无向图
++ 节点和（或）边带权图
++ 允许（不允许）自环图
++ 允许（不允许）平行边图，允许平行边图有时也称为**多重图**(`multigraphs`)
++ 节点或边被有序插入、顺序、无序图(`graphs whose nodes/edges are insertion-ordered, sorted, or unordered`)
+
