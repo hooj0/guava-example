@@ -38,3 +38,17 @@ graph.addEdge(nodeU, nodeV, edgeUV);
 一条连接节点本身的边被称为**自环**(`self-loop`)，也就是说，**一条边连接了两个相同的节点**。如果这个自环是**有向**的，那么这条边既是节点的**入度边**也是节点的**出度边**，这个节点既是边的**起点**(`source`)也是边的**终点**(`target`)。
 
 如果两条边以**相同的顺序**连接**相同**的节点，则称这两条边为**平行边**(`parallel`)。如果以**相反的顺序**连接相同的节点则称这两条边为**逆平行边**(`antiparallel`)，**无向边**不能被称为**逆平行边**。
+
+示例：
+```java
+//有向图
+directedGraph.addEdge(nodeU, nodeV, edgeUV_a);
+directedGraph.addEdge(nodeU, nodeV, edgeUV_b);
+directedGraph.addEdge(nodeV, nodeU, edgeVU);
+
+//无向图
+undirectedGraph.addEdge(nodeU, nodeV, edgeUV_a);
+undirectedGraph.addEdge(nodeU, nodeV, edgeUV_b);
+undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
+```
+在有向图`directedGraph`中，边`edgeUV_a`和边`edgeUV_b`是相互平行边，与边`edgeVU`是逆平行边；在无向图`undirectedGraph`中，边`edgeUV_a`、`edgeUV_b`和`edgeVU`是两两相互逆平行边。
