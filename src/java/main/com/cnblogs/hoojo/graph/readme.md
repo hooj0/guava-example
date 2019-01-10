@@ -51,4 +51,4 @@ undirectedGraph.addEdge(nodeU, nodeV, edgeUV_a);
 undirectedGraph.addEdge(nodeU, nodeV, edgeUV_b);
 undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 ```
-在有向图`directedGraph`中，边`edgeUV_a`和边`edgeUV_b`是相互平行边，与边`edgeVU`是逆平行边；在无向图`undirectedGraph`中，边`edgeUV_a`、`edgeUV_b`和`edgeVU`是两两相互逆平行边。
+在**有向图**`directedGraph`中，边`edgeUV_a`和边`edgeUV_b`是**相互平行边**，与边`edgeVU`是**逆平行边**；在**无向图**`undirectedGraph`中，边`edgeUV_a`、`edgeUV_b`和`edgeVU`是**两两相互逆平行边**。
