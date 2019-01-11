@@ -80,6 +80,16 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 上面三种 "`top-level`" 接口都继承自接口`SuccessorsFunction`和`PredecessorsFunction`。这样做是为了在仅需要访问节点的**后继**（`successors`）或者**前趋**（`predecessors`）的图中，它可以直接被用来作为**图算法**（例如，`BFS`广度优遍历）中参数的类型。这在图形的所有者已经具有适用于它们的表示并且不特别想要将它们的表示序列化为`common.graph`类型以便运行一个图算法的情况下尤其有用。
 
 ### Graph
-`Graph`是最简单也是最基本的图类型。为了处理节点与节点之间的关系它定义了一些基本的操作，例如：`successors(node)` --> 获取`node`的后继`adjacentNodes(node)` --> 获取`node`的邻接点`inDegree(node)` --> 获取`node`的入度等。这些节点在图中都是唯一的对象，在其内部数据结构中，你可以认为它们是`Map`的键值(`Key`)。
+`Graph`是最简单也是最基本的图类型。为了**处理节点与节点之间的关系**它定义了一些基本的操作，例如：`successors(node)` --> 获取`node`的后继`adjacentNodes(node)` --> 获取`node`的邻接点`inDegree(node)` --> 获取`node`的入度等。这些节点在图中都是**唯一**的对象，在其内部数据结构中，你可以认为它们是**`Map`的键值(`Key`)**。
+
 `Graph`中的边是完全匿名的，他们只能根据端点来定义。举例：`Graph<Airport>`中，其边连接任意两个可以直航的机场。
+
+### ValueGraph
+接口`ValueGraph`包含了`Graph`中的所有与节点相关的方法，并增加了一些**检索指定边权值**的方法。
+
+`ValueGraph`中的每一条边都有一个与之相关的特定权值，但是这些权值不能保证唯一性。`ValueGraph`与`Graph`的关系类似与`Map`与`Set`的关系（`Graph`中的边是以顶点对的形式保存在`Set`中，而`ValueGraph`的边是以顶点对与其权值的映射关系保存在`Map`中）。
+
+`ValueGraph`提供了一个`asGraph()`的函数，它可以从`ValueGraph`中返回一个`Graph`视图，这样作用于`Graph`实例上的方法也能作用于`ValueGraph`的实例上。
+
+举例：`ValueGraph<Airport, Integer>`，其边表示在能直航的两个机场之间航班必须花费的时间。
 
