@@ -64,3 +64,6 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 + 允许（不允许）平行边图，允许平行边图有时也称为**多重图**(`multigraphs`)
 + 节点或边被有序插入、顺序、无序图(`graphs whose nodes/edges are insertion-ordered, sorted, or unordered`)
 
+`common.graph`中的各种类型的图都是通过与其相关的`Builder`具体实现类型来构建的，不过这些`Builder`实现类型不一定支持上面提到的所有图类型，但也可能支持其他类型的图。库中图的数据结构是通过矩阵、邻接`list`或邻接`map`等方式来存储的，选择何种存储方式取决于适用的实现场景。
+
+
