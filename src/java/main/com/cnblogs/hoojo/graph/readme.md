@@ -66,4 +66,10 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 
 `common.graph`中的各种类型的图都是通过与其相关的`Builder`具体实现类型来构建的，不过这些`Builder`实现类型不一定支持上面提到的所有图类型，但也可能支持其他类型的图。库中图的数据结构是通过矩阵、邻接`list`或邻接`map`等方式来存储的，选择何种存储方式取决于适用的实现场景。
 
+对于以下这些变形图在`common.graph`中没有确切的支持，尽管它们可以通过已有的图类型进行建模：
++ 树(`trees`)、森林(`forests`)
++ 由不同类型的同类元素（节点或边）构成的图。（二分图/k分图、`multimodal graphs`）
++ 超图
+
+`common.graph`不允许图中同时存在有向边和无向边。`Graphs`中提供了很多基本操作（如：图的拷贝和比较操作）。
 
