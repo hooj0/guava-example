@@ -145,3 +145,16 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
 
 ## 可变(`Mutable`)图和不可变(`Immutable`)图
 
+### `Mutablexx` 类型
+每种图类型都有与其对应的Mutablexx子类型： MutableGraph，MutableValueGraph，以及 MutableNetwork。这些子类型定义了下面这些变形方法：
+
++ 增加和删除节点的方法：addNode(node)、removeNode(node)。
++ 增加和删除边的方法：
+	```java
+	MutableGraph --> putEdge(nodeU, nodeV)、removeEdge(nodeU, nodeV)
+	MutableValueGraph --> putEdgeValue(nodeU, nodeV, value)、removeEdge(nodeU, nodeV)
+	MutableNetwork --> addEdge(nodeU, nodeV, edge)、removeEdge(edge)
+	```
+这些方法的定义与java的集合类型以及guava的新集合类型都有所不同——每种类型都包含变形方法的函数签名。选择将变形方法放在子类型中，一部分原因是为了鼓励防御性编程：一般来说，如果你的代码只是为了检查或者遍历一个图，而不改变它，那么输入应该就指定为Graph、ValueGraph或者 Network类型，而不是它们的可变子类型。另一方面，如果你的代码确实需要修改一个对象，那么使用带Mutable修饰的子类对你会很有帮助。
+由于Grpah等都是接口，即使它们不包含这些变形方法，但这些接口的实例并不能保证这些方法不被调用（如果它们实际上是`Mutablexx`的子类型），因为调用者可能会将其转换成该子类型。如果有一种契约的保证，即一个方法的参数或返回值不能被修改的Grahp类型，你可以使用下面介绍的这种不可变(Immutable)实现。
+
