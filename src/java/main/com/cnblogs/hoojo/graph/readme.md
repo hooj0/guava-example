@@ -124,10 +124,10 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
     .build();
 ```
 - 可以使用下面两种的任意一种方式通过`Builder`来构建图实例：
-	+ 1、调用静态方法`directed()` 或者 `undirected()` 来实例化一个有向图或者无向图。
-	+ 2、调用静态方法`from()`基于一个已存在的图实例构建图。
-- 在创建了`Builder`实例后，还可以选择指定其他特性和功能。
-- 同一个`Builder`实例可以多次调用`build()`方法来创建多个图的实例。
-- 不需要在`Builder`上指定节点和边的类型，只需要在图类型本身上指定即可。
-- `build()`方法返回一个`Mutable`子类型的图时，提供了变形的方法。下面将会介绍更多关于`Mutable`和`Immutable`的图。
+	+ 1、调用静态方法`directed()` 或者 `undirected()` 来实例化一个**有向图或者无向图**。
+	+ 2、调用静态方法`from()`基于一个**已存在**的图实例构建图。
+- 在创建了`Builder`实例后，还可以**选择**指定其他特性和功能。
+- 同一个`Builder`实例可以**多次调用`build()`方法来创建多个图**的实例。
+- 不需要在`Builder`上指定**节点和边**的类型，只需要在**图类型本身**上指定即可。
+- `build()`方法返回一个`Mutable`子类型的图时，提供了**变形**的方法。下面将会介绍更多关于`Mutable`和`Immutable`的图。
 
