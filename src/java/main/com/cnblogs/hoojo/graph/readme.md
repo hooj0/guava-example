@@ -64,12 +64,17 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 + 允许（不允许）平行边图，允许平行边图有时也称为**多重图**(`multigraphs`)
 + 节点或边被有序插入、顺序、无序图(`graphs whose nodes/edges are insertion-ordered, sorted, or unordered`)
 
-`common.graph`中的各种类型的图都是通过与其相关的`Builder`具体实现类型来构建的，不过这些`Builder`实现类型不一定支持上面提到的所有图类型，但也可能支持其他类型的图。库中图的数据结构是通过矩阵、邻接`list`或邻接`map`等方式来存储的，选择何种存储方式取决于适用的实现场景。
+`common.graph`中的各种类型的图都是通过与其相关的`Builder`具体实现类型来构建的，不过这些`Builder`实现类型**不一定支持**上面提到的所有图类型，但也可能支持其他类型的图。库中图的数据结构是通过矩阵、邻接`list`或邻接`map`等方式来存储的，选择何种存储方式取决于适用的实现场景。
 
 对于以下这些变形图在`common.graph`中没有确切的支持，尽管它们可以通过已有的图类型进行建模：
 + 树(`trees`)、森林(`forests`)
 + 由不同类型的同类元素（节点或边）构成的图。（二分图/k分图、`multimodal graphs`）
 + 超图
 
-`common.graph`不允许图中同时存在有向边和无向边。`Graphs`中提供了很多基本操作（如：图的拷贝和比较操作）。
+`common.graph`**不允许图中同时存在**有向边和无向边。`Graphs`中提供了很多基本操作（如：图的拷贝和比较操作）。
+
+
+## 图的类型
+`common.graph`模块中有三种通过边来作为区分依据的"`top-level`"接口(`interface`)：`Graph`、 `ValueGraph`、和`Network`。另外还存在一些同级类型，不过这些都不是这三种类型的子类型。
+上面三种 "`top-level`" 接口都继承自接口`SuccessorsFunction`和`PredecessorsFunction`。这样做是为了在仅需要访问节点的后继（`successors`）或者前趋（`predecessors`）的图中，它可以直接被用来作为图算法（例如，`BFS`广度优遍历）中参数的类型。
 
