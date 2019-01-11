@@ -155,6 +155,16 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
 	MutableValueGraph --> putEdgeValue(nodeU, nodeV, value)、removeEdge(nodeU, nodeV)
 	MutableNetwork --> addEdge(nodeU, nodeV, edge)、removeEdge(edge)
 	```
-这些方法的定义与`java`的集合类型以及`guava`的新集合类型都有所不同——每种类型都包含变形方法的函数签名。选择将变形方法放在子类型中，一部分原因是为了鼓励防御性编程：一般来说，如果你的代码只是为了检查或者遍历一个图，而不改变它，那么输入应该就指定为`Graph`、`ValueGraph`或者 `Network`类型，而不是它们的可变子类型。另一方面，如果你的代码确实需要修改一个对象，那么使用带`Mutable`修饰的子类对你会很有帮助。
-由于`Grpah`等都是接口，即使它们不包含这些变形方法，但这些接口的实例并不能保证这些方法不被调用（如果它们实际上是`Mutablexx`的子类型），因为调用者可能会将其转换成该子类型。如果有一种契约的保证，即一个方法的参数或返回值不能被修改的`Grahp`类型，你可以使用下面介绍的这种不可变(`Immutable`)实现。
+这些方法的定义与`java`的集合类型以及`guava`的新集合类型都有所不同 —— 每种类型都包含**变形方法**的函数签名。选择将变形方法放在子类型中，一部分原因是为了鼓励防御性编程：一般来说，如果你的代码只是为了检查或者遍历一个图，而不改变它，那么输入应该就指定为`Graph`、`ValueGraph`或者 `Network`类型，而不是它们的可变子类型。另一方面，如果你的代码确实需要修改一个对象，那么使用带`Mutable`修饰的子类对你会很有帮助。
 
+由于`Grpah`等都是接口，即使它们不包含这些变形方法，但这些接口的实例并不能保证这些方法不被调用（如果它们实际上是`Mutablexx`的子类型），因为调用者可能会将其转换成该子类型。如果有一种**契约的保证**，即一个方法的参数或返回值不能被修改的`Grahp`类型，你可以使用下面介绍的这种不可变(`Immutable`)实现。
+
+### `Immutablexx` 的实现
+每一种图类型(`Graph`、`ValueGraph`、`Network`)都有相应的不可变实现类(`ImmutableGraph`、`ImmutableValueGraph`、`ImmutableNetwork`)，这些类类似于`Guava`的`ImmutableSet`、`ImmutableList`、`ImmutableMap`等，一旦被创建出来，它们就不能被修改，且它们在内部使用了高效的不可变数据结构。
+
+不同与Guava的其他不可变类型，这些不可变实现类压根没有提供修改的方法，所以他们不需要抛出`UnsupportedOperationException`异常来应对这些操作。
+
+通过调用静态方法`copyOf()`来创建`ImmutableGraph`等的实例。例如：
+```java
+ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
+```
