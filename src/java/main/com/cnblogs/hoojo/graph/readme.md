@@ -108,3 +108,26 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 + `ValueGraph`中的边带有一个值（例如权值或标签），且边**在整个图中不能保证其唯一性**。如果每一对节点之间都是通过最多一条边连接的，并且每一条边都有与之相关的权值时，则选用它。
 + `Network`中边是**全局唯一**的，就像**节点在图中是唯一**的一样。如果边对象需要唯一，并且希望能查询它们的引用时，则选用它。(请注意，这种唯一性使得`Network`支持平行边。)
 
+## 构建图的实例
+
+`common.graph`中图的具体实现类并没有设计成`public`的，这样主要是为了减少用户需要了解的图类型的数量，使得构建各种功能的图变得更加容易。要创建一个**内置图类型**的实例，可以使用相应的`Builder`类： `GraphBuilder`、` ValueGraphBuilder`和`NetworkBuilder`。例如：
+```java
+MutableGraph<Integer> graph = GraphBuilder.undirected().build();
+
+MutableValueGraph<City, Distance> roads = ValueGraphBuilder.directed().build();
+
+MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
+    .allowsParallelEdges(true)
+    .nodeOrder(ElementOrder.natural())
+    .expectedNodeCount(100000)
+    .expectedEdgeCount(1000000)
+    .build();
+```
+- 可以使用下面两种的任意一种方式通过`Builder`来构建图实例：
+	+ 1、调用静态方法`directed()` 或者 `undirected()` 来实例化一个有向图或者无向图。
+	+ 2、调用静态方法`from()`基于一个已存在的图实例构建图。
+- 在创建了`Builder`实例后，还可以选择指定其他特性和功能。
+- 同一个`Builder`实例可以多次调用`build()`方法来创建多个图的实例。
+- 不需要在`Builder`上指定节点和边的类型，只需要在图类型本身上指定即可。
+- `build()`方法返回一个`Mutable`子类型的图时，提供了变形的方法。下面将会介绍更多关于`Mutable`和`Immutable`的图。
+

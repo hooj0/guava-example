@@ -1,6 +1,13 @@
 package com.cnblogs.hoojo.graph;
 
 import com.cnblogs.hoojo.BasedTest;
+import com.google.common.graph.ElementOrder;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
+import com.google.common.graph.MutableNetwork;
+import com.google.common.graph.MutableValueGraph;
+import com.google.common.graph.NetworkBuilder;
+import com.google.common.graph.ValueGraphBuilder;
 
 /**
  * 图的定义 graph defined
@@ -22,5 +29,16 @@ import com.cnblogs.hoojo.BasedTest;
 public class GraphDefinitionsTest extends BasedTest {
 
 	public void testDefined() {
+		MutableGraph<Integer> graph = GraphBuilder.undirected().build();
+
+		MutableValueGraph<City, Distance> roads = ValueGraphBuilder.directed().build();
+
+		MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
+		    .allowsParallelEdges(true)
+		    .nodeOrder(ElementOrder.natural())
+		    .expectedNodeCount(100000)
+		    .expectedEdgeCount(1000000)
+		    .build();
+
 	}
 }
