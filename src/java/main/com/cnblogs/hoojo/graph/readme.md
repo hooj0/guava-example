@@ -175,4 +175,11 @@ ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 + **线程安全**：多个线程同时访问该图是安全的操作
 + **完整性**：该类型不能在包之外定义子类型（允许违反这条）
 
+将这些类看作成接口(`interface`)，而不是实现类：
+每一个`Immutable*`类都是提供了有意义行为保证的类型，而不仅仅是特定的实现类。所以你应该把它们当作是有重要意义的接口来看待。
+
+如果字段或返回值是`Immutable*`的实例（如`ImmutableGraph`），则应将其申明为`Immutable*`类型，而不是对应的接口类型（如`Graph`）。`This communicates to callers all of the semantic guarantees listed above, which is almost always very useful information`.
+
+另一方面，一个`ImmutableGraph`类型的参数对调用者来说会觉得比较麻烦，而更倾向与`Graph`类型。
+
 
