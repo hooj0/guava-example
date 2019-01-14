@@ -176,10 +176,10 @@ ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 + **完整性**：该类型不能在包之外定义子类型（允许违反这条）
 
 将这些类看作成接口(`interface`)，而不是实现类：
-每一个`Immutable*`类都是提供了有意义行为保证的类型，而不仅仅是特定的实现类。所以你应该把它们当作是有重要意义的接口来看待。
+每一个`Immutable*`类都是提供了有意义行为保证的类型，而不仅仅是特定的实现类。所以应该把它们当作是有重要意义的接口来看待。
+如果字段或返回值是`Immutable*`的实例（如`ImmutableGraph`），则应将其申明为`Immutable*`类型，而不是对应的接口类型（如`Graph`）。
+另一方面，一个`ImmutableGraph`类型的参数**对调用者来说会觉得比较麻烦**，而**更倾向与`Graph`类型**。
 
-如果字段或返回值是`Immutable*`的实例（如`ImmutableGraph`），则应将其申明为`Immutable*`类型，而不是对应的接口类型（如`Graph`）。`This communicates to callers all of the semantic guarantees listed above, which is almost always very useful information`.
-
-另一方面，一个`ImmutableGraph`类型的参数对调用者来说会觉得比较麻烦，而更倾向与`Graph`类型。
+> **警告**：正如其他地方指出的，修改一个包含在集合中的元素几乎总是一个坏注意，这样会导致一些**未定义的行为和错误出现**。因此，通常最好避免使用可变对象作为`Immutable*`类型的对象的元素，因为大多数用户是期望你的`immutable`对象是真的不可修改。
 
 
