@@ -15,7 +15,7 @@
 	- **`source` 起点**: 边的起始点，用来连接边
 	- **`target` 终点**: 边的结束点，用来连接边
 
-		示例**：	
+示例**：	
 ```java
 graph.addEdge(nodeU, nodeV, edgeUV);
 ```
@@ -125,8 +125,8 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
     .build();
 ```
 - 可以使用下面两种的任意一种方式通过`Builder`来构建图实例：
-	+ 1、调用静态方法`directed()` 或者 `undirected()` 来实例化一个**有向图或者无向图**。
-	+ 2、调用静态方法`from()`基于一个**已存在**的图实例构建图。
+	+ 调用静态方法`directed()` 或者 `undirected()` 来实例化一个**有向图或者无向图**。
+	+ 调用静态方法`from()`基于一个**已存在**的图实例构建图。
 - 在创建了`Builder`实例后，还可以**选择**指定其他特性和功能。
 - 同一个`Builder`实例可以**多次调用`build()`方法来创建多个图**的实例。
 - 不需要在`Builder`上指定**节点和边**的类型，只需要在**图类型本身**上指定即可。
