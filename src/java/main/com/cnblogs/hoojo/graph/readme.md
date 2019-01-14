@@ -176,27 +176,53 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
 ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 ```
 
+**保障**
+
 每一种`Immutable*`类型提供了一下保证：
 + **不变性**：元素不能被添加、删除、替换。（这些类没有实现`Mutable*`的接口）
 + **迭代的确定性**：迭代顺序总是和输入图的顺序相同
 + **线程安全**：多个线程同时访问该图是安全的操作
 + **完整性**：该类型不能在包之外定义子类型（允许违反这条）
 
-将这些类看作成接口(`interface`)，而不是实现类：
+**将这些类看作成接口(`interface`)，而不是实现类**：
 每一个`Immutable*`类都是提供了有意义行为保证的类型，而不仅仅是特定的实现类。所以应该把它们当作是有重要意义的接口来看待。
 如果字段或返回值是`Immutable*`的实例（如`ImmutableGraph`），则应将其申明为`Immutable*`类型，而不是对应的接口类型（如`Graph`）。
 另一方面，一个`ImmutableGraph`类型的参数**对调用者来说会觉得比较麻烦**，而**更倾向与`Graph`类型**。
 
 > **警告**：正如其他地方指出的，修改一个包含在集合中的元素几乎总是一个坏注意，这样会导致一些**未定义的行为和错误出现**。因此，通常最好避免使用可变对象作为`Immutable*`类型的对象的元素，因为大多数用户是期望你的`immutable`对象是真的不可修改。
 
-## 图的节点和边
+## 图形元素（节点和边）
 
-**节点`Network`中的边，必须可以用做`Map`的键**：
-- 必须**在图中唯一**，当且仅当`nodeA.equals(nodeB) == false`时，则认为`nodeA`和`nodeB`是不相等的。
-- 必须的**实现函数** `equals()`和`hashCode()`。
-- 如果元素是**有序**的，例如`GraphBuilder.orderNodes()`，则必须和`equals()`保持一致，由`Comparator`和`Comparable`接口定义。
+**元素必须可用作`Map`键**：
+- **必须在图中唯一**，当且仅当`nodeA.equals(nodeB) == false`时，则认为`nodeA`和`nodeB`是不相等的。
+- **必须的实现函数** `equals()`和`hashCode()`。
+- **如果元素是有序的**，例如`GraphBuilder.orderNodes()`，则必须和`equals()`保持一致，由`Comparator`和`Comparable`接口定义。
+- **非递归**，`hashCode()`和`equals()`不能递归引用其他元素，如下例所示：
+	```java
+	// DON'T use a class like this as a graph element (or Map key/Set element)
+	public final class Node<T> {
+	  T value;
+	  Set<Node<T>> successors;
+	
+	  public boolean equals(Object o) {
+	    Node<T> other = (Node<T>) o;
+	    return Objects.equals(value, other.value)
+	        && Objects.equals(successors, other.successors);
+	  }
+	
+	  public int hashCode() {
+	    return Objects.hash(value, successors);
+	  }
+	}
+	```
+	使用这样的类作为`common.graph`元素类型（例如，`Graph <Node <T >>`）具有以下问题：
+		- **冗余**：`common.graph`库提供的`Graph`实现已经存储了这些关系
+		- **低效**：添加/访问这些元素会调用`equals()`，可能还有`hashCode()`，这需要`O(n)`时间
+		- **不可行**：如果图中有循环，则`equals()`和`hashCode()`可能永远不会终止
+	相反，只需使用`T`值本身作为节点类型（假设`T`值本身就是有效的`Map`键）。
 
-如果图的元素有**可变状态**：
+**元素和可变状态**：
+如果图元素具有可变状态：
 - 不能在`equals()/ hashCode()`方法中反射获取可变状态（这些在`Map`的相关文档中有过详细讨论）
 - **不要创建多个相等**的元素，并希望它们可以互换。特别是，如果你需要在创建期间多次引用这些元素，应该在向图中添加这些元素时一次性的创建并保存其引用，而不是每次都通过`new MyMutableNode(id)`传给`add**()`的中。
 
