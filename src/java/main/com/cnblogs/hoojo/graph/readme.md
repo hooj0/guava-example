@@ -148,13 +148,20 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
 ### `Mutablexx` 类型
 每种图类型都有与其对应的`Mutablexx`子类型： `MutableGraph`，`MutableValueGraph`，以及 `MutableNetwork`。这些子类型定义了下面这些变形方法：
 
-+ 增加和删除节点的方法：`addNode(node)`、`removeNode(node)`。
++ 增加和删除节点的方法：
+	- `addNode(node)`
+	- `removeNode(node)`。
 + 增加和删除边的方法：
-	```java
-	MutableGraph --> putEdge(nodeU, nodeV)、removeEdge(nodeU, nodeV)
-	MutableValueGraph --> putEdgeValue(nodeU, nodeV, value)、removeEdge(nodeU, nodeV)
-	MutableNetwork --> addEdge(nodeU, nodeV, edge)、removeEdge(edge)
-	```
+	- `MutableGraph`
+		+ `putEdge(nodeU, nodeV)`
+		+ `removeEdge(nodeU, nodeV)`
+	- `MutableValueGraph`
+		+ `putEdgeValue(nodeU, nodeV, value)`
+		+ `removeEdge(nodeU, nodeV)`
+	- `MutableNetwork`
+		+ `addEdge(nodeU, nodeV, edge)`
+		+ `removeEdge(edge)`
+		
 这些方法的定义与`java`的集合类型以及`guava`的新集合类型都有所不同 —— 每种类型都包含**变形方法**的函数签名。选择将变形方法放在子类型中，一部分原因是为了鼓励防御性编程：一般来说，如果你的代码只是为了检查或者遍历一个图，而不改变它，那么输入应该就指定为`Graph`、`ValueGraph`或者 `Network`类型，而不是它们的可变子类型。另一方面，如果你的代码确实需要修改一个对象，那么使用带`Mutable`修饰的子类对你会很有帮助。
 
 由于`Grpah`等都是接口，即使它们不包含这些变形方法，但这些接口的实例并不能保证这些方法不被调用（如果它们实际上是`Mutablexx`的子类型），因为调用者可能会将其转换成该子类型。如果有一种**契约的保证**，即一个方法的参数或返回值不能被修改的`Grahp`类型，你可以使用下面介绍的这种不可变(`Immutable`)实现。
@@ -186,15 +193,36 @@ ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 
 **节点`Network`中的边，必须可以用做`Map`的键**：
 - 必须**在图中唯一**，当且仅当`nodeA.equals(nodeB) == false`时，则认为`nodeA`和`nodeB`是不相等的。
-- 必须合适的**实现函数** `equals()`和`hashCode()`。
+- 必须的**实现函数** `equals()`和`hashCode()`。
 - 如果元素是**有序**的，例如`GraphBuilder.orderNodes()`，则必须和`equals()`保持一致，由`Comparator`和`Comparable`接口定义。
 
 如果图的元素有**可变状态**：
 - 不能在`equals()/ hashCode()`方法中反射获取可变状态（这些在`Map`的相关文档中有过详细讨论）
 - **不要创建多个相等**的元素，并希望它们可以互换。特别是，如果你需要在创建期间多次引用这些元素，应该在向图中添加这些元素时一次性的创建并保存其引用，而不是每次都通过`new MyMutableNode(id)`传给`add**()`的中。
 
-如果需要保存可变元素的每一个可变状态，可以选用不可变元素，并将可变状态保存在单独的数据结构中，如：一个元素状态`Map`。
+如果需要保存**可变元素的每一个可变状态**，可以**选用不可变**元素，并将**可变**状态保存在单独的数据结构中，如：一个元素状态`Map`。
 
 > **图的元素必须不能为`null`**。
+
+## 契约和行为
+本节讨论常见内置图的实现方式。
+
+### 变形
+
+### 图 `equals()`和等价
+
+### 访问器方法
+
+### 同步
+
+### 元素对象
+
+
+## 实现者注意事项
+
+
+
+
+
 
 
