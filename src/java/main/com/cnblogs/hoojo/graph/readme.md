@@ -95,6 +95,7 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 
 ### `Network`
 `Network`中包含了`Graph`中的所有与节点相关的方法，还增加了**操作边以及操作顶点与边的关系**的方法，例如：`outEdges(node)` --> 获取`node`的出度边 ` incidentNodes(edge)` --> 获取边`edge`的顶点对和 `edgesConnecting(nodeU, nodeV)` --> 获取`nodeU`和`nodeV`的直连边。
+
 `Network`中每一条边都是唯一的，就像节点在所有的`Graph`类型中是唯一的一样。边的唯一性限制使得`Network`能够天然的支持**并行边**，以及与**边和节点与边相关**的方法。
 
 `Network`类提供了一个`asGraph()`的方法，它可以从`Network`中返回一个`Graph`视图，这样作用于`Graph`实例上的方法也能操作`Network`的实例上。
@@ -216,9 +217,9 @@ ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 	}
 	```
 	使用这样的类作为`common.graph`元素类型（例如，`Graph <Node <T >>`）具有以下问题：
-		- **冗余**：`common.graph`库提供的`Graph`实现已经存储了这些关系
-		- **低效**：添加/访问这些元素会调用`equals()`，可能还有`hashCode()`，这需要`O(n)`时间
-		- **不可行**：如果图中有循环，则`equals()`和`hashCode()`可能永远不会终止
+		+ **冗余**：`common.graph`库提供的`Graph`实现已经存储了这些关系
+		+ **低效**：添加/访问这些元素会调用`equals()`，可能还有`hashCode()`，这需要`O(n)`时间
+		+ **不可行**：如果图中有循环，则`equals()`和`hashCode()`可能永远不会终止
 	相反，只需使用`T`值本身作为节点类型（假设`T`值本身就是有效的`Map`键）。
 
 **元素和可变状态**：
