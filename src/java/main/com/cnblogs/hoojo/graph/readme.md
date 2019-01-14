@@ -162,9 +162,17 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
 ### `Immutablexx` 的实现
 每一种图类型(`Graph`、`ValueGraph`、`Network`)都有相应的不可变实现类(`ImmutableGraph`、`ImmutableValueGraph`、`ImmutableNetwork`)，这些类类似于`Guava`的`ImmutableSet`、`ImmutableList`、`ImmutableMap`等，一旦被创建出来，它们就不能被修改，且它们在内部使用了高效的不可变数据结构。
 
-不同与Guava的其他不可变类型，这些不可变实现类压根没有提供修改的方法，所以他们不需要抛出`UnsupportedOperationException`异常来应对这些操作。
+不同与`Guava`的其他不可变类型，这些不可变实现类压根没有提供修改的方法，所以他们不需要抛出`UnsupportedOperationException`异常来应对这些操作。
 
 通过调用静态方法`copyOf()`来创建`ImmutableGraph`等的实例。例如：
 ```java
 ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 ```
+
+每一种`Immutable*`类型提供了一下保证：
++ **不变性**：元素不能被添加、删除、替换。（这些类没有实现`Mutable*`的接口）
++ **迭代的确定性**：迭代顺序总是和输入图的顺序相同
++ **线程安全**：多个线程同时访问该图是安全的操作
++ **完整性**：该类型不能在包之外定义子类型（允许违反这条）
+
+
