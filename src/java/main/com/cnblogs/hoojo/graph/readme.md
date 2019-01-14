@@ -182,4 +182,13 @@ ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 
 > **警告**：正如其他地方指出的，修改一个包含在集合中的元素几乎总是一个坏注意，这样会导致一些**未定义的行为和错误出现**。因此，通常最好避免使用可变对象作为`Immutable*`类型的对象的元素，因为大多数用户是期望你的`immutable`对象是真的不可修改。
 
+## 图的元素:节点和边
+
+节点`Network`中的边，必须可以用做`Map`的键：
+- 必须**在图中唯一**，当且仅当`nodeA.equals(nodeB) == false`时，则认为`nodeA`和`nodeB`是不相等的。
+- 必须合适的**实现函数** `equals()`和`hashCode()`。
+- 如果元素是**有序**的，例如`GraphBuilder.orderNodes()`，则必须和`equals()`保持一致，由`Comparator`和`Comparable`接口定义。
+
+
+
 
