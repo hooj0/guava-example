@@ -102,7 +102,7 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 
 举例：`Network<Airport, Flight>` 它的每一条边代表了从一个机场到另一个机场可以乘坐的特定航班（两个机场之间可以同时有多趟航班）。
 
-## 如何选择合适的图类型
+## 选择合适的图类型
 这三种图类型之间本质的**区别在于它们边表示的不同**：
 
 + `Graph`中的边是节点之间的**匿名连接**，**没有自己的标识或属性**。如果每一对节点之间都是通过最多一条边连接的，而且这些边没有任何与之相关的信息时，则选用它。
@@ -112,6 +112,7 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 ## 构建图的实例
 
 `common.graph`中图的具体实现类并没有设计成`public`的，这样主要是为了减少用户需要了解的图类型的数量，使得构建各种功能的图变得更加容易。要创建一个**内置图类型**的实例，可以使用相应的`Builder`类： `GraphBuilder`、` ValueGraphBuilder`和`NetworkBuilder`。例如：
+
 ```java
 MutableGraph<Integer> graph = GraphBuilder.undirected().build();
 
@@ -194,7 +195,7 @@ ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 
 ## 图形元素（节点和边）
 
-**元素必须可用作`Map`键**：
+**元素必须可用作`Map`键**
 - **必须在图中唯一**，当且仅当`nodeA.equals(nodeB) == false`时，则认为`nodeA`和`nodeB`是不相等的。
 - **必须的实现函数** `equals()`和`hashCode()`。
 - **如果元素是有序的**，例如`GraphBuilder.orderNodes()`，则必须和`equals()`保持一致，由`Comparator`和`Comparable`接口定义。
@@ -224,7 +225,9 @@ ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 
   相反，只需使用`T`值本身作为节点类型（假设`T`值本身就是有效的`Map`键）。
 
-**元素和可变状态**：
+
+**元素和可变状态**
+
 如果图元素具有可变状态：
 
 - 不能在`equals()/ hashCode()`方法中反射获取可变状态（这些在`Map`的相关文档中有过详细讨论）
@@ -232,12 +235,26 @@ ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 
 如果需要保存**可变元素的每一个可变状态**，可以**选用不可变**元素，并将**可变**状态保存在单独的数据结构中，如：一个元素状态`Map`。
 
-> **图的元素必须不能为`null`**。
+**图的元素必须不能为`null`**
+
+向图表添加元素的方法在合同上需要拒绝`null`元素。
 
 ## 契约和行为
+
 本节讨论常见内置图的实现方式。
 
 ### 变形
+
+可以往图中添加一条边，如果图中还没有出现对应的两个端点时，两个端点则会静默添加到图中：
+```java
+Graph<Integer> graph = GraphBuilder.directed().build();  // graph is empty
+graph.putEdge(1, 2);  // this adds 1 and 2 as nodes of this graph, and puts
+                      // an edge between them
+if (graph.nodes().contains(1)) {  // evaluates to "true"
+  ...
+}
+```
+
 
 ### 图 `equals()`和等价
 
