@@ -7,21 +7,24 @@
 
 ## 定义
 - **`graph` 的组成**，图中每一条边都是**有向**边的，则被称为**有向图**；每一条边都是**无向**的，则被称为**无向图**。**不支持图中既有有向边又有无向边的情形**。
-	- **`node` 节点**：一组节点(`node`)（也称为**顶点**）
-	- **`edge` 边**：一组连接节点的边(`edge`)（也称为**链接**或者**弧**）
-	- **`endpoint` 端点**：边缘的节点称为端点(`endpoint`)
-	- **`directed` 有向边**: 定义了开始(`source`)和结束(`target`)，有向边适用于非对称的关系模型（起源、指向、作者）
-	- **`undirected` 无向边**: 没有定义了开始(`source`)或结束(`target`)，无向边适用于对称关系模型（折叠、距离、同级关系）
-	- **`source` 起点**: 边的起始点，用来连接边
-	- **`target` 终点**: 边的结束点，用来连接边
+  - **`node` 节点**：一组节点(`node`)（也称为**顶点**）
+  - **`edge` 边**：一组连接节点的边(`edge`)（也称为**链接**或者**弧**）
+  - **`endpoint` 端点**：边缘的节点称为端点(`endpoint`)
+  - **`directed` 有向边**: 定义了开始(`source`)和结束(`target`)，有向边适用于非对称的关系模型（起源、指向、作者）
+  - **`undirected` 无向边**: 没有定义了开始(`source`)或结束(`target`)，无向边适用于对称关系模型（折叠、距离、同级关系）
+  - **`source` 起点**: 边的起始点，用来连接边
+  - **`target` 终点**: 边的结束点，用来连接边
 
-示例**：	
+举例：
+
 ```java
 graph.addEdge(nodeU, nodeV, edgeUV);
 ```
-`nodeU`和`nodeV`是两个邻接点(`adjacent`)，`edgeUV`是顶点`nodeU`到顶点`nodeV`的事件(`incident`)
+- `nodeU`和`nodeV`是两个邻接点(`adjacent`)
+- `edgeUV`是顶点`nodeU`到顶点`nodeV`的事件(`incident`)
 	
 在**有向图**中，有如下定义：
+
 + `nodeU`是`nodeV`的一个**前趋**(`predecessor`)
 + `nodeV`是`nodeU`的一个**后继**(`successor`)
 + `edgeUV`是`nodeU`的一条**出度**(`outgoing`)边
@@ -35,9 +38,13 @@ graph.addEdge(nodeU, nodeV, edgeUV);
 + `edgeUV`既是`nodeU`的**入度**也是`nodeU`的**出度**
 + `edgeUV`既是`nodeV`的**入度**也是`nodeV`的**出度**
 
-一条连接节点本身的边被称为**自环**(`self-loop`)，也就是说，**一条边连接了两个相同的节点**。如果这个自环是**有向**的，那么这条边既是节点的**入度边**也是节点的**出度边**，这个节点既是边的**起点**(`source`)也是边的**终点**(`target`)。
+一条连接节点本身的边被称为**自环**(`self-loop`)，也就是说，**一条边连接了两个相同的节点**。
 
-如果两条边以**相同的顺序**连接**相同**的节点，则称这两条边为**平行边**(`parallel`)。如果以**相反的顺序**连接相同的节点则称这两条边为**逆平行边**(`antiparallel`)，**无向边**不能被称为**逆平行边**。
+如果这个自环是**有向**的，那么这条边既是节点的**入度边**也是节点的**出度边**，这个节点既是边的**起点**(`source`)也是边的**终点**(`target`)。
+
+如果两条边以**相同的顺序**连接**相同**的节点，则称这两条边为**平行边**(`parallel`)。
+
+如果以**相反的顺序**连接相同的节点则称这两条边为**逆平行边**(`antiparallel`)，**无向边**不能被称为**逆平行边**。
 
 示例：
 ```java
@@ -255,14 +262,60 @@ if (graph.nodes().contains(1)) {  // evaluates to "true"
 }
 ```
 
-
 ### 图 `equals()`和等价
+
+`Guava`的`22`版本中每种图都定义有特定意义的`equals()`：
+
++ `Graph.equals()`定义为两个相等的`Graph`有相同的**节点和边集**（也就是说，两个`Graph`中，每条边有**相同的端点以及相同的方向**）。
++ `ValueGraph.equals()`定义为两个相等的`ValueGraph`有**相同的节点和边集**，并且**边上的权重也相等**。
++ `Network.equals()`定义为两个相等的`Network`有**相同的节点和边集**，以及每个边对象都以**相同的方向**连接相同的节点（如果有边的话）。
+
+此外，对于每种图类型，只有它们的边具有**相同的方向**时，**两个图才能是相等**的（两个图要么**都是有向**的，要么**都是无向**的）。
+
+理所当然，`hashCode()`函数在每种图类型中都与`equals()`保持一致。
+
+ 如果想比较两个`Network`或者两个基于连接性的`ValueGraph`，或者将一个`Network`或一个`ValueGraph`与`Graph`进行比较，可以使用`Network`和`ValueGraph`提供的`Graph`视图：
+
+```java
+Graph<Integer> graph1, graph2;
+ValueGraph<Integer, Double> valueGraph1, valueGraph2;
+Network<Integer, MyEdge> network1, network2;
+
+// compare based on nodes and node relationships only
+if (graph1.equals(graph2)) { ... }
+if (valueGraph1.asGraph().equals(valueGraph2.asGraph())) { ... }
+if (network1.asGraph().equals(graph1.asGraph())) { ... }
+
+// compare based on nodes, node relationships, and edge values
+if (valueGraph1.equals(valueGraph2)) { ... }
+
+// compare based on nodes, node relationships, and edge identities
+if (network1.equals(network2)) { ... }
+```
+
+
 
 ### 访问器方法
 
+访问器可以返回下面两种集合：
+
+- 返回图的视图。**不支持对图的修改**将结果反映到到视图上（例如，在通过`nodes()`遍历图时，又在调用`addNode(n)`或者`removeNode(n)`），而且可能会抛出`ConcurrentModificationException`异常。
+- 尽管输入是有效的，但是当没有元素满足请求时，则会**返回空集合**。
+
+如果**传递的元素不在图**中，访问器将会抛出`IllegalArgumentException`异常。
+
+一些`JDK`的集合框架中的方法（如`contains()`）使用对象来作为参数，而没有使用合适的泛型参数；在`Guava22`中`common.graph`模块中方法一般采用泛型参数来改进类型的安全性。
+
 ### 同步
 
+图的同步策略取决于每个图自己的实现。默认情况下，如果在另一个线程中修改了图，则调用图的任何方法都可能导致未定义的行为。 一般来说，内置的实现的可变类型没有提供同步的保证，但是`Immutable*`类型（由于是不可修改的）是线程安全的。
+
 ### 元素对象
+
+添加到图中的节点、边或值对象与内置实现无关，它们只是作为内部数据结构的键。这意味这，节点/边可以在图实例之间共享。
+ 默认情况下，节点和边是按照顺序来插入的（也就是说，`nodes()`和`edges()`的`Iterator`是按照它们加入到图中的顺序的顺序来访问的，就像在`LinkedHashSet`中一样）。
+
+
 
 
 ## 实现者注意事项
