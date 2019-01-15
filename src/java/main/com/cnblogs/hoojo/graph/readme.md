@@ -1,4 +1,4 @@
-# graph 图论
+# `Graph` 图论
 `Guava`库的目录`common.graph`包含的模块是一个描述实体(`entity`)以及实体之间的关系的图数据结构模型库。例如：网页与超链接、科学家与他们写的论文、机场与其航线、人与其家族等。`Guava-Graph`模块的目的是提供一种通用以及可扩展的语言来描述类似上述的举例。
 
 ## 关系图
@@ -445,6 +445,31 @@ Set<N> getTwoHopNeighbors(Graph<N> graph, N node) {
   return twoHopNeighbors;
 }
 ```
+
+### 遍历有向图
+
+```java
+// Update the shortest-path weighted distances of the successors to "node"
+// in a directed Network (inner loop of Dijkstra's algorithm)
+// given a known distance for {@code node} stored in a {@code Map<N, Double>},
+// and a {@code Function<E, Double>} for retrieving a weight for an edge.
+//将后继者的最短路径加权距离更新为“节点”
+//在有向网络中（Dijkstra算法的内部循环）
+//给定{@code node}的已知距离存储在{@code Map <N，Double>}中，
+//和{@code Function <E，Double>}用于检索边的权重。
+void updateDistancesFrom(Network<N, E> network, N node) {
+  double nodeDistance = distances.get(node);
+  for (E outEdge : network.outEdges(node)) {
+    N target = network.target(outEdge);
+    double targetDistance = nodeDistance + edgeWeights.apply(outEdge);
+    if (targetDistance < distances.getOrDefault(target, Double.MAX_VALUE)) {
+      distances.put(target, targetDistance);
+    }
+  }
+}
+```
+
+## `FAQ`
 
 
 
