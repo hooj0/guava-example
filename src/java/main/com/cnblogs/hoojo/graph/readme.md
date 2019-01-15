@@ -109,7 +109,8 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 
 举例：`Network<Airport, Flight>` 它的每一条边代表了从一个机场到另一个机场可以乘坐的特定航班（两个机场之间可以同时有多趟航班）。
 
-# 选择合适的图类型
+## 选择合适的图类型
+
 这三种图类型之间本质的**区别在于它们边表示的不同**：
 
 + `Graph`中的边是节点之间的**匿名连接**，**没有自己的标识或属性**。如果每一对节点之间都是通过最多一条边连接的，而且这些边没有任何与之相关的信息时，则选用它。
@@ -140,7 +141,8 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
 - 不需要在`Builder`上指定**节点和边**的类型，只需要在**图类型本身**上指定即可。
 - `build()`方法返回一个`Mutable`子类型的图时，提供了**变形**的方法。下面将会介绍更多关于`Mutable`和`Immutable`的图。
 
-# 构建器约束与优化提示
+## 构建器约束与优化提示
+
 `Builder`类型通常提供两种类型的选项：**约束**和**优化提示**。
 
 约束指定由给定`Builder`实例创建的图**必须满足的行为和属性**，例如：
@@ -185,7 +187,7 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
 ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 ```
 
-**保障**
+### 保障
 
 每一种`Immutable*`类型提供了一下保证：
 + **不变性**：元素不能被添加、删除、替换。（这些类没有实现`Mutable*`的接口）
@@ -246,7 +248,7 @@ ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 
 向图表添加元素的方法在合同上需要拒绝`null`元素。
 
-## 契约和行为
+# 契约和行为
 
 本节讨论常见内置图的实现方式。
 
@@ -310,13 +312,12 @@ if (network1.equals(network2)) { ... }
 
 **图的同步策略取决于每个图自己的实现**。默认情况下，如果在另一个线程中**修改**了图，则**调用图的任何方法都可能导致未定义的行为**。 一般来说，内置的实现的可变类型**没有提供同步的保证**，但是`Immutable*`类型（由于是不可修改的）是**线程安全**的。
 
-### 元素对象
+## 元素对象
 
 添加到图中的节点、边或值对象与内置实现无关，它们只是作为**内部数据结构**的键。这意味这，**节点/边可以在图实例之间共享**。
 默认情况下，节点和边是**按照顺序来插入**的（也就是说，`nodes()`和`edges()`的`Iterator`是按照它们加入到图中的顺序的**顺序来访问**的，就像在`LinkedHashSet`中一样）。
 
-
-## 实现者注意事项
+# 实现者注意事项
 
 ## 存储模型
 
@@ -468,8 +469,6 @@ void updateDistancesFrom(Network<N, E> network, N node) {
   }
 }
 ```
-
-# `FAQ`
 
 
 
