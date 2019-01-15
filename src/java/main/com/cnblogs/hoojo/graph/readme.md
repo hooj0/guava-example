@@ -1,11 +1,11 @@
 # `Graph` 图论
 `Guava`库的目录`common.graph`包含的模块是一个描述实体(`entity`)以及实体之间的关系的图数据结构模型库。例如：网页与超链接、科学家与他们写的论文、机场与其航线、人与其家族等。`Guava-Graph`模块的目的是提供一种通用以及可扩展的语言来描述类似上述的举例。
 
-## 关系图
+# 关系图
 
 ![uml](draw.jpg)
 
-## 定义
+# 定义
 - **`graph` 的组成**，图中每一条边都是**有向**边的，则被称为**有向图**；每一条边都是**无向**的，则被称为**无向图**。**不支持图中既有有向边又有无向边的情形**。
   - **`node` 节点**：一组节点(`node`)（也称为**顶点**）
   - **`edge` 边**：一组连接节点的边(`edge`)（也称为**链接**或者**弧**）
@@ -60,7 +60,7 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 ```
 在**有向图**`directedGraph`中，边`edgeUV_a`和边`edgeUV_b`是**相互平行边**，与边`edgeVU`是**逆平行边**；在**无向图**`undirectedGraph`中，边`edgeUV_a`、`edgeUV_b`和`edgeVU`是**两两相互逆平行边**。
 
-## 功能
+# 功能
 `common.graph`模块的核心是提供**图相关操作的接口和类**。另外，它**没有提供类似`I/O`或者可视化**的功能。如果选用这个模块将会有非常多的限制，具体详细信息可以查看下面`FAQ`的相关主题。
 
 总体来讲，它提供了如下几种类型的图：
@@ -81,17 +81,17 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 `common.graph`**不允许图中同时存在**有向边和无向边。`Graphs`中提供了很多基本操作（如：图的拷贝和比较操作）。
 
 
-## 图的类型
+# 图的类型
 `common.graph`模块中有三种通过边来作为区分依据的"`top-level`"接口(`interface`)：`Graph`、 `ValueGraph`和`Network`。另外还存在一些同级类型，不过这些都不是这三种类型的子类型。
 
 上面三种 "`top-level`" 接口都继承自接口`SuccessorsFunction`和`PredecessorsFunction`。这样做是为了在仅需要访问节点的**后继**（`successors`）或者**前趋**（`predecessors`）的图中，它可以直接被用来作为**图算法**（例如，`BFS`广度优遍历）中参数的类型。这在图形的所有者已经具有适用于它们的表示并且不特别想要将它们的表示序列化为`common.graph`类型以便运行一个图算法的情况下尤其有用。
 
-### `Graph`
+## `Graph`
 `Graph`是最简单也是最基本的图类型。为了**处理节点与节点之间的关系**它定义了一些基本的操作，例如：`successors(node)` --> 获取`node`的后继`adjacentNodes(node)` --> 获取`node`的邻接点`inDegree(node)` --> 获取`node`的入度等。这些节点在图中都是**唯一**的对象，在其内部数据结构中，你可以认为它们是**`Map`的键值(`Key`)**。
 
 `Graph`中的边是完全匿名的，他们只能根据端点来定义。举例：`Graph<Airport>`中，其边连接任意两个可以直航的机场。
 
-### `ValueGraph`
+## `ValueGraph`
 接口`ValueGraph`包含了`Graph`中的所有与节点相关的方法，并增加了一些**检索指定边权值**的方法。
 
 `ValueGraph`中的每一条边都有一个与之相关的特定权值，但是这些权值不能保证唯一性。`ValueGraph`与`Graph`的关系类似与`Map`与`Set`的关系（`Graph`中的边是以顶点对的形式保存在`Set`中，而`ValueGraph`的边是以顶点对与其权值的映射关系保存在`Map`中）。
@@ -100,7 +100,7 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 
 举例：`ValueGraph<Airport, Integer>`，其边表示在能直航的两个机场之间航班必须花费的时间。
 
-### `Network`
+## `Network`
 `Network`中包含了`Graph`中的所有与节点相关的方法，还增加了**操作边以及操作顶点与边的关系**的方法，例如：`outEdges(node)` --> 获取`node`的出度边 ` incidentNodes(edge)` --> 获取边`edge`的顶点对和 `edgesConnecting(nodeU, nodeV)` --> 获取`nodeU`和`nodeV`的直连边。
 
 `Network`中每一条边都是唯一的，就像节点在所有的`Graph`类型中是唯一的一样。边的唯一性限制使得`Network`能够天然的支持**并行边**，以及与**边和节点与边相关**的方法。
@@ -109,14 +109,14 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 
 举例：`Network<Airport, Flight>` 它的每一条边代表了从一个机场到另一个机场可以乘坐的特定航班（两个机场之间可以同时有多趟航班）。
 
-## 选择合适的图类型
+# 选择合适的图类型
 这三种图类型之间本质的**区别在于它们边表示的不同**：
 
 + `Graph`中的边是节点之间的**匿名连接**，**没有自己的标识或属性**。如果每一对节点之间都是通过最多一条边连接的，而且这些边没有任何与之相关的信息时，则选用它。
 + `ValueGraph`中的边带有一个值（例如权值或标签），且边**在整个图中不能保证其唯一性**。如果每一对节点之间都是通过最多一条边连接的，并且每一条边都有与之相关的权值时，则选用它。
 + `Network`中边是**全局唯一**的，就像**节点在图中是唯一**的一样。如果边对象需要唯一，并且希望能查询它们的引用时，则选用它。(请注意，这种唯一性使得`Network`支持平行边。)
 
-## 构建图的实例
+# 构建图的实例
 
 `common.graph`中图的具体实现类并没有设计成`public`的，这样主要是为了减少用户需要了解的图类型的数量，使得构建各种功能的图变得更加容易。要创建一个**内置图类型**的实例，可以使用相应的`Builder`类： `GraphBuilder`、` ValueGraphBuilder`和`NetworkBuilder`。例如：
 
@@ -140,7 +140,7 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
 - 不需要在`Builder`上指定**节点和边**的类型，只需要在**图类型本身**上指定即可。
 - `build()`方法返回一个`Mutable`子类型的图时，提供了**变形**的方法。下面将会介绍更多关于`Mutable`和`Immutable`的图。
 
-## 构建器约束与优化提示
+# 构建器约束与优化提示
 `Builder`类型通常提供两种类型的选项：**约束**和**优化提示**。
 
 约束指定由给定`Builder`实例创建的图**必须满足的行为和属性**，例如：
@@ -152,9 +152,9 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
 
 每种图表类型都提供与其`Builder`指定的约束相对应的访问器，但不提供优化提示的访问器。
 
-## 可变(`Mutable`)图和不可变(`Immutable`)图
+# 可变(`Mutable`)图和不可变(`Immutable`)图
 
-### `Mutablexx` 类型
+## `Mutablexx` 类型
 每种图类型都有与其对应的`Mutablexx`子类型： `MutableGraph`，`MutableValueGraph`，以及 `MutableNetwork`。这些子类型定义了下面这些变形方法：
 
 + 增加和删除节点的方法：
@@ -175,7 +175,7 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
 
 由于`Grpah`等都是接口，即使它们不包含这些变形方法，但这些接口的实例并不能保证这些方法不被调用（如果它们实际上是`Mutablexx`的子类型），因为调用者可能会将其转换成该子类型。如果有一种**契约的保证**，即一个方法的参数或返回值不能被修改的`Grahp`类型，你可以使用下面介绍的这种不可变(`Immutable`)实现。
 
-### `Immutablexx` 的实现
+## `Immutablexx` 的实现
 每一种图类型(`Graph`、`ValueGraph`、`Network`)都有相应的不可变实现类(`ImmutableGraph`、`ImmutableValueGraph`、`ImmutableNetwork`)，这些类类似于`Guava`的`ImmutableSet`、`ImmutableList`、`ImmutableMap`等，一旦被创建出来，它们就不能被修改，且它们在内部使用了高效的不可变数据结构。
 
 不同与`Guava`的其他不可变类型，这些不可变实现类压根没有提供修改的方法，所以他们不需要抛出`UnsupportedOperationException`异常来应对这些操作。
@@ -250,7 +250,7 @@ ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 
 本节讨论常见内置图的实现方式。
 
-### 变形
+## 变形
 
 可以往图中添加一条边，如果图中还没有出现对应的两个端点时，两个端点则会静默添加到图中：
 ```java
@@ -262,7 +262,7 @@ if (graph.nodes().contains(1)) {  // evaluates to "true"
 }
 ```
 
-### 图 `equals()`和等价
+## 图 `equals()`和等价
 
 `Guava`的`22`版本中每种图都定义有特定意义的`equals()`：
 
@@ -295,7 +295,7 @@ if (network1.equals(network2)) { ... }
 
 
 
-### 访问器方法
+## 访问器方法
 
 访问器可以返回下面两种集合：
 
@@ -306,7 +306,7 @@ if (network1.equals(network2)) { ... }
 
 一些`JDK`的集合框架中的方法（如`contains()`）使用对象来作为参数，而没有使用合适的泛型参数；在`Guava22`中`common.graph`模块中方法一般采用泛型参数来改进类型的安全性。
 
-### 同步
+## 同步
 
 **图的同步策略取决于每个图自己的实现**。默认情况下，如果在另一个线程中**修改**了图，则**调用图的任何方法都可能导致未定义的行为**。 一般来说，内置的实现的可变类型**没有提供同步的保证**，但是`Immutable*`类型（由于是不可修改的）是**线程安全**的。
 
@@ -318,7 +318,7 @@ if (network1.equals(network2)) { ... }
 
 ## 实现者注意事项
 
-### 存储模型
+## 存储模型
 
 `common.graph`支持多种机制来存储图的拓扑结构，包括：
 
@@ -328,7 +328,7 @@ if (network1.equals(network2)) { ... }
 
 **注意**：`Multimap`不是一个支持孤立节点（没有边的节点）的内部数据结构，由于它们的限制，**一个键要么至少映射一个值，要么不出现在`Multimap`中**。
 
-### 访问行为
+## 访问行为
 
 对于返回一个集合的访问器函数，有下面几个语义选项：
 
@@ -345,7 +345,7 @@ if (network1.equals(network2)) { ... }
 
 (4)是一个**非常危险**的设计选择，应该非常**谨慎的使用**，因为这样很**难保证内部数据结构的一致性**。
 
-### `Abstract*` 类
+## `Abstract*` 类
 
 每一种图都有一个相应的`Abstract`类：`AbstractGraph`等。
 如果可能的话，图的实现应该继承适当的`Abstract`类，而**不是直接实现接口**。`Abstract`类提供了几个比较难正确执行或者**有助于实现一致性实现**的方法，例如：
@@ -355,15 +355,15 @@ if (network1.equals(network2)) { ... }
 - `Graph.edges()`
 - `Network.asGraph()`
 
-## 代码示例
+# 代码示例
 
-### 判断节点是否在图中？
+## 判断节点是否在图中？
 
 ```java
 graph.nodes().contains(node);
 ```
 
-### 节点`u`和节点`v`是否存在边？
+## 节点`u`和节点`v`是否存在边？
 
 在无向图的情况下，下面例子中的参数`u`和`v`是顺序无关的。 
 
@@ -390,7 +390,7 @@ valueGraph.edgeValue(u, v).isPresent();  // Java 8 only
 valueGraph.edgeValueOrDefault(u, v, null) != null;
 ```
 
-### `Graph` 例子
+## `Graph` 例子
 
 ```java
 MutableGraph<Integer> graph = GraphBuilder.directed().build();
@@ -402,7 +402,7 @@ Set<Integer> successorsOfTwo = graph.successors(2); // returns {3}
 graph.putEdge(2, 3);  // no effect; Graph does not support parallel edges
 ```
 
-### `ValueGraph` 例子
+## `ValueGraph` 例子
 
 ```java
 MutableValueGraph<Integer, Double> weightedGraph = ValueGraphBuilder.directed().build();
@@ -413,7 +413,7 @@ weightedGraph.putEdgeValue(3, 5, 1.5);  // edge values (like Map values) need no
 weightedGraph.putEdgeValue(2, 3, 2.0);  // updates the value for (2,3) to 2.0
 ```
 
-### `Network` 例子
+## `Network` 例子
 
 ```java
 MutableNetwork<Integer, String> network = NetworkBuilder.directed().build();
@@ -431,7 +431,7 @@ network.addEdge("2->3", 2, 3);  // no effect; this edge is already present
 Set<String> inEdgesOfFour = network.inEdges(4); // throws; node not in graph
 ```
 
-### 遍历无向图
+## 遍历无向图
 
 ```java
 // Return all nodes reachable by traversing 2 edges starting from "node"
@@ -446,7 +446,7 @@ Set<N> getTwoHopNeighbors(Graph<N> graph, N node) {
 }
 ```
 
-### 遍历有向图
+## 遍历有向图
 
 ```java
 // Update the shortest-path weighted distances of the successors to "node"
@@ -469,7 +469,7 @@ void updateDistancesFrom(Network<N, E> network, N node) {
 }
 ```
 
-## `FAQ`
+# `FAQ`
 
 
 
