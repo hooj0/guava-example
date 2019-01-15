@@ -368,7 +368,82 @@ graph.nodes().contains(node);
 在无向图的情况下，下面例子中的参数`u`和`v`是顺序无关的。 
 
 ```java
+// This is the preferred syntax since 23.0 for all graph types.
+graphs.hasEdgeConnecting(u, v);
 
+// These are equivalent (to each other and to the above expression).
+graph.successors(u).contains(v);
+graph.predecessors(v).contains(u);
+
+// This is equivalent to the expressions above if the graph is undirected.
+graph.adjacentNodes(u).contains(v);
+
+// This works only for Networks.
+!network.edgesConnecting(u, v).isEmpty();
+
+// This works only if "network" has at most a single edge connecting u to v.
+network.edgeConnecting(u, v).isPresent();  // Java 8 only
+network.edgeConnectingOrNull(u, v) != null;
+
+// These work only for ValueGraphs.
+valueGraph.edgeValue(u, v).isPresent();  // Java 8 only
+valueGraph.edgeValueOrDefault(u, v, null) != null;
+```
+
+### `Graph` 例子
+
+```java
+MutableGraph<Integer> graph = GraphBuilder.directed().build();
+graph.addNode(1);
+graph.putEdge(2, 3);  // also adds nodes 2 and 3 if not already present
+
+Set<Integer> successorsOfTwo = graph.successors(2); // returns {3}
+
+graph.putEdge(2, 3);  // no effect; Graph does not support parallel edges
+```
+
+### `ValueGraph` 例子
+
+```java
+MutableValueGraph<Integer, Double> weightedGraph = ValueGraphBuilder.directed().build();
+weightedGraph.addNode(1);
+weightedGraph.putEdgeValue(2, 3, 1.5);  // also adds nodes 2 and 3 if not already present
+weightedGraph.putEdgeValue(3, 5, 1.5);  // edge values (like Map values) need not be unique
+...
+weightedGraph.putEdgeValue(2, 3, 2.0);  // updates the value for (2,3) to 2.0
+```
+
+### `Network` 例子
+
+```java
+MutableNetwork<Integer, String> network = NetworkBuilder.directed().build();
+network.addNode(1);
+network.addEdge("2->3", 2, 3);  // also adds nodes 2 and 3 if not already present
+
+Set<Integer> successorsOfTwo = network.successors(2);  // returns {3}
+Set<String> outEdgesOfTwo = network.outEdges(2);   // returns {"2->3"}
+
+network.addEdge("2->3 too", 2, 3);  // throws; Network disallows parallel edges
+                                    // by default
+network.addEdge("2->3", 2, 3);  // no effect; this edge is already present
+                                // and connecting these nodes in this order
+
+Set<String> inEdgesOfFour = network.inEdges(4); // throws; node not in graph
+```
+
+### 遍历无向图
+
+```java
+// Return all nodes reachable by traversing 2 edges starting from "node"
+// (ignoring edge direction and edge weights, if any, and not including "node").
+Set<N> getTwoHopNeighbors(Graph<N> graph, N node) {
+  Set<N> twoHopNeighbors = new HashSet<>();
+  for (N neighbor : graph.adjacentNodes(node)) {
+    twoHopNeighbors.addAll(graph.adjacentNodes(neighbor));
+  }
+  twoHopNeighbors.remove(node);
+  return twoHopNeighbors;
+}
 ```
 
 
