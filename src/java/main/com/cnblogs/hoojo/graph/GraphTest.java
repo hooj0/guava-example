@@ -1,13 +1,12 @@
 package com.cnblogs.hoojo.graph;
 
+import java.util.Set;
+
+import org.junit.Test;
+
 import com.cnblogs.hoojo.BasedTest;
-import com.google.common.graph.ElementOrder;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
-import com.google.common.graph.MutableNetwork;
-import com.google.common.graph.MutableValueGraph;
-import com.google.common.graph.NetworkBuilder;
-import com.google.common.graph.ValueGraphBuilder;
 
 /**
  * 图的定义 graph defined
@@ -26,9 +25,30 @@ import com.google.common.graph.ValueGraphBuilder;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class GraphDefinitionsTest extends BasedTest {
+public class GraphTest extends BasedTest {
 
-	public void testDefined() {
+	@Test
+	public void testDirected() {
+		// 有向图
+		MutableGraph<Integer> graph = GraphBuilder.directed().build();
+		
+		// 添加节点
+		graph.addNode(1);
+		// 添加边
+		graph.putEdge(2, 3);  // 如果尚未存在，还会添加节点2和3
+		
+		out(graph); // isDirected: true, allowsSelfLoops: false, nodes: [1, 2, 3], edges: [<2 -> 3>]
+
+		// 后继节点
+		Set<Integer> successorsOfTwo = graph.successors(2); // returns {3}
+		out(successorsOfTwo); // [3]
+
+		graph.putEdge(2, 3);  // 没有效果;图不支持平行边
+		out(graph); // isDirected: true, allowsSelfLoops: false, nodes: [1, 2, 3], edges: [<2 -> 3>]
+	}
+	
+	public void test1() {
+		/*
 		MutableGraph<Integer> graph = GraphBuilder.undirected().build();
 
 		MutableValueGraph<City, Distance> roads = ValueGraphBuilder.directed().build();
@@ -39,6 +59,6 @@ public class GraphDefinitionsTest extends BasedTest {
 		    .expectedNodeCount(100000)
 		    .expectedEdgeCount(1000000)
 		    .build();
-
+		    */
 	}
 }
