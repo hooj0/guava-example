@@ -87,7 +87,15 @@ undirectedGraph.addEdge(nodeV, nodeU, edgeVU);
 上面三种 "`top-level`" 接口都继承自接口`SuccessorsFunction`和`PredecessorsFunction`。这样做是为了在仅需要访问节点的**后继**（`successors`）或者**前趋**（`predecessors`）的图中，它可以直接被用来作为**图算法**（例如，`BFS`广度优遍历）中参数的类型。这在图形的所有者已经具有适用于它们的表示并且不特别想要将它们的表示序列化为`common.graph`类型以便运行一个图算法的情况下尤其有用。
 
 ## `Graph`
-`Graph`是最简单也是最基本的图类型。为了**处理节点与节点之间的关系**它定义了一些基本的操作，例如：`successors(node)` --> 获取`node`的后继`adjacentNodes(node)` --> 获取`node`的邻接点`inDegree(node)` --> 获取`node`的入度等。这些节点在图中都是**唯一**的对象，在其内部数据结构中，你可以认为它们是**`Map`的键值(`Key`)**。
+`Graph`是最简单也是最基本的图类型。为了**处理节点与节点之间的关系**它定义了一些基本的操作，例如：
+
++ `successors(node)` ：获取`node`的后继
+
++ `adjacentNodes(node)` ：获取`node`的邻接点
+
++ `inDegree(node)` ： 获取`node`的入度
+
+这些节点在图中都是**唯一**的对象，在其内部数据结构中，你可以认为它们是**`Map`的键值(`Key`)**。
 
 `Graph`中的边是完全匿名的，他们只能根据端点来定义。举例：`Graph<Airport>`中，其边连接任意两个可以直航的机场。
 
@@ -160,7 +168,7 @@ MutableNetwork<Webpage, Link> webSnapshot = NetworkBuilder.directed()
 
 每种图表类型都提供与其`Builder`指定的约束相对应的访问器，但不提供优化提示的访问器。
 
-# 可变(`Mutable`)图和不可变(`Immutable`)图
+# 可变`Mutable`图和不可变`Immutable`图
 
 ## `Mutablexx` 类型
 每种图类型都有与其对应的`Mutablexx`子类型： `MutableGraph`，`MutableValueGraph`，以及 `MutableNetwork`。这些子类型定义了下面这些变形方法：
