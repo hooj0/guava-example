@@ -45,6 +45,11 @@ public class GraphTest extends BasedTest {
 
 		graph.putEdge(2, 3);  // 没有效果;图不支持平行边
 		out(graph); // isDirected: true, allowsSelfLoops: false, nodes: [1, 2, 3], edges: [<2 -> 3>]
+		
+		// 获取node的邻接点
+		out(graph.adjacentNodes(2)); // [3]
+		// 获取node的入度
+		out(graph.inDegree(3)); // 1
 	}
 	
 	public void test1() {
