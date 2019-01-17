@@ -147,11 +147,17 @@ public class GraphTest extends BasedTest {
 		//返回图中所有的节点(顺序依赖nodeOrder)
 		Set<Integer> nodes = graph.nodes(); 
 		// 按节点的插入先后顺序输出
-		out("graph1 nodes count:" + nodes.size() + ", nodes value:" + format(nodes)); // graph1 nodes count:4, nodes value:2,3,1,4,
+		out("graph nodes count:" + nodes.size() + ", nodes value:" + format(nodes)); // graph1 nodes count:4, nodes value:2,3,1,4,
+		
+		// unordered() 无序：节点的输出顺序
+		// nodes value:{3,4,1,2}
+
+		// natural() 自然顺序：节点输出顺序
+		// nodes value:{1,2,3,4}
 
 		//返回图中所有的边集合
 		Set<EndpointPair<Integer>> edges = graph.edges();
-		out("graph1 edge count:" + edges.size() + ", edges value:" + format(edges)); // graph1 edge count:4, edges value:<2 -> 2>,<2 -> 3>,<1 -> 2>,<1 -> 3>,
+		out("graph edge count:" + edges.size() + ", edges value:" + format(edges)); // graph1 edge count:4, edges value:<2 -> 2>,<2 -> 3>,<1 -> 2>,<1 -> 3>,
 
 	}
 }
