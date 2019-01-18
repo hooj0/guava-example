@@ -1,5 +1,8 @@
 package com.cnblogs.hoojo.graph;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.Test;
@@ -7,7 +10,10 @@ import org.junit.Test;
 import com.cnblogs.hoojo.BasedTest;
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.EndpointPair;
+import com.google.common.graph.Graph;
 import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.Graphs;
+import com.google.common.graph.ImmutableGraph;
 import com.google.common.graph.MutableGraph;
 import com.google.common.graph.Traverser;
 
@@ -56,7 +62,7 @@ public class GraphTest extends BasedTest {
 	}
 	
 	@Test
-	public void test2() {
+	public void testBuilder() {
 		MutableGraph<String> graph = GraphBuilder.undirected().build();
 		
 		//将节点加入有向图中
@@ -110,18 +116,8 @@ public class GraphTest extends BasedTest {
 		}
 	}
 	
-	// 格式化节点函数：
-	private String format(Set<?> collections) {
-	    StringBuilder builder = new StringBuilder();
-	    for (Object value : collections) {
-	        builder.append(value);
-	        builder.append(",");
-	    }
-	    return builder.toString();
-	}
-
 	@Test
-	public void test1() {
+	public void testAPI() {
 		int NODE_COUNT = 1000;
 		
 		MutableGraph<Integer> graph = GraphBuilder.directed() // 指定为有向图
@@ -142,6 +138,7 @@ public class GraphTest extends BasedTest {
 		graph.putEdge(N1, N3);
 		graph.putEdge(N1, N2);
 		graph.putEdge(N2, N2);
+		
 		graph.addNode(N4);
 
 		//返回图中所有的节点(顺序依赖nodeOrder)
@@ -158,6 +155,97 @@ public class GraphTest extends BasedTest {
 		//返回图中所有的边集合
 		Set<EndpointPair<Integer>> edges = graph.edges();
 		out("graph edge count:" + edges.size() + ", edges value:" + format(edges)); // graph1 edge count:4, edges value:<2 -> 2>,<2 -> 3>,<1 -> 2>,<1 -> 3>,
+		
+		// 获取节点的前趋列表：
+		Set<Integer> predecessors = graph.predecessors(N2); //获取N2的前趋
+		// 对于允许自环的图allowsSelfLoops(true)中，一条自环边在有向图中既是前趋也是后继，既是入度也是出度。
+		out("graph1 node:" + N2 + " predecessors:" + format(predecessors)); // graph1 node:2 predecessors:1,2,
 
+		// 获取节点的后继列表
+		graph.putEdge(N2, N4); //图上面示例图中红色边所示，动态增加了一条边
+		out(graph); // isDirected: true, allowsSelfLoops: true, nodes: [2, 3, 1, 4], edges: [<2 -> 4>, <2 -> 2>, <2 -> 3>, <1 -> 2>, <1 -> 3>]
+		
+		Set<Integer> successors = graph.successors(N2); //获取N2的后继
+		out("add edge of (" + N2 + "->" + N4 + ") after graph1 node:" 
+				+ N2 + " successors:" + format(successors)); // add edge of (2->4) after graph1 node:2 successors:4,2,3,
+
+		// 获取节点的邻接点列表(包括前趋和后继)：
+		Set<Integer> adjacents = graph.adjacentNodes(N2); //获取N2的邻接点
+		out("graph1 node: " + N2 + ", adjacents: " + format(adjacents)); // graph1 node: 2, adjacents: 4,1,2,3,
+
+		// 获取节点的度(入度和出度)：
+		out("graph1 node: " + N2 + ", degree: " + graph.degree(N2)+ ", indegree: " + graph.inDegree(N2) + ", outdegree: " + graph.outDegree(N2)); //N2的度、入度、出度
+		// 自环既是入度也是出度
+		// graph1 node: 2, degree: 5, indegree: 2, outdegree: 3
+
+		// 判断顶点连通性(是否有直连边)：
+		final boolean connecting23 = graph.hasEdgeConnecting(N2, N3); //N2&N3是否连通
+		final boolean connecting14 = graph.hasEdgeConnecting(N1, N4); //N1&N4是否连通
+		out("graph1 node " + N2 + " & " + N3 + " connecting: " + connecting23 + ", node " + N1 + " & " + N4 + " connecting: " + connecting14); // graph1 node 2 & 3 connecting: true, node 1 & 4 connecting: false //N1&N4之间无边
+
+		// 转换成不可变graph(Immutable**类型)
+		ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
+		nodes = immutableGraph.nodes(); //返回图中所有的节点(顺序依赖nodeOrder)
+		out("immutable graph nodes count:" + nodes.size() + ", nodes value:" + format(nodes)); // immutable graph nodes count:4, nodes value:2,3,1,4, //同被拷贝图顺序
+
+		// 判断是否存在环(第一个顶点和最后一个顶点相同的路径称为环)
+		final boolean cycle = Graphs.hasCycle(graph);
+		out("graph1 has cycle: " + cycle); // graph1 has cycle: true //因为N2节点存在一条自环，如果去掉则不存在环
+		
+		// 获取仅包含指定节点的生成子图：
+		Set<Integer> subNodes = new HashSet<>();
+		subNodes.add(N1);
+		subNodes.add(N2); //获取只包含N1和N2的生成子图
+		MutableGraph<Integer> subgraph = Graphs.inducedSubgraph(graph, subNodes);
+		out("subgraph: " + subgraph); // subgraph: isDirected: true, allowsSelfLoops: true, nodes: [1, 2], edges: [<1 -> 2>, <2 -> 2>]
+
+		// 获取节点的可到达列表(获取能访问到的节点结合，不单指直连边)：
+		Set<Integer> reachNodes = Graphs.reachableNodes(graph, N2); //N2的可达列表
+		// 这里是通过从起始点N开始进行BFS遍历的结果。
+		out("graph1 node: " + N2 + ", reachNodes: " + format(reachNodes)); // graph1 node: 2, reachNodes: 2,4,3, //N2不存在能访问到N1的边
+
+		// 获取图的传递闭包(如果节点A的可达列表reachableNodes(A)包含节点B，
+		// 则在节点A和节点B之间增加一条直连边)，具体参考有向图的传递闭包概念。
+		Graph<Integer> graph2 = Graphs.transitiveClosure(graph);
+		out("transitiveClosure graph2: " + graph2); // transitiveClosure graph2: isDirected: true, allowsSelfLoops: true, nodes: [2, 4, 3, 1], edges: [<2 -> 4>, <2 -> 2>, <2 -> 3>, <4 -> 4>, <3 -> 3>, <1 -> 4>, <1 -> 1>, <1 -> 2>, <1 -> 3>]
+
+		// 获取有向图的的反转图：
+		Graph<Integer> graph3 = Graphs.transpose(graph);
+		out("transpose graph3: " + graph3); // transpose graph3: isDirected: true, allowsSelfLoops: true, nodes: [2, 3, 1, 4], edges: [<2 -> 1>, <2 -> 2>, <3 -> 1>, <3 -> 2>, <4 -> 2>]
+		
+		// 图的遍历
+		// -----------------------------------------------------------------------
+		// 深度优先-后序
+		Iterable<Integer> dfs = Traverser.forGraph(graph).depthFirstPostOrder(N1); 
+		out("dfs traverser: " + format(dfs)); // dfs traverser: 4,3,2,1,
+
+		// 深度优先-前序
+		Iterable<Integer> dfsPre =Traverser.forGraph(graph).depthFirstPreOrder(N1); 
+		out("dfs pre traverser: " + format(dfsPre)); // dfs pre traverser: 1,2,4,3,
+
+		// 广度优先
+		Iterable<Integer> bfs =Traverser.forGraph(graph).breadthFirst(N1);
+		out("bfs traverser: " + format(bfs)); // bfs traverser: 1,2,3,4,
+
+	}
+	
+	// 格式化节点函数：
+	private String format(Collection<?> collections) {
+	    StringBuilder builder = new StringBuilder();
+	    for (Object value : collections) {
+	        builder.append(value);
+	        builder.append(",");
+	    }
+	    return builder.toString();
+	}
+	
+	private String format(Iterable<?> iterable) {
+	    StringBuilder builder = new StringBuilder();
+	    Iterator<?> iter = iterable.iterator();
+	    while (iter.hasNext()) {
+	    	 builder.append(iter.next());
+		        builder.append(",");
+	    }
+	    return builder.toString();
 	}
 }
