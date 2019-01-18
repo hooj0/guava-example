@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import com.cnblogs.hoojo.BasedTest;
 import com.google.common.graph.ElementOrder;
+import com.google.common.graph.EndpointPair;
 import com.google.common.graph.MutableNetwork;
 import com.google.common.graph.NetworkBuilder;
 
@@ -137,7 +138,13 @@ public class NetworkTest extends BasedTest {
 		String edge = network1.edgeConnectingOrNull(N1, N3);//如果是N1和N2则会抛异常
 		out("network1 node " + N1 + " & " + N3 + " edge: " + edge); // network1 node 1 & 3 edge: 1-3
 
+		// 获取节点的邻接边(所有包含该节点的边集合)
+		Set<String> incidentEdges = network1.incidentEdges(N1);
+		out("network1 node " + N1 + " incidents: " + format(incidentEdges)); // network1 node 1 incidents: 1-1,1-1-a,2-1,3-1,1-2-b,1-2-1,1-2,1-3,
 
+		// 获取边的邻接点(边对应的两个顶点)
+		EndpointPair<Integer> incidentNodes =  network1.incidentNodes(E12_A);
+		out("network1 edge " + E12_A + " incidentNodes: " + incidentNodes); // network1 edge 1-2-1 incidentNodes: <1 -> 2>
 	}
 	
 	private String format(Collection<?> collections) {
