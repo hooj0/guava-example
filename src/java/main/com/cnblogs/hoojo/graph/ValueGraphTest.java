@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.cnblogs.hoojo.BasedTest;
 import com.google.common.graph.ElementOrder;
+import com.google.common.graph.Graph;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
 
@@ -90,6 +91,15 @@ public class ValueGraphTest extends BasedTest {
 		//返回图中所有的节点(顺序依赖nodeOrder)
 		Set<Integer> nodes = graph1.nodes(); 
 		out("graph1 nodes count:" + nodes.size() + ", nodes value:" + format(nodes)); // graph1 nodes count:4, nodes value:3,1,4,2,
+
+		// 获取连接边：
+		String edge = graph1.edgeValueOrDefault(N1, N2, "@null");
+		out("graph node " + N1 + " & " + N2 + " edge: " + edge); // graph node 1 & 2 edge: 1-2
+
+		// asGraph()转换为Graph视图
+		// asGraph()实际上是重新new了一个AbstractGraph，只是它的接口实现是调用了Graph本身的接口，因此如果修改asGraph()返回的视图的数据，其变化也会反映在Graph本身上，反之亦然。
+		Graph<Integer> graph5 = graph1.asGraph();
+		out("asGraph:" + graph5); // asGraph:isDirected: true, allowsSelfLoops: true, nodes: [3, 1, 4, 2], edges: [<3 -> 4>, <3 -> 1>, <1 -> 1>, <1 -> 2>, <1 -> 3>, <4 -> 4>, <2 -> 1>]
 
 	}
 	
