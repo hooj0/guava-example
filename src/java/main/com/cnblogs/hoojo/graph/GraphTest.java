@@ -18,11 +18,16 @@ import com.google.common.graph.MutableGraph;
 import com.google.common.graph.Traverser;
 
 /**
- * 图的定义 graph defined
+ * graph test example
  * Guava库的目录common.graph包含的模块是一个描述实体(entity)以及实体之间的关系的图数据结构模型库。
  * 
- * 例如：网页与超链接、科学家与他们写的论文、机场与其航线、人与其家族等。Guava-Graph模块的目的是提供一种通用以及可扩展的语言来描述类似上述的举例。
+ * 特性：
+ * 	a) 顶点唯一; 
+ * 	b) 支持有向边和无向边; 
+ * 	c) 边只能通过两个顶点隐式定义; 
+ * 	d) 不支持并行边。
  * 
+ * 例如：网页与超链接、科学家与他们写的论文、机场与其航线、人与其家族等。Guava-Graph模块的目的是提供一种通用以及可扩展的语言来描述类似上述的举例。
  * https://www.jianshu.com/nb/20139843
  * 
  * @author hoojo
@@ -144,7 +149,7 @@ public class GraphTest extends BasedTest {
 		//返回图中所有的节点(顺序依赖nodeOrder)
 		Set<Integer> nodes = graph.nodes(); 
 		// 按节点的插入先后顺序输出
-		out("graph nodes count:" + nodes.size() + ", nodes value:" + format(nodes)); // graph1 nodes count:4, nodes value:2,3,1,4,
+		out("graph nodes count:" + nodes.size() + ", nodes value:" + format(nodes)); // graph nodes count:4, nodes value:2,3,1,4,
 		
 		// unordered() 无序：节点的输出顺序
 		// nodes value:{3,4,1,2}
@@ -154,34 +159,34 @@ public class GraphTest extends BasedTest {
 
 		//返回图中所有的边集合
 		Set<EndpointPair<Integer>> edges = graph.edges();
-		out("graph edge count:" + edges.size() + ", edges value:" + format(edges)); // graph1 edge count:4, edges value:<2 -> 2>,<2 -> 3>,<1 -> 2>,<1 -> 3>,
+		out("graph edge count:" + edges.size() + ", edges value:" + format(edges)); // graph edge count:4, edges value:<2 -> 2>,<2 -> 3>,<1 -> 2>,<1 -> 3>,
 		
 		// 获取节点的前趋列表：
 		Set<Integer> predecessors = graph.predecessors(N2); //获取N2的前趋
 		// 对于允许自环的图allowsSelfLoops(true)中，一条自环边在有向图中既是前趋也是后继，既是入度也是出度。
-		out("graph1 node:" + N2 + " predecessors:" + format(predecessors)); // graph1 node:2 predecessors:1,2,
+		out("graph node:" + N2 + " predecessors:" + format(predecessors)); // graph node:2 predecessors:1,2,
 
 		// 获取节点的后继列表
 		graph.putEdge(N2, N4); //图上面示例图中红色边所示，动态增加了一条边
 		out(graph); // isDirected: true, allowsSelfLoops: true, nodes: [2, 3, 1, 4], edges: [<2 -> 4>, <2 -> 2>, <2 -> 3>, <1 -> 2>, <1 -> 3>]
 		
 		Set<Integer> successors = graph.successors(N2); //获取N2的后继
-		out("add edge of (" + N2 + "->" + N4 + ") after graph1 node:" 
-				+ N2 + " successors:" + format(successors)); // add edge of (2->4) after graph1 node:2 successors:4,2,3,
+		out("add edge of (" + N2 + "->" + N4 + ") after graph node:" 
+				+ N2 + " successors:" + format(successors)); // add edge of (2->4) after graph node:2 successors:4,2,3,
 
 		// 获取节点的邻接点列表(包括前趋和后继)：
 		Set<Integer> adjacents = graph.adjacentNodes(N2); //获取N2的邻接点
-		out("graph1 node: " + N2 + ", adjacents: " + format(adjacents)); // graph1 node: 2, adjacents: 4,1,2,3,
+		out("graph node: " + N2 + ", adjacents: " + format(adjacents)); // graph node: 2, adjacents: 4,1,2,3,
 
 		// 获取节点的度(入度和出度)：
-		out("graph1 node: " + N2 + ", degree: " + graph.degree(N2)+ ", indegree: " + graph.inDegree(N2) + ", outdegree: " + graph.outDegree(N2)); //N2的度、入度、出度
+		out("graph node: " + N2 + ", degree: " + graph.degree(N2)+ ", indegree: " + graph.inDegree(N2) + ", outdegree: " + graph.outDegree(N2)); //N2的度、入度、出度
 		// 自环既是入度也是出度
-		// graph1 node: 2, degree: 5, indegree: 2, outdegree: 3
+		// graph node: 2, degree: 5, indegree: 2, outdegree: 3
 
 		// 判断顶点连通性(是否有直连边)：
 		final boolean connecting23 = graph.hasEdgeConnecting(N2, N3); //N2&N3是否连通
 		final boolean connecting14 = graph.hasEdgeConnecting(N1, N4); //N1&N4是否连通
-		out("graph1 node " + N2 + " & " + N3 + " connecting: " + connecting23 + ", node " + N1 + " & " + N4 + " connecting: " + connecting14); // graph1 node 2 & 3 connecting: true, node 1 & 4 connecting: false //N1&N4之间无边
+		out("graph node " + N2 + " & " + N3 + " connecting: " + connecting23 + ", node " + N1 + " & " + N4 + " connecting: " + connecting14); // graph node 2 & 3 connecting: true, node 1 & 4 connecting: false //N1&N4之间无边
 
 		// 转换成不可变graph(Immutable**类型)
 		ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
@@ -190,7 +195,7 @@ public class GraphTest extends BasedTest {
 
 		// 判断是否存在环(第一个顶点和最后一个顶点相同的路径称为环)
 		final boolean cycle = Graphs.hasCycle(graph);
-		out("graph1 has cycle: " + cycle); // graph1 has cycle: true //因为N2节点存在一条自环，如果去掉则不存在环
+		out("graph has cycle: " + cycle); // graph has cycle: true //因为N2节点存在一条自环，如果去掉则不存在环
 		
 		// 获取仅包含指定节点的生成子图：
 		Set<Integer> subNodes = new HashSet<>();
@@ -202,7 +207,7 @@ public class GraphTest extends BasedTest {
 		// 获取节点的可到达列表(获取能访问到的节点结合，不单指直连边)：
 		Set<Integer> reachNodes = Graphs.reachableNodes(graph, N2); //N2的可达列表
 		// 这里是通过从起始点N开始进行BFS遍历的结果。
-		out("graph1 node: " + N2 + ", reachNodes: " + format(reachNodes)); // graph1 node: 2, reachNodes: 2,4,3, //N2不存在能访问到N1的边
+		out("graph node: " + N2 + ", reachNodes: " + format(reachNodes)); // graph node: 2, reachNodes: 2,4,3, //N2不存在能访问到N1的边
 
 		// 获取图的传递闭包(如果节点A的可达列表reachableNodes(A)包含节点B，
 		// 则在节点A和节点B之间增加一条直连边)，具体参考有向图的传递闭包概念。
@@ -231,8 +236,8 @@ public class GraphTest extends BasedTest {
 		// 删除节点，或者删除边时，需要将对应的连接关系也要删除，因此又涉及到了关系结构GraphConnections，此处也重点分析一下：
 		graph.removeNode(N2); //删除一个节点N2
 		edges = graph.edges();
-		out("graph1 remove node of (" + N2 +  ") after graph1 edge count:" 
-				+ edges.size() + ", edges value:" + format(edges)); // graph1 remove node of (2) after graph1 edge count:1, edges value:<1 -> 3>,
+		out("graph remove node of (" + N2 +  ") after graph edge count:" 
+				+ edges.size() + ", edges value:" + format(edges)); // graph remove node of (2) after graph edge count:1, edges value:<1 -> 3>,
 
 		// 构建类Builder的from()接口只能复制其属性值，而并不会复制相应的节点和边：
 		// build of from()仅仅复制其属性，节点和边不会复制过来
