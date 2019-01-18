@@ -129,14 +129,25 @@ public class NetworkTest extends BasedTest {
 		Set<String> adjacentEdges = network1.adjacentEdges(E12_A);
 		out("network1 edge: " + E12_A + ", adjacentEdges: " + format(adjacentEdges)); // network1 edge: 1-2-1, adjacentEdges: 1-1,1-1-a,2-1,3-1,1-2-b,1-2,1-3,
 
+		// 获取两个顶点之间的边集(network中由于顶点间存在平行边，因此两个顶点之间存在多条边)：
+		Set<String> networkEdges = network1.edgesConnecting(N1, N2);
+		out("network1 node " + N1 + " & " + N2 + " edges: " + format(networkEdges)); // network1 node 1 & 2 edges: 1-2-b,1-2-1,1-2,
+
+		// 返回两个顶点之间的一条边（如果该两个顶点间存在多条边则会抛出异常）：
+		String edge = network1.edgeConnectingOrNull(N1, N3);//如果是N1和N2则会抛异常
+		out("network1 node " + N1 + " & " + N3 + " edge: " + edge); // network1 node 1 & 3 edge: 1-3
+
+
 	}
 	
 	private String format(Collection<?> collections) {
 	    StringBuilder builder = new StringBuilder();
+	    
 	    for (Object value : collections) {
 	        builder.append(value);
 	        builder.append(",");
 	    }
+	    
 	    return builder.toString();
 	}
 }
