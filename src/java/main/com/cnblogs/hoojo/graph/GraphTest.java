@@ -227,6 +227,18 @@ public class GraphTest extends BasedTest {
 		Iterable<Integer> bfs =Traverser.forGraph(graph).breadthFirst(N1);
 		out("bfs traverser: " + format(bfs)); // bfs traverser: 1,2,3,4,
 
+		// 删除节点(对应的连接边也将删除)
+		// 删除节点，或者删除边时，需要将对应的连接关系也要删除，因此又涉及到了关系结构GraphConnections，此处也重点分析一下：
+		graph.removeNode(N2); //删除一个节点N2
+		edges = graph.edges();
+		out("graph1 remove node of (" + N2 +  ") after graph1 edge count:" 
+				+ edges.size() + ", edges value:" + format(edges)); // graph1 remove node of (2) after graph1 edge count:1, edges value:<1 -> 3>,
+
+		// 构建类Builder的from()接口只能复制其属性值，而并不会复制相应的节点和边：
+		// build of from()仅仅复制其属性，节点和边不会复制过来
+		MutableGraph<Integer> graph4 = GraphBuilder.from(graph3).build(); 
+		Set<EndpointPair<Integer>> edges4 = graph4.edges();
+		out("graph4 edge count:" + edges4.size() + ", edges value:" + format(edges4));
 	}
 	
 	// 格式化节点函数：
