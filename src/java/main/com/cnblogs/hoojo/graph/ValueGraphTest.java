@@ -102,6 +102,17 @@ public class ValueGraphTest extends BasedTest {
 
 	}
 	
+	/**
+	 * AOE网对应研究实际问题是工程的工期问题：
+	 * （1）完成一项工程至少需要多少时间？
+	 * （2）哪些活动是影响整个工程进度的关键？
+	 * @createDate 2019年1月21日 下午5:56:49
+	 */
+	@Test
+	public void testAOE() {
+		
+	}
+	
 	private String format(Collection<?> collections) {
 	    StringBuilder builder = new StringBuilder();
 	    for (Object value : collections) {
