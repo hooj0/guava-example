@@ -110,7 +110,35 @@ public class ValueGraphTest extends BasedTest {
 	 */
 	@Test
 	public void testAOE() {
+		MutableValueGraph<String, Integer> graph = ValueGraphBuilder.directed()
+			    .nodeOrder(ElementOrder.insertion())
+			    .expectedNodeCount(10)
+			    .build();
+
+		String V1 = "v1";
+		String V2 = "v2";
+		String V3 = "v3";
+		String V4 = "v4";
+		String V5 = "v5";
+		String V6 = "v6";
+		String V7 = "v7";
+		String V8 = "v8";
+		String V9 = "v9";
 		
+		graph.putEdgeValue(V1, V2, 6);
+		graph.putEdgeValue(V1, V3, 4);
+		graph.putEdgeValue(V1, V4, 5);
+		graph.putEdgeValue(V2, V5, 1);
+		graph.putEdgeValue(V3, V5, 1);
+		graph.putEdgeValue(V4, V6, 2);
+		graph.putEdgeValue(V5, V7, 9);
+		
+		graph.putEdgeValue(V5, V8, 7);
+		graph.putEdgeValue(V6, V8, 4);
+		graph.putEdgeValue(V7, V9, 2);
+		graph.putEdgeValue(V8, V9, 4);
+		out("graph: " + graph); // graph: isDirected: true, allowsSelfLoops: false, nodes: [v1, v2, v3, v4, v5, v6, v7, v8, v9], edges: {<v1 -> v2>=6, <v1 -> v3>=4, <v1 -> v4>=5, <v2 -> v5>=1, <v3 -> v5>=1, <v4 -> v6>=2, <v5 -> v7>=9, <v5 -> v8>=7, <v6 -> v8>=4, <v7 -> v9>=2, <v8 -> v9>=4}
+
 	}
 	
 	private String format(Collection<?> collections) {
