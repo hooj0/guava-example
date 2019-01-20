@@ -1,11 +1,9 @@
 package com.cnblogs.hoojo.graph;
 
-import java.util.Collection;
 import java.util.Set;
 
 import org.junit.Test;
 
-import com.cnblogs.hoojo.BasedTest;
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.EndpointPair;
 import com.google.common.graph.MutableNetwork;
@@ -32,7 +30,7 @@ import com.google.common.graph.NetworkBuilder;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class NetworkTest extends BasedTest {
+public class NetworkTest extends AbstractGraphTests {
 
 	@Test
 	public void testDefined() {
@@ -145,16 +143,5 @@ public class NetworkTest extends BasedTest {
 		// 获取边的邻接点(边对应的两个顶点)
 		EndpointPair<Integer> incidentNodes =  network1.incidentNodes(E12_A);
 		out("network1 edge " + E12_A + " incidentNodes: " + incidentNodes); // network1 edge 1-2-1 incidentNodes: <1 -> 2>
-	}
-	
-	private String format(Collection<?> collections) {
-	    StringBuilder builder = new StringBuilder();
-	    
-	    for (Object value : collections) {
-	        builder.append(value);
-	        builder.append(",");
-	    }
-	    
-	    return builder.toString();
 	}
 }
