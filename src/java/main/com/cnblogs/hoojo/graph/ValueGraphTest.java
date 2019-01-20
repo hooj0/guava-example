@@ -1,14 +1,13 @@
 package com.cnblogs.hoojo.graph;
 
-import java.util.Collection;
 import java.util.Set;
 
 import org.junit.Test;
 
-import com.cnblogs.hoojo.BasedTest;
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.Graph;
 import com.google.common.graph.MutableValueGraph;
+import com.google.common.graph.Traverser;
 import com.google.common.graph.ValueGraphBuilder;
 
 /**
@@ -29,7 +28,7 @@ import com.google.common.graph.ValueGraphBuilder;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ValueGraphTest extends BasedTest {
+public class ValueGraphTest extends AbstractGraphTests {
 
 	@Test
 	public void testDefined() {
@@ -139,14 +138,13 @@ public class ValueGraphTest extends BasedTest {
 		graph.putEdgeValue(V8, V9, 4);
 		out("graph: " + graph); // graph: isDirected: true, allowsSelfLoops: false, nodes: [v1, v2, v3, v4, v5, v6, v7, v8, v9], edges: {<v1 -> v2>=6, <v1 -> v3>=4, <v1 -> v4>=5, <v2 -> v5>=1, <v3 -> v5>=1, <v4 -> v6>=2, <v5 -> v7>=9, <v5 -> v8>=7, <v6 -> v8>=4, <v7 -> v9>=2, <v8 -> v9>=4}
 
-	}
-	
-	private String format(Collection<?> collections) {
-	    StringBuilder builder = new StringBuilder();
-	    for (Object value : collections) {
-	        builder.append(value);
-	        builder.append(",");
-	    }
-	    return builder.toString();
+		/**
+		 * 利用Traverser接口将graph进行拓扑排序topologically，此处返回的逆拓扑排序
+		 */
+		String startNode = "v1";
+		Iterable<String> topologicallys = Traverser.forGraph(graph).depthFirstPostOrder(startNode);
+
+		// 倒序
+		out("topologically: " + format(topologicallys)); // topologically: v9,v7,v8,v5,v2,v3,v6,v4,v1,
 	}
 }
