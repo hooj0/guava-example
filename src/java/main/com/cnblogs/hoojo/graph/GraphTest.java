@@ -1,13 +1,10 @@
 package com.cnblogs.hoojo.graph;
 
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.Test;
 
-import com.cnblogs.hoojo.BasedTest;
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.EndpointPair;
 import com.google.common.graph.Graph;
@@ -39,7 +36,7 @@ import com.google.common.graph.Traverser;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class GraphTest extends BasedTest {
+public class GraphTest extends AbstractGraphTests {
 
 	@Test
 	public void testDirected() {
@@ -244,25 +241,5 @@ public class GraphTest extends BasedTest {
 		MutableGraph<Integer> graph4 = GraphBuilder.from(graph3).build(); 
 		Set<EndpointPair<Integer>> edges4 = graph4.edges();
 		out("graph4 edge count:" + edges4.size() + ", edges value:" + format(edges4));
-	}
-	
-	// 格式化节点函数：
-	private String format(Collection<?> collections) {
-	    StringBuilder builder = new StringBuilder();
-	    for (Object value : collections) {
-	        builder.append(value);
-	        builder.append(",");
-	    }
-	    return builder.toString();
-	}
-	
-	private String format(Iterable<?> iterable) {
-	    StringBuilder builder = new StringBuilder();
-	    Iterator<?> iter = iterable.iterator();
-	    while (iter.hasNext()) {
-	    	 builder.append(iter.next());
-		        builder.append(",");
-	    }
-	    return builder.toString();
 	}
 }
