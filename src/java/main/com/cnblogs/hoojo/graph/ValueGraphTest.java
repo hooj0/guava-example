@@ -1,13 +1,19 @@
 package com.cnblogs.hoojo.graph;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.Graph;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.Traverser;
+import com.google.common.graph.ValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
 
 /**
@@ -146,5 +152,39 @@ public class ValueGraphTest extends AbstractGraphTests {
 
 		// 倒序
 		out("topologically: " + format(topologicallys)); // topologically: v9,v7,v8,v5,v2,v3,v6,v4,v1,
+		
+		// 递推求得ve(j)值：
+		Map<String, Integer> ves = getVeValues(graph, topologicallys);
+		out("ves: " + format(ves)); // ves: {v6:7, v7:16, v8:14, v9:18, v1:0, v2:6, v3:4, v4:5, v5:7, }
+
 	}
+	
+	/**
+	 * ve(j) = Max{ve(i) + dut(<i,j>) }; <i,j>属于T，j=1,2...,n-1
+	 * @param graph
+	 * @param topologicallys
+	 * @return
+	 */
+	private static Map<String, Integer> getVeValues(ValueGraph<String, Integer> graph, 	Iterable<String> topologicallys) {
+	    List<String> reverses = Lists.newArrayList(topologicallys.iterator());
+	    Collections.reverse(reverses); // 将逆拓扑排序反向
+	    
+	    Map<String, Integer> ves = new HashMap<>(); // 结果集
+	    // 从前往后遍历
+	    for (String node : reverses) {
+	        ves.put(node, 0); // 每个节点的ve值初始为0
+
+	        // 获取node的前趋列表
+	        Set<String> predecessors = graph.predecessors(node); 
+	        int maxValue = 0;
+	        
+	        // 找前趋节点+当前活动耗时最大的值为当前节点的ve值
+	        for (String predecessor : predecessors) {
+	            maxValue = Math.max(ves.get(predecessor) + graph.edgeValueOrDefault(predecessor, node, 0), maxValue);
+	        }
+	        ves.put(node, maxValue);
+	    }
+	    return ves;
+	}
+
 }
