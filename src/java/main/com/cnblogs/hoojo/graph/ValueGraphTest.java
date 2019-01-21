@@ -9,6 +9,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.Graph;
 import com.google.common.graph.MutableValueGraph;
@@ -157,6 +158,9 @@ public class ValueGraphTest extends AbstractGraphTests {
 		Map<String, Integer> ves = getVeValues(graph, topologicallys);
 		out("ves: " + format(ves)); // ves: {v6:7, v7:16, v8:14, v9:18, v1:0, v2:6, v3:4, v4:5, v5:7, }
 
+		// 递推求得vl(j)值
+		ves = getVlValues(graph, topologicallys, ves);
+		out("ves: " + format(ves)); // ves: {v6:10, v7:16, v8:14, v9:18, v1:0, v2:6, v3:6, v4:8, v5:7, }
 	}
 	
 	/**
@@ -185,6 +189,35 @@ public class ValueGraphTest extends AbstractGraphTests {
 	        ves.put(node, maxValue);
 	    }
 	    return ves;
+	}
+
+	/**
+	 * vl(i) = Min{vl(j) - dut(<i,j>}; <i,j>属于S，i=n-2,...,0
+	 * @param graph
+	 * @param topologicallys
+	 * @param vels
+	 * @return
+	 */
+	private static Map<String, Integer> getVlValues(ValueGraph<String, Integer> graph, Iterable<String> topologicallys, Map<String, Integer> vels) {
+	    Map<String, Integer> vls = Maps.newHashMap(); // 结果集
+	    // 从后往前遍历
+	    for (String node : topologicallys) {
+	        // 获取node的后继列表
+	        Set<String> successors = graph.successors(node);
+	        int initValue = Integer.MAX_VALUE; // 初始值为最大值
+	        if (successors.size() <= 0) { // 表示是结束点，赋值为ve值
+	            initValue = vels.get(node);
+	        }
+	        vls.put(node, initValue);
+	        
+	        int minValue = initValue;
+	        // 找后继节点-当前活动耗时最少的值为当前节点的vl值
+	        for (String successor : successors) {
+	            minValue = Math.min(vls.get(successor) - graph.edgeValueOrDefault(node, successor, 0), minValue);
+	        }
+	        vls.put(node, minValue);
+	    }
+	    return vls;
 	}
 
 }
