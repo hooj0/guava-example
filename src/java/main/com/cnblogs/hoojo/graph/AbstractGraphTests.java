@@ -2,6 +2,8 @@ package com.cnblogs.hoojo.graph;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import com.cnblogs.hoojo.BasedTest;
 
@@ -36,5 +38,17 @@ public class AbstractGraphTests extends BasedTest {
 		        builder.append(",");
 	    }
 	    return builder.toString();
+	}
+	
+	protected String format(Map<String, Integer> map) {
+	    StringBuilder builder = new StringBuilder("{");
+	    
+	    Set<String> keys = map.keySet();
+	    for (String key : keys) {
+	    	builder.append(key);
+	    	builder.append(":").append(map.get(key));
+	    	builder.append(", ");
+	    }
+	    return builder.append("}").toString();
 	}
 }
