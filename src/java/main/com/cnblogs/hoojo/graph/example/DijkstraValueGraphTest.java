@@ -1,6 +1,7 @@
 package com.cnblogs.hoojo.graph.example;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -103,6 +104,25 @@ public class DijkstraValueGraphTest extends AbstractGraphTests {
 			// 更新其中转节点路径
 			minExtra.path = nodeExtras.get(minExtra.preNode).path + " -> " + minExtra.nodeName;
 			current = minExtra; // 标识当前并入的最短路径节点
+		}
+
+		// 更新与其相关节点的最短路径中间结果：
+		// -----------------------------------------------------------------
+		/**
+		 * 并入新查找到的节点后，更新与其相关节点的最短路径中间结果
+		 * if (D[j] + arcs[j][k] < D[k]) D[k] = D[j] + arcs[j][k]
+		 */
+		// 只需循环当前节点的后继列表即可(优化)
+		Set<String> successors = graph.successors(current.nodeName);
+		for (String notVisitedNode : successors) {
+			NodeExtra extra = nodeExtras.get(notVisitedNode);
+			if (!extra.visited) {
+				final int value = current.distance + graph.edgeValueOrDefault(current.nodeName, notVisitedNode, 0); // D[j] +  arcs[j][k]
+				if (value < extra.distance) { // D[j] + arcs[j][k] < D[k]
+					extra.distance = value;
+					extra.preNode = current.nodeName;
+				}
+			}
 		}
 
 		
