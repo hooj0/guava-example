@@ -17,6 +17,7 @@ import com.google.common.graph.ValueGraphBuilder;
  * 
  * 算法思想是按路径长度递增的次序一步一步并入来求取，是贪心算法的一个应用，
  * 用来解决单源点到其余顶点的最短路径问题。
+ * 
  * @author hoojo
  * @createDate 2019年1月22日 下午3:35:53
  * @file DijkstraValueGraphTest.java
@@ -54,32 +55,47 @@ public class DijkstraValueGraphTest extends AbstractGraphTests {
 		String V5 = "v5";
 		
 		graph.putEdgeValue(V0, V2, 10);
-		graph.putEdgeValue(V0, V4, 30);
-		graph.putEdgeValue(V0, V5, 100);
-		graph.putEdgeValue(V1, V2, 5);
-		graph.putEdgeValue(V2, V3, 50);
-		graph.putEdgeValue(V3, V5, 10);
-		graph.putEdgeValue(V4, V3, 20);
-		graph.putEdgeValue(V4, V5, 60);
+        graph.putEdgeValue(V0, V4, 30);
+        graph.putEdgeValue(V0, V5, 100);
+        graph.putEdgeValue(V1, V2, 5);
+        graph.putEdgeValue(V2, V3, 50);
+        graph.putEdgeValue(V3, V5, 10);
+        graph.putEdgeValue(V4, V3, 20);
+        graph.putEdgeValue(V4, V5, 60);
 		
 		out(graph); // isDirected: true, allowsSelfLoops: false, nodes: [v0, v2, v4, v5, v1, v3], edges: {<v0 -> v2>=10, <v0 -> v4>=30, <v0 -> v5>=100, <v2 -> v3>=50, <v4 -> v3>=20, <v4 -> v5>=60, <v1 -> v2>=5, <v3 -> v5>=10}
 
+		Set<String> nodes = graph.nodes();
 		Map<String, NodeExtra> nodeExtras = Maps.newHashMap();
 		
-		// 将起始点V0并入集合S中，因为他的最短路径已知为0：
+		
+        // 初始化extra
 		// -----------------------------------------------------------------
 		String startNode = V0;
+        for (String node : nodes) {
+            NodeExtra extra = new NodeExtra();
+            extra.nodeName = node;
+            /*初始最短路径：存在边时，为边的权值；没有边时为无穷大*/
+            final int value = graph.edgeValueOrDefault(startNode, node, Integer.MAX_VALUE);
+            extra.distance = value;
+            extra.visited = false;
+            if (value < Integer.MAX_VALUE) {
+                extra.path = startNode + " -> " + node;
+                extra.preNode = startNode;
+            }
+            nodeExtras.put(node, extra);
+        }
+		
+        
+		// 将起始点V0并入集合S中，因为他的最短路径已知为0：
+		// -----------------------------------------------------------------
 		NodeExtra current = nodeExtras.get(startNode);
-		if (current == null) {
-			current = new NodeExtra();
-		}
 		
 		current.distance = 0; // 一开始可设置开始节点的最短路径为0
 		current.visited = true; // 并入S集合
 		current.path = startNode;
 		current.preNode = startNode;
 		
-		nodeExtras.put(startNode, current);
 		
 		// 在当前状态下找出起始点V0开始到其他节点路径最短的节点：
 		// -----------------------------------------------------------------
@@ -95,7 +111,7 @@ public class DijkstraValueGraphTest extends AbstractGraphTests {
 				minExtra = extra;
 			}
 		}
-		out("minExtra: " + minExtra);
+		
 		
 		// 将最短路径的节点并入集合S中：
 		// -----------------------------------------------------------------
@@ -105,6 +121,7 @@ public class DijkstraValueGraphTest extends AbstractGraphTests {
 			minExtra.path = nodeExtras.get(minExtra.preNode).path + " -> " + minExtra.nodeName;
 			current = minExtra; // 标识当前并入的最短路径节点
 		}
+		
 
 		// 更新与其相关节点的最短路径中间结果：
 		// -----------------------------------------------------------------
@@ -124,8 +141,16 @@ public class DijkstraValueGraphTest extends AbstractGraphTests {
 				}
 			}
 		}
-
 		
+
+		// 输出起始节点V0到每个节点的最短路径以及路径的途径点信息
+		// -----------------------------------------------------------------
+		Set<String> keys = nodeExtras.keySet();
+		for (String node : keys) {
+		    NodeExtra extra = nodeExtras.get(node);
+		    if (extra.distance < Integer.MAX_VALUE) {
+		        out(startNode + " -> " + node + ": min: " + extra.distance + ", path: " + extra.path); //path在运算过程中更新
+		    }
+		}
 	}
-	
 }
