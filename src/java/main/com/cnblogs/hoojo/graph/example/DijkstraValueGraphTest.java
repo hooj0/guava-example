@@ -38,6 +38,8 @@ public class DijkstraValueGraphTest extends AbstractGraphTests {
 	
 	@Test
 	public void test() {
+		// 构建有向图
+		// -----------------------------------------------------------------
 		MutableValueGraph<String, Integer> graph = ValueGraphBuilder.directed()
 		        .nodeOrder(ElementOrder.insertion())
 		        .expectedNodeCount(10)
@@ -64,6 +66,7 @@ public class DijkstraValueGraphTest extends AbstractGraphTests {
 		Map<String, NodeExtra> nodeExtras = Maps.newHashMap();
 		
 		// 将起始点V0并入集合S中，因为他的最短路径已知为0：
+		// -----------------------------------------------------------------
 		String startNode = V0;
 		NodeExtra current = nodeExtras.get(startNode);
 		if (current == null) {
@@ -78,6 +81,7 @@ public class DijkstraValueGraphTest extends AbstractGraphTests {
 		nodeExtras.put(startNode, current);
 		
 		// 在当前状态下找出起始点V0开始到其他节点路径最短的节点：
+		// -----------------------------------------------------------------
 		NodeExtra minExtra = null; // 路径最短的节点信息
 		int min = Integer.MAX_VALUE;
 		for (String notVisitedNode : graph.nodes()) {
@@ -93,6 +97,7 @@ public class DijkstraValueGraphTest extends AbstractGraphTests {
 		out("minExtra: " + minExtra);
 		
 		// 将最短路径的节点并入集合S中：
+		// -----------------------------------------------------------------
 		if (minExtra != null) { // 找到了路径最短的节点
 			minExtra.visited = true; // 并入集合S中
 			// 更新其中转节点路径
