@@ -101,7 +101,7 @@ public class DijkstraValueGraphTest extends AbstractGraphTests {
 		// -----------------------------------------------------------------
 		NodeExtra minExtra = null; // 路径最短的节点信息
 		int min = Integer.MAX_VALUE;
-		for (String notVisitedNode : graph.nodes()) {
+		for (String notVisitedNode : nodes) {
 			// 获取节点的辅助信息
 			NodeExtra extra = nodeExtras.get(notVisitedNode);
 
