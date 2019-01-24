@@ -96,53 +96,57 @@ public class DijkstraValueGraphTest extends AbstractGraphTests {
 		current.path = startNode;
 		current.preNode = startNode;
 		
-		
-		// 在当前状态下找出起始点V0开始到其他节点路径最短的节点：
-		// -----------------------------------------------------------------
-		NodeExtra minExtra = null; // 路径最短的节点信息
-		int min = Integer.MAX_VALUE;
-		for (String notVisitedNode : nodes) {
-			// 获取节点的辅助信息
-			NodeExtra extra = nodeExtras.get(notVisitedNode);
+		// 需要循环节点遍数
+		for (String node : nodes) {
+			out("loop node: " + node);
+			
+			// 在当前状态下找出起始点V0开始到其他节点路径最短的节点：
+			// -----------------------------------------------------------------
+			NodeExtra minExtra = null; // 路径最短的节点信息
+			int min = Integer.MAX_VALUE;
+			for (String notVisitedNode : nodes) {
+				// 获取节点的辅助信息
+				NodeExtra extra = nodeExtras.get(notVisitedNode);
 
-			// 不在S集合中，且路径较短
-			if (extra != null && !extra.visited && extra.distance < min) {
-				min = extra.distance;
-				minExtra = extra;
+				// 不在S集合中，且路径较短
+				if (!extra.visited && extra.distance < min) {
+					min = extra.distance;
+					minExtra = extra;
+				}
 			}
-		}
-		
-		
-		// 将最短路径的节点并入集合S中：
-		// -----------------------------------------------------------------
-		if (minExtra != null) { // 找到了路径最短的节点
-			minExtra.visited = true; // 并入集合S中
-			// 更新其中转节点路径
-			minExtra.path = nodeExtras.get(minExtra.preNode).path + " -> " + minExtra.nodeName;
-			current = minExtra; // 标识当前并入的最短路径节点
-		}
-		
+			
+			
+			// 将最短路径的节点并入集合S中：
+			// -----------------------------------------------------------------
+			if (minExtra != null) { // 找到了路径最短的节点
+				minExtra.visited = true; // 并入集合S中
+				// 更新其中转节点路径
+				minExtra.path = nodeExtras.get(minExtra.preNode).path + " -> " + minExtra.nodeName;
+				current = minExtra; // 标识当前并入的最短路径节点
+			}
+			
 
-		// 更新与其相关节点的最短路径中间结果：
-		// -----------------------------------------------------------------
-		/**
-		 * 并入新查找到的节点后，更新与其相关节点的最短路径中间结果
-		 * if (D[j] + arcs[j][k] < D[k]) D[k] = D[j] + arcs[j][k]
-		 */
-		// 只需循环当前节点的后继列表即可(优化)
-		Set<String> successors = graph.successors(current.nodeName);
-		for (String notVisitedNode : successors) {
-			NodeExtra extra = nodeExtras.get(notVisitedNode);
-			if (!extra.visited) {
-				final int value = current.distance + graph.edgeValueOrDefault(current.nodeName, notVisitedNode, 0); // D[j] +  arcs[j][k]
-				if (value < extra.distance) { // D[j] + arcs[j][k] < D[k]
-					extra.distance = value;
-					extra.preNode = current.nodeName;
+			// 更新与其相关节点的最短路径中间结果：
+			// -----------------------------------------------------------------
+			/**
+			 * 并入新查找到的节点后，更新与其相关节点的最短路径中间结果
+			 * if (D[j] + arcs[j][k] < D[k]) D[k] = D[j] + arcs[j][k]
+			 */
+			// 只需循环当前节点的后继列表即可(优化)
+			Set<String> successors = graph.successors(current.nodeName);
+			for (String notVisitedNode : successors) {
+				NodeExtra extra = nodeExtras.get(notVisitedNode);
+				if (!extra.visited) {
+					final int value = current.distance + graph.edgeValueOrDefault(current.nodeName, notVisitedNode, 0); // D[j] +  arcs[j][k]
+					if (value < extra.distance) { // D[j] + arcs[j][k] < D[k]
+						extra.distance = value;
+						extra.preNode = current.nodeName;
+					}
 				}
 			}
 		}
 		
-
+		
 		// 输出起始节点V0到每个节点的最短路径以及路径的途径点信息
 		// -----------------------------------------------------------------
 		Set<String> keys = nodeExtras.keySet();
