@@ -81,7 +81,7 @@ public class KruskalValueGraphTest extends AbstractGraphTests {
          * 按增序遍历图中所有边
          */
         for (EndpointPair<String> edge : edges) {
-            out(edge.nodeU() + " ->" + edge.nodeV() + " = " + graph.edgeValueOrDefault(edge.nodeU(), edge.nodeV(), 0));
+            //out(edge.nodeU() + " ->" + edge.nodeV() + " = " + graph.edgeValueOrDefault(edge.nodeU(), edge.nodeV(), 0));
 
             /**
              * 获取两个节点所代表的连通分量的sn值
@@ -115,6 +115,7 @@ public class KruskalValueGraphTest extends AbstractGraphTests {
 	private static List<EndpointPair<String>> sortEdges(final ValueGraph<String, Integer> graph) {
         List<EndpointPair<String>> edges = new ArrayList<>();
         edges.addAll(graph.edges());
+        
         /**
          * 使用Collections的sort函数进行排序，compare()比较的是边权值
          */
@@ -128,6 +129,7 @@ public class KruskalValueGraphTest extends AbstractGraphTests {
                 return edge1 - edge2;
             }
         });
+        
         return edges;
     }
 }
