@@ -58,8 +58,7 @@ public class FolydValueGraphTest extends AbstractGraphTests {
 
         /**
          * floyd核心算法：
-         * if arcs[i][k] + arcs[k][j] < arcs[i][j] then
-         *      arcs[i][j] = arcs[i][k] + arcs[k][j]
+         * if arcs[i][k] + arcs[k][j] < arcs[i][j] then arcs[i][j] = arcs[i][k] + arcs[k][j]
          */
 		for (int k = 1; k <= vexCount; k++) {
 			for (int i = 1; i <= vexCount; i++) {
