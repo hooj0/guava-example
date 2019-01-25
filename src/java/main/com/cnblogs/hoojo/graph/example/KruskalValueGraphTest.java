@@ -81,8 +81,7 @@ public class KruskalValueGraphTest extends AbstractGraphTests {
          * 按增序遍历图中所有边
          */
         for (EndpointPair<String> edge : edges) {
-            /*Log.i(TAG, edge.nodeU() + " ->" + edge.nodeV() + " = "
-                    + graph.edgeValueOrDefault(edge.nodeU(), edge.nodeV(), 0));*/
+            out(edge.nodeU() + " ->" + edge.nodeV() + " = " + graph.edgeValueOrDefault(edge.nodeU(), edge.nodeV(), 0));
 
             /**
              * 获取两个节点所代表的连通分量的sn值
