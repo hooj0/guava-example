@@ -145,6 +145,7 @@ public class AOEValueGraphTest extends AbstractGraphTests {
 	 */
 	private static Map<String, Integer> getVlValues(ValueGraph<String, Integer> graph, Iterable<String> topologicallys, Map<String, Integer> vels) {
 	    Map<String, Integer> vls = Maps.newHashMap(); // 结果集
+	    
 	    // 从后往前遍历
 	    for (String node : topologicallys) {
 	        // 获取node的后继列表
@@ -162,6 +163,7 @@ public class AOEValueGraphTest extends AbstractGraphTests {
 	        }
 	        vls.put(node, minValue);
 	    }
+	    
 	    return vls;
 	}
 }
