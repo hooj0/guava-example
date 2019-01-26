@@ -78,12 +78,12 @@ public class TraversingValueGraphTest extends AbstractGraphTests {
 	            .nodeOrder(ElementOrder.<String>natural())
 	            .build();
 		
-	        graph.putEdge(A, D);
-	        graph.putEdge(A, E);
-	        graph.putEdge(B, E);
-	        graph.putEdge(B, F);
-	        graph.putEdge(E, H);
-	        graph.putEdge(C, G);
+        graph.putEdge(A, D);
+        graph.putEdge(A, E);
+        graph.putEdge(B, E);
+        graph.putEdge(B, F);
+        graph.putEdge(E, H);
+        graph.putEdge(C, G);
 	        
 		Iterable<String> bfs = Traverser.forTree(graph).breadthFirst(A);
 		out("bfs tree: " + format(bfs));
