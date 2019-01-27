@@ -97,6 +97,5 @@ public class ValueGraphTest extends AbstractGraphTests {
 		// asGraph()实际上是重新new了一个AbstractGraph，只是它的接口实现是调用了Graph本身的接口，因此如果修改asGraph()返回的视图的数据，其变化也会反映在Graph本身上，反之亦然。
 		Graph<Integer> graph5 = graph.asGraph();
 		out("asGraph:" + graph5); // asGraph:isDirected: true, allowsSelfLoops: true, nodes: [3, 1, 4, 2], edges: [<3 -> 4>, <3 -> 1>, <1 -> 1>, <1 -> 2>, <1 -> 3>, <4 -> 4>, <2 -> 1>]
-
 	}
 }
