@@ -111,7 +111,7 @@ public class GraphTest extends AbstractGraphTests {
 		Set<String> outgoingEdges = graph.successors("C"); // ‘C’的后继
 		out("node C, outgoings: " + format(outgoingEdges)); // node C, outgoings: H,D,B,F,
 
-		//深度优先遍历
+		// 深度优先遍历
 		Iterable<String> dfs = Traverser.forGraph(graph).depthFirstPostOrder("G");
 		for (String value : dfs) {
 		    out("value: " + value);
@@ -141,6 +141,7 @@ public class GraphTest extends AbstractGraphTests {
 		graph.putEdge(N1, N2);
 		graph.putEdge(N2, N2);
 		
+		// 添加节点
 		graph.addNode(N4);
 
 		//返回图中所有的节点(顺序依赖nodeOrder)
@@ -159,7 +160,7 @@ public class GraphTest extends AbstractGraphTests {
 		out("graph edge count:" + edges.size() + ", edges value:" + format(edges)); // graph edge count:4, edges value:<2 -> 2>,<2 -> 3>,<1 -> 2>,<1 -> 3>,
 		
 		// 获取节点的前趋列表：
-		Set<Integer> predecessors = graph.predecessors(N2); //获取N2的前趋
+		Set<Integer> predecessors = graph.predecessors(N2); // 获取N2的前趋
 		// 对于允许自环的图allowsSelfLoops(true)中，一条自环边在有向图中既是前趋也是后继，既是入度也是出度。
 		out("graph node:" + N2 + " predecessors:" + format(predecessors)); // graph node:2 predecessors:1,2,
 
@@ -167,12 +168,12 @@ public class GraphTest extends AbstractGraphTests {
 		graph.putEdge(N2, N4); //图上面示例图中红色边所示，动态增加了一条边
 		out(graph); // isDirected: true, allowsSelfLoops: true, nodes: [2, 3, 1, 4], edges: [<2 -> 4>, <2 -> 2>, <2 -> 3>, <1 -> 2>, <1 -> 3>]
 		
-		Set<Integer> successors = graph.successors(N2); //获取N2的后继
+		Set<Integer> successors = graph.successors(N2); // 获取N2的后继
 		out("add edge of (" + N2 + "->" + N4 + ") after graph node:" 
 				+ N2 + " successors:" + format(successors)); // add edge of (2->4) after graph node:2 successors:4,2,3,
 
 		// 获取节点的邻接点列表(包括前趋和后继)：
-		Set<Integer> adjacents = graph.adjacentNodes(N2); //获取N2的邻接点
+		Set<Integer> adjacents = graph.adjacentNodes(N2); // 获取N2的邻接点
 		out("graph node: " + N2 + ", adjacents: " + format(adjacents)); // graph node: 2, adjacents: 4,1,2,3,
 
 		// 获取节点的度(入度和出度)：
@@ -181,8 +182,8 @@ public class GraphTest extends AbstractGraphTests {
 		// graph node: 2, degree: 5, indegree: 2, outdegree: 3
 
 		// 判断顶点连通性(是否有直连边)：
-		final boolean connecting23 = graph.hasEdgeConnecting(N2, N3); //N2&N3是否连通
-		final boolean connecting14 = graph.hasEdgeConnecting(N1, N4); //N1&N4是否连通
+		final boolean connecting23 = graph.hasEdgeConnecting(N2, N3); // N2&N3 是否连通
+		final boolean connecting14 = graph.hasEdgeConnecting(N1, N4); // N1&N4 是否连通
 		out("graph node " + N2 + " & " + N3 + " connecting: " + connecting23 + ", node " + N1 + " & " + N4 + " connecting: " + connecting14); // graph node 2 & 3 connecting: true, node 1 & 4 connecting: false //N1&N4之间无边
 
 		// 转换成不可变graph(Immutable**类型)
@@ -192,7 +193,7 @@ public class GraphTest extends AbstractGraphTests {
 
 		// 判断是否存在环(第一个顶点和最后一个顶点相同的路径称为环)
 		final boolean cycle = Graphs.hasCycle(graph);
-		out("graph has cycle: " + cycle); // graph has cycle: true //因为N2节点存在一条自环，如果去掉则不存在环
+		out("graph has cycle: " + cycle); // graph has cycle: true // 因为N2节点存在一条自环，如果去掉则不存在环
 		
 		// 获取仅包含指定节点的生成子图：
 		Set<Integer> subNodes = new HashSet<>();
@@ -202,7 +203,7 @@ public class GraphTest extends AbstractGraphTests {
 		out("subgraph: " + subgraph); // subgraph: isDirected: true, allowsSelfLoops: true, nodes: [1, 2], edges: [<1 -> 2>, <2 -> 2>]
 
 		// 获取节点的可到达列表(获取能访问到的节点结合，不单指直连边)：
-		Set<Integer> reachNodes = Graphs.reachableNodes(graph, N2); //N2的可达列表
+		Set<Integer> reachNodes = Graphs.reachableNodes(graph, N2); // N2的可达列表
 		// 这里是通过从起始点N开始进行BFS遍历的结果。
 		out("graph node: " + N2 + ", reachNodes: " + format(reachNodes)); // graph node: 2, reachNodes: 2,4,3, //N2不存在能访问到N1的边
 
