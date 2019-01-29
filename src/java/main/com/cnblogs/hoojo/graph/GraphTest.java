@@ -124,8 +124,8 @@ public class GraphTest extends AbstractGraphTests {
 		
 		MutableGraph<Integer> graph = GraphBuilder.directed() // 指定为有向图
 			    .nodeOrder(ElementOrder.<Integer>insertion()) // 节点按插入顺序输出(还可以取值无序unordered()、节点类型的自然顺序natural())
-			    .expectedNodeCount(NODE_COUNT) //预期节点数
-			    .allowsSelfLoops(true) //允许自环
+			    .expectedNodeCount(NODE_COUNT) // 预期节点数
+			    .allowsSelfLoops(true) // 允许自环
 			    .build();
 
 		out(graph); // isDirected: true, allowsSelfLoops: true, nodes: [], edges: []
@@ -186,6 +186,11 @@ public class GraphTest extends AbstractGraphTests {
 		final boolean connecting14 = graph.hasEdgeConnecting(N1, N4); // N1&N4 是否连通
 		out("graph node " + N2 + " & " + N3 + " connecting: " + connecting23 + ", node " + N1 + " & " + N4 + " connecting: " + connecting14); // graph node 2 & 3 connecting: true, node 1 & 4 connecting: false //N1&N4之间无边
 
+		// 返回此图中的边，其端点包含节点
+		out("incident edges: " + graph.incidentEdges(N2)); // [<1 -> 2>, <2 -> 2>, <2 -> 4>, <2 -> 3>]
+		// 是否是有向图
+		out("is directed：" + graph.isDirected()); // true
+		
 		// 转换成不可变graph(Immutable**类型)
 		ImmutableGraph<Integer> immutableGraph = ImmutableGraph.copyOf(graph);
 		nodes = immutableGraph.nodes(); //返回图中所有的节点(顺序依赖nodeOrder)
