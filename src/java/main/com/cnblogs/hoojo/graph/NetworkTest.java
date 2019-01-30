@@ -143,5 +143,9 @@ public class NetworkTest extends AbstractGraphTests {
 		// 获取边的邻接点(边对应的两个顶点)
 		EndpointPair<Integer> incidentNodes =  network1.incidentNodes(E12_A);
 		out("network1 edge " + E12_A + " incidentNodes: " + incidentNodes); // network1 edge 1-2-1 incidentNodes: <1 -> 2>
+		
+		// 如果此网络允许并行边，则返回true。 
+		// 尝试向不允许它们的网络添加并行边缘将抛出IllegalArgumentException。
+		out(network1.allowsParallelEdges()); // true
 	}
 }
