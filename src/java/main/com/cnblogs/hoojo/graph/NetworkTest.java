@@ -100,6 +100,7 @@ public class NetworkTest extends AbstractGraphTests {
 		Integer N2 = 2;
 		Integer N3 = 3;
 		Integer N4 = 4;
+		
 		String E11 = "1-1";
 		String E12 = "1-2";
 		String E13 = "1-3";
@@ -147,5 +148,10 @@ public class NetworkTest extends AbstractGraphTests {
 		// 如果此网络允许并行边，则返回true。 
 		// 尝试向不允许它们的网络添加并行边缘将抛出IllegalArgumentException。
 		out(network1.allowsParallelEdges()); // true
+		
+		// 返回与此网络中的节点具有共同事件边缘的节点
+		out(network1.adjacentNodes(N3));
+		
+		
 	}
 }
