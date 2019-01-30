@@ -152,6 +152,11 @@ public class NetworkTest extends AbstractGraphTests {
 		// 返回与此网络中的节点具有共同事件边缘的节点
 		out(network1.adjacentNodes(N3));
 		
+		// 添加节点
+		network1.addNode(5);
+		out(network1.adjacentNodes(N3));
 		
+		// 如果此网络允许自循环（将节点连接到自身的边），则返回true。
+		out(network1.allowsSelfLoops());
 	}
 }
