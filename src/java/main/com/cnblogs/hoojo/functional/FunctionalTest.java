@@ -2,6 +2,7 @@ package com.cnblogs.hoojo.functional;
 
 import com.cnblogs.hoojo.BasedTest;
 import com.google.common.base.*;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ordering;
 import org.junit.Test;
@@ -308,5 +309,70 @@ public class FunctionalTest extends BasedTest {
 		}).equivalent(1, 2)); // false
 		
 		Equivalence.equals().equivalent('a', 'b');
+	}
+
+	@Test
+	public void testConvert() {
+		Converter<String, Long> stringLongConverter = new Converter<String, Long>() {
+			@Override
+			protected Long doForward(String object) {
+				return Long.valueOf(object);
+			}
+
+			@Override
+			protected String doBackward(Long object) {
+				return String.valueOf(object);
+			}
+
+			@Override
+			public String toString() {
+				return "string2long";
+			}
+		};
+
+		Long LONG_VAL = 12345L;
+		String STR_VAL = "12345";
+
+		ImmutableList<String> STRINGS = ImmutableList.of("123", "456");
+		ImmutableList<Long> LONGS = ImmutableList.of(123L, 456L);
+
+		out(stringLongConverter.convert(STR_VAL)); // 12345
+		out(stringLongConverter.reverse().convert(LONG_VAL)); // 12345
+
+		stringLongConverter.convertAll(STRINGS).forEach(System.out::print); // 123456
+		out();
+
+		Converter<StringWrapper, String> wrapperStringConverter = new Converter<StringWrapper, String>() {
+			@Override
+			protected String doForward(StringWrapper object) {
+				return object.value;
+			}
+
+			@Override
+			protected StringWrapper doBackward(String object) {
+				return new StringWrapper(object);
+			}
+
+			@Override
+			public String toString() {
+				return "StringWrapper";
+			}
+		};
+
+		Converter<StringWrapper, Long> converter = wrapperStringConverter.andThen(stringLongConverter);
+		out(converter.convert(new StringWrapper(STR_VAL))); // 12345
+		out(converter.reverse().convert(LONG_VAL).value); // 12345
+
+		Converter<String, String> converterIdentity = Converter.identity();
+		out(converterIdentity.convert(STR_VAL)); // 12345
+		out(converterIdentity.reverse().convert(STR_VAL)); // 12345
+	}
+
+	private static class StringWrapper {
+		private final String value;
+
+		public StringWrapper(String value) {
+			this.value = value;
+		}
 	}
 }
