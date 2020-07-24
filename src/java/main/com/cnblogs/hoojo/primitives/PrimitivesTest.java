@@ -250,10 +250,25 @@ public class PrimitivesTest extends BasedTest {
 	public void testBooleans() {
 		out(Booleans.asList(false, false, true, false)); // [false, false, true, false]
 		out(Booleans.compare(false, true)); // -1
-		
+
+		out(Booleans.hashCode(true)); // 1231
+		out(Booleans.contains(new boolean[] { true, false }, false)); // true
+		out(Booleans.indexOf(new boolean[] { true, false }, false)); // 1
+		out(Booleans.lastIndexOf(new boolean[] { true, false, false }, false)); // 2
+		out(Booleans.concat(new boolean[] { true, false, false }, new boolean[] { false, false }));
+
+		out(Booleans.join(",", false, true)); // false,true
+
 		out(Booleans.countTrue(true, false, false)); // 1
-		out(Booleans.trueFirst());
-		out(Booleans.falseFirst());
+		out(Booleans.trueFirst().compare(false, true)); // 1
+		out(Booleans.trueFirst().compare(true, false)); // -1
+		out(Booleans.trueFirst().compare(true, true)); // 0
+		out(Booleans.trueFirst().compare(false, false)); // 0
+
+		out(Booleans.falseFirst().compare(false, true)); // -1
+		out(Booleans.falseFirst().compare(true, false)); // 1
+		out(Booleans.falseFirst().compare(true, true)); // 0
+		out(Booleans.falseFirst().compare(false, false)); // 0
 	}
 	
 	@Test
