@@ -25,7 +25,7 @@ public class VerifyTest extends BasedTest {
         }
 
         try {
-            Verify.verify(false, "valid failure %s","!!!");
+            Verify.verify(false, "valid failure %s", "!!!");
         } catch (Exception e) {
             out(e); // com.google.common.base.VerifyException: valid failure !!!
         }
