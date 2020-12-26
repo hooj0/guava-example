@@ -6,7 +6,7 @@ import com.google.common.escape.Escaper;
 import org.junit.Test;
 
 /**
- * 炭排放器构建器测试
+ * 字符转义 构建器测试
  *
  * @author hoojo
  * @version 1.0
