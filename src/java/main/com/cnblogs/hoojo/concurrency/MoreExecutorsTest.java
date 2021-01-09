@@ -1,16 +1,10 @@
 package com.cnblogs.hoojo.concurrency;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.junit.Test;
 
-import com.google.common.util.concurrent.MoreExecutors;
+import java.util.concurrent.*;
 
 /**
 线程任务执行器测试示例
@@ -29,31 +23,32 @@ platformThreadFactory()：返回一个默认的线程工厂用于创建新的线
 shutdownAndAwaitTermination( ExecutorService service, long timeout, TimeUnit unit)：逐渐关闭指定的ExecutorService，首先会禁用新的提交， 然后会取消现有的任务。
 
  */
-public class MoreExecutorsTest {
+@SuppressWarnings("ALL")
+public class MoreExecutorsTest extends BasedTest {
 
 	@Test
 	public void test1() {
 		// 返回一个执行器
 		Executor exec = MoreExecutors.directExecutor();
 		exec.execute(() -> {
-			System.out.println("run...");
+			out("run...");
 		});
 		
 		ExecutorService service = Executors.newFixedThreadPool(3);
 		service.submit(() -> {
-			System.out.println("exec...");
+			out("exec...");
 		});
-		System.out.println("----------------");
+		out("----------------");
 		// 在JVM关闭之前，保证线程服务中的任务执行完成
 		MoreExecutors.addDelayedShutdownHook(service, 15, TimeUnit.SECONDS);
 		
-		System.out.println("-----------------");
+		out("-----------------");
 		BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>();
 		ThreadPoolExecutor pool = new ThreadPoolExecutor(5, 10, 1000 * 15, TimeUnit.SECONDS, workQueue);
 		
 		// 返回执行器服务 
 		ExecutorService executorService = MoreExecutors.getExitingExecutorService(pool);
-		System.out.println(executorService);
+		out(executorService);
 		
 		// 比其他的服务多了一些额外的锁的行为
 		service = MoreExecutors.newDirectExecutorService();
@@ -62,7 +57,7 @@ public class MoreExecutorsTest {
 		MoreExecutors.shutdownAndAwaitTermination(service, 15, TimeUnit.SECONDS);
 		
 		MoreExecutors.platformThreadFactory().newThread(() -> {
-			System.out.println("cancel");
+			out("cancel");
 		});
 	}
 
@@ -72,7 +67,7 @@ public class MoreExecutorsTest {
         service.submit(() -> {
 
             while (true) {
-                System.out.println("...1.....");
+                out("...1.....");
                 TimeUnit.SECONDS.sleep(5);
             }
         });
@@ -80,7 +75,7 @@ public class MoreExecutorsTest {
         // 逐渐关闭给定的执行者服务，首先禁用新提交，并在必要时取消剩余的任务
         MoreExecutors.shutdownAndAwaitTermination(service, 60, TimeUnit.SECONDS);
         MoreExecutors.platformThreadFactory().newThread(() -> {
-            System.out.println("cancel");
+            out("cancel");
         });
 	}
 }
