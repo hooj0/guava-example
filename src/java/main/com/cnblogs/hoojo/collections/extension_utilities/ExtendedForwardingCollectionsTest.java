@@ -1,17 +1,13 @@
 package com.cnblogs.hoojo.collections.extension_utilities;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ForwardingMap;
 import com.google.common.collect.ForwardingSet;
 import com.google.common.collect.Sets;
+import org.junit.Test;
+
+import java.util.*;
 
 /**
  * 集合扩展工具类
@@ -96,7 +92,8 @@ import com.google.common.collect.Sets;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ExtendedForwardingCollectionsTest {
+@SuppressWarnings("ALL")
+public class ExtendedForwardingCollectionsTest extends BasedTest {
 
 	// 自定义Set
 	class MyGuavaSet<E> extends ForwardingSet<E> {
@@ -122,13 +119,13 @@ public class ExtendedForwardingCollectionsTest {
 				super.add(e);
 			}
 			
-			System.out.println(standardToString());
+			out(standardToString());
 			return true;
 		}
 		
 		// 扩展的方法
 		public void print() {
-			super.forEach(x -> System.out.println("elements: " + x));
+			super.forEach(x -> out("elements: " + x));
 		}
 	}
 	
@@ -140,7 +137,7 @@ public class ExtendedForwardingCollectionsTest {
 		sets.add(2, 3, 4);
 		
 		sets.print();
-		System.out.println(sets.toString()); // MyGuavaSet: [1, 2, 3, 4]
+		out(sets.toString()); // MyGuavaSet: [1, 2, 3, 4]
 	}
 	
 	@SuppressWarnings("all")
@@ -176,6 +173,6 @@ public class ExtendedForwardingCollectionsTest {
 		map.put("z", 5);
 		map.put("x", 7);
 		
-		System.out.println(map.toString()); // [a=1, b=3, z=5, x=7, d=10]
+		out(map.toString()); // [a=1, b=3, z=5, x=7, d=10]
 	}
 }
