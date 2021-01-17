@@ -1,18 +1,14 @@
 package com.cnblogs.hoojo.cache;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.cache.*;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
-import com.google.common.collect.ImmutableMap;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 【基于容量回收-数量】缓存回收策略 超出指定size后回收
@@ -58,7 +54,8 @@ import com.google.common.collect.ImmutableMap;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class SizeBasedEvictionCacheTest {
+@SuppressWarnings("ALL")
+public class SizeBasedEvictionCacheTest extends BasedTest {
 
 	private LoadingCache<String, Integer> cache; 
 	
@@ -73,13 +70,13 @@ public class SizeBasedEvictionCacheTest {
 				.removalListener(new RemovalListener<String, Integer>() { // 删除缓存给予监听通知
 					@Override
 					public void onRemoval(RemovalNotification<String, Integer> notification) {
-						System.out.println(notification.wasEvicted());
-						System.out.println("remove cache key: " + notification.getKey() + ", value: " + notification.getValue());
+						out(notification.wasEvicted());
+						out("remove cache key: " + notification.getKey() + ", value: " + notification.getValue());
 					}
 				}).build(new CacheLoader<String, Integer>() { // 缓存加载方式
 					@Override
 					public Integer load(String key) throws RuntimeException {
-						System.out.println("loading......");
+						out("loading......");
 						return map.get(key);
 					}
 				});
@@ -89,13 +86,13 @@ public class SizeBasedEvictionCacheTest {
 	@Test
 	public void testWriteEvictionCacheGC() throws InterruptedException {
 		
-		System.out.println("cache size: " + cache.size());
-		System.out.println("cache init value: " + cache.asMap());
+		out("cache size: " + cache.size());
+		out("cache init value: " + cache.asMap());
 		
 		// 默认最先被缓存的数据被回收，后面的缓存会挤走最前面的
 		for (int i = 1; i < 15; i++) {
 			cache.put("cache-" + i, i);
-			System.out.println(cache.asMap());
+			out(cache.asMap());
 			Thread.sleep(1000);
 		}
 	}
@@ -103,17 +100,17 @@ public class SizeBasedEvictionCacheTest {
 	@Test
 	public void testReadWriteEvictionCacheGC() throws InterruptedException, ExecutionException {
 		
-		System.out.println("cache size: " + cache.size());
-		System.out.println("cache init value: " + cache.asMap());
+		out("cache size: " + cache.size());
+		out("cache init value: " + cache.asMap());
 		
 		// 默认最先被缓存的数据被回收，后面的缓存会挤走最前面的
 		for (int i = 1; i < 15; i++) {
 			// 后面访问特定的某些值，这些访问的值没有被系统回收
 			if (i > 8) {
-				System.out.println(("get-cache-" + (i - 8)) + ": " + cache.getIfPresent("cache-" + (i - 8)));
+				out(("get-cache-" + (i - 8)) + ": " + cache.getIfPresent("cache-" + (i - 8)));
 			}
 			cache.put("cache-" + i, i);
-			System.out.println(cache.asMap());
+			out(cache.asMap());
 			Thread.sleep(1000);
 		}
 	}
@@ -121,14 +118,14 @@ public class SizeBasedEvictionCacheTest {
 	@Test
 	public void testReadWriteEvictionCacheGC2() throws InterruptedException, ExecutionException {
 		
-		System.out.println("cache size: " + cache.size());
-		System.out.println("cache init value: " + cache.asMap());
+		out("cache size: " + cache.size());
+		out("cache init value: " + cache.asMap());
 		
 		// 默认最先被缓存的数据被回收，后面的缓存会挤走最前面的
 		for (int i = 1; i <= 10; i++) {
 			cache.put("cache-" + i, i);
 		}
-		System.out.println("put 1-10 limit cache：" + cache.asMap());
+		out("put 1-10 limit cache：" + cache.asMap());
 		
 		// 访问特定的某些cache，这些访问的cache将没有被系统回收
 		cache.getAll(Arrays.asList("cache-1", "cache-2", "cache-3", "cache-4"));
@@ -136,6 +133,6 @@ public class SizeBasedEvictionCacheTest {
 		for (int i = 11; i <= 15; i++) {
 			cache.put("cache-" + i, i); // 再次put cache，之前的cache会被回收
 		}
-		System.out.println("put 11-15 limit cache：" + cache.asMap());
+		out("put 11-15 limit cache：" + cache.asMap());
 	}
 }
