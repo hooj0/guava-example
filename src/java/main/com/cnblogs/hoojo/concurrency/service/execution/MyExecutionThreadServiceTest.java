@@ -1,16 +1,16 @@
 package com.cnblogs.hoojo.concurrency.service.execution;
 
-import static org.junit.Assert.assertFalse;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service.Listener;
 import com.google.common.util.concurrent.Service.State;
+import org.junit.Test;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.*;
 
 /**
  * AbstractExecutionThreadService 异步线程任务执行器示例
@@ -23,7 +23,8 @@ import com.google.common.util.concurrent.Service.State;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class MyExecutionThreadServiceTest {
+@SuppressWarnings("ALL")
+public class MyExecutionThreadServiceTest extends BasedTest {
 
 	private static final long LONG_TIMEOUT_MILLIS = 2500;
 	TimeUnit SECONDS = TimeUnit.SECONDS;
@@ -33,14 +34,14 @@ public class MyExecutionThreadServiceTest {
 
 		@Override
 		protected void run() throws Exception {
-			System.out.println("---run---start");
+			out("---run---start");
 			latch.await();
-			System.out.println("---run---end");
+			out("---run---end");
 		}
 
 		@Override
 		protected void triggerShutdown() {
-			System.out.println("triggerShutdown......");
+			out("triggerShutdown......");
 			latch.countDown();
 		}
 	}
