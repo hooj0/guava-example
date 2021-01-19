@@ -1,5 +1,6 @@
 package com.cnblogs.hoojo.concurrency.service._abstract;
 
+import com.cnblogs.hoojo.BasedTest;
 import org.junit.Test;
 
 import com.cnblogs.hoojo.concurrency.service._abstract.MyService.RecordingListener;
@@ -15,212 +16,213 @@ import com.cnblogs.hoojo.concurrency.service._abstract.MyService.RecordingListen
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class MyServiceTest2 {
+@SuppressWarnings("ALL")
+public class MyServiceTest2 extends BasedTest {
 
 	@Test
 	public void test() {
 
-		System.out.println("--------new--------");
+		out("--------new--------");
 		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
 
-		System.out.println("--------startAsync--------");
+		out("--------startAsync--------");
 		service.startAsync();
-		System.out.println(service.state()); // State.STARTING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STARTING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------awaitRunning--------");
+		out("--------awaitRunning--------");
 		service.awaitRunning();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
 		
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		service.stopAsync();
-		System.out.println(service.state()); // State.STOPPING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STOPPING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------awaitTerminated--------");
+		out("--------awaitTerminated--------");
 		service.awaitTerminated();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
 	}
 	
 	@Test
 	public void test2() {
 
-		System.out.println("--------new--------");
+		out("--------new--------");
 		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
 
-		System.out.println("--------startAsync--------");
+		out("--------startAsync--------");
 		service.startAsync().awaitRunning();
-		System.out.println(service.state()); // State.STARTING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STARTING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------startAsync--------");
+		out("--------startAsync--------");
 		service.startAsync(); // Exception，不能重复启动
 	}
 	
 	@Test
 	public void test3() {
 
-		System.out.println("--------new--------");
+		out("--------new--------");
 		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
 
-		System.out.println("--------startAsync--------");
+		out("--------startAsync--------");
 		service.startAsync();
-		System.out.println(service.state()); // State.STARTING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STARTING
+		out(service.isRunning()); // false
 		
 	}
 	
 	@Test
 	public void test4() {
 
-		System.out.println("--------new--------");
+		out("--------new--------");
 		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
 
-		System.out.println("--------startAsync--------");
+		out("--------startAsync--------");
 		service.startAsync();
-		System.out.println(service.state()); // State.STARTING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STARTING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------awaitRunning--------");
+		out("--------awaitRunning--------");
 		service.awaitRunning();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
 		
-		System.out.println("--------awaitRunning--------");
+		out("--------awaitRunning--------");
 		service.awaitRunning();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
 		
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		service.stopAsync();
-		System.out.println(service.state()); // State.STOPPING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STOPPING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------awaitTerminated--------");
+		out("--------awaitTerminated--------");
 		service.awaitTerminated();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
 	}
 	
 	@Test
 	public void test5() {
 
-		System.out.println("--------new--------");
+		out("--------new--------");
 		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
 
-		System.out.println("--------startAsync--------");
+		out("--------startAsync--------");
 		service.startAsync();
-		System.out.println(service.state()); // State.STARTING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STARTING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------awaitRunning--------");
+		out("--------awaitRunning--------");
 		service.awaitRunning();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
 		
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		service.stopAsync();
-		System.out.println(service.state()); // State.STOPPING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STOPPING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		service.stopAsync(); // 重复关闭，底层不做任何业务，不触发 Listener.stopping
-		System.out.println(service.state()); // State.STOPPING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STOPPING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------awaitTerminated--------");
+		out("--------awaitTerminated--------");
 		service.awaitTerminated();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
 	}
 	
 	@Test
 	public void test6() {
 		
-		System.out.println("--------new--------");
+		out("--------new--------");
 		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 		
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
 		
-		System.out.println("--------startAsync--------");
+		out("--------startAsync--------");
 		service.startAsync();
-		System.out.println(service.state()); // State.STARTING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STARTING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------awaitRunning--------");
+		out("--------awaitRunning--------");
 		service.awaitRunning();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
 		
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		service.stopAsync();
-		System.out.println(service.state()); // State.STOPPING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STOPPING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------awaitTerminated--------");
+		out("--------awaitTerminated--------");
 		service.awaitTerminated();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
 	}
 	
 	@Test
 	public void test7() {
 
-		System.out.println("--------new--------");
+		out("--------new--------");
 		MyService2 service = new MyService2();
 		RecordingListener.record(service);
 
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
 
-		System.out.println("--------startAsync--------");
+		out("--------startAsync--------");
 		service.startAsync();
-		System.out.println(service.state()); // State.STARTING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STARTING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------awaitRunning--------");
+		out("--------awaitRunning--------");
 		service.awaitRunning();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
 		
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		service.stopAsync();
-		System.out.println(service.state()); // State.STOPPING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STOPPING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------awaitTerminated--------");
+		out("--------awaitTerminated--------");
 		service.awaitTerminated();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
 
-		System.out.println("--------awaitTerminated--------");
+		out("--------awaitTerminated--------");
 		service.awaitTerminated();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
 	}
 	
 	@Test
@@ -228,21 +230,21 @@ public class MyServiceTest2 {
 
 		String fail = "start";
 		
-		System.out.println("--------new--------");
+		out("--------new--------");
 		MyService service = new MyService(fail);
 		RecordingListener.record(service);
 
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
 
-		System.out.println("--------startAsync--------");
+		out("--------startAsync--------");
 		service.startAsync();
 		// doStart fail exception
 		// doStart--->state: STARTING, isRunning: false
 		// Listener.starting: FAILED, isRunning: false
 		
-		System.out.println(service.state()); // State.FAILED
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.FAILED
+		out(service.isRunning()); // false
 	}
 	
 	@Test
@@ -250,35 +252,35 @@ public class MyServiceTest2 {
 
 		String fail = "stop";
 		
-		System.out.println("--------new--------");
+		out("--------new--------");
 		MyService service = new MyService(fail);
 		RecordingListener.record(service);
 
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
 
-		System.out.println("--------startAsync--------");
+		out("--------startAsync--------");
 		service.startAsync();
-		System.out.println(service.state()); // State.STARTING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STARTING
+		out(service.isRunning()); // false
 		
-		System.out.println("--------notifyStarted--------");
+		out("--------notifyStarted--------");
 		service._notifyStarted();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
 		
-		System.out.println("--------awaitRunning--------");
+		out("--------awaitRunning--------");
 		service.awaitRunning();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
 		
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		service.stopAsync();
 		
 		// doStop--->state: STOPPING, isRunning: false
 		// Listener.stopping: FAILED, from:RUNNING, isRunning: false
 		// Listener.failed: FAILED, from:STOPPING, isRunning: false
-		System.out.println(service.state()); // State.FAILED
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.FAILED
+		out(service.isRunning()); // false
 	}
 }
