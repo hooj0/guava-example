@@ -1,5 +1,6 @@
 package com.cnblogs.hoojo.string;
 
+import com.cnblogs.hoojo.BasedTest;
 import org.junit.Test;
 
 import com.google.common.base.Charsets;
@@ -16,47 +17,48 @@ import com.google.common.base.Strings;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class StringsTest {
+@SuppressWarnings("ALL")
+public class StringsTest extends BasedTest {
 
 	@Test
 	public void testStrings() {
 		
 		// 获取相同的前缀
-		System.out.println(Strings.commonPrefix("abdz", "abcdefg")); // ab
-		System.out.println(Strings.commonPrefix("abcdg", "abcdefg")); // abcd
+		out(Strings.commonPrefix("abdz", "abcdefg")); // ab
+		out(Strings.commonPrefix("abcdg", "abcdefg")); // abcd
 		
 		// 获取相同的后缀
-		System.out.println(Strings.commonSuffix("abcefg", "123efg")); // efg
+		out(Strings.commonSuffix("abcefg", "123efg")); // efg
 		
 		// 空字符 转 null 对象
-		System.out.println(Strings.emptyToNull(null)); // null
-		System.out.println(Strings.emptyToNull("")); // null
+		out(Strings.emptyToNull(null)); // null
+		out(Strings.emptyToNull("")); // null
 		
 		// 判断为空
-		System.out.println(Strings.isNullOrEmpty(null)); // true
-		System.out.println(Strings.isNullOrEmpty("")); // true
-		System.out.println(Strings.isNullOrEmpty(" ")); // false
+		out(Strings.isNullOrEmpty(null)); // true
+		out(Strings.isNullOrEmpty("")); // true
+		out(Strings.isNullOrEmpty(" ")); // false
 		
 		// 空对象转 空字符串 “”
-		System.out.println(Strings.nullToEmpty(null)); // ""
-		System.out.println(Strings.nullToEmpty("")); // ""
+		out(Strings.nullToEmpty(null)); // ""
+		out(Strings.nullToEmpty("")); // ""
 		
 		// 在末尾追加字符串，如果长度不足的条件下
-		System.out.println(Strings.padEnd("hello", 1, '!')); // hello
-		System.out.println(Strings.padEnd("hello", "hello".length() + 3, '!')); // hello!!!
+		out(Strings.padEnd("hello", 1, '!')); // hello
+		out(Strings.padEnd("hello", "hello".length() + 3, '!')); // hello!!!
 		
 		// 在前面追加字符串
-		System.out.println(Strings.padStart("hello", 1, '!')); // hello
-		System.out.println(Strings.padStart("hello", 10, '!')); // !!!!!hello
+		out(Strings.padStart("hello", 1, '!')); // hello
+		out(Strings.padStart("hello", 10, '!')); // !!!!!hello
 		
 		// 复制本身
-		System.out.println(Strings.repeat("go", 3)); // gogogo
+		out(Strings.repeat("go", 3)); // gogogo
 	}
 	
 	@Test
 	public void testCharset() {
 		
-		System.out.println(Charsets.ISO_8859_1);
-		System.out.println(new String("".getBytes(Charsets.UTF_8)));
+		out(Charsets.ISO_8859_1);
+		out(new String("".getBytes(Charsets.UTF_8)));
 	}
 }
