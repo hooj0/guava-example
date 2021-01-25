@@ -1,13 +1,12 @@
 package com.cnblogs.hoojo.graph;
 
-import java.util.Set;
-
-import org.junit.Test;
-
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.Graph;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
+import org.junit.Test;
+
+import java.util.Set;
 
 /**
  * value graph test example
@@ -27,6 +26,7 @@ import com.google.common.graph.ValueGraphBuilder;
  * @email hoojo_@126.com
  * @version 1.0
  */
+@SuppressWarnings("ALL")
 public class ValueGraphTest extends AbstractGraphTests {
 
 	@Test
