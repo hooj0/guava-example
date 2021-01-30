@@ -1,5 +1,6 @@
 package com.cnblogs.hoojo.eventbus;
 
+import com.cnblogs.hoojo.BasedTest;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
@@ -47,7 +48,8 @@ import com.google.common.eventbus.Subscribe;
 </table>
  * 
  */
-public class EventBusTest {
+@SuppressWarnings("ALL")
+public class EventBusTest extends BasedTest {
 
 	class EventBusExample {
 		
@@ -69,7 +71,7 @@ public class EventBusTest {
 		
 		@Subscribe
 		public void handlerMessage(String message) {
-			System.out.println(eventBus.identifier() + ", rev: " + message);
+			out(eventBus.identifier() + ", rev: " + message);
 		}
 		
 		public void destory() {
