@@ -1,18 +1,10 @@
 package com.cnblogs.hoojo.graph;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.google.common.graph.*;
 import org.junit.Test;
 
-import com.google.common.graph.ElementOrder;
-import com.google.common.graph.EndpointPair;
-import com.google.common.graph.Graph;
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.Graphs;
-import com.google.common.graph.ImmutableGraph;
-import com.google.common.graph.MutableGraph;
-import com.google.common.graph.Traverser;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * graph test example
@@ -36,6 +28,7 @@ import com.google.common.graph.Traverser;
  * @email hoojo_@126.com
  * @version 1.0
  */
+@SuppressWarnings("ALL")
 public class GraphTest extends AbstractGraphTests {
 
 	@Test
