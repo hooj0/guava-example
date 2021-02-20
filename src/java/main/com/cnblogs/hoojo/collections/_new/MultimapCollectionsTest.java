@@ -1,16 +1,10 @@
 package com.cnblogs.hoojo.collections._new;
 
-import java.util.Arrays;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.collect.*;
 import org.junit.Test;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableSetMultimap;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.TreeMultimap;
+import java.util.Arrays;
 
 /**
  * 一键多值集合
@@ -106,7 +100,8 @@ API:
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class MultimapCollectionsTest {
+@SuppressWarnings("ALL")
+public class MultimapCollectionsTest extends BasedTest {
 
 	@Test
 	public void testApi() {
@@ -117,28 +112,28 @@ public class MultimapCollectionsTest {
 		hash.putAll("b", Arrays.asList(2, 4, 2, 3));
 		hash.putAll(hash);
 		
-		System.out.println(hash); // {a=[1], b=[4, 2, 3]}
-		System.out.println(hash.get("b")); // [4, 2, 3] 获取b的值，返回Set集合
+		out(hash); // {a=[1], b=[4, 2, 3]}
+		out(hash.get("b")); // [4, 2, 3] 获取b的值，返回Set集合
 		
-		System.out.println(hash.containsValue(2)); // true
-		System.out.println(hash.containsKey("a")); // true
-		System.out.println(hash.containsEntry("b", 4)); // true
-		System.out.println(hash.containsEntry("b", 5)); // false
+		out(hash.containsValue(2)); // true
+		out(hash.containsKey("a")); // true
+		out(hash.containsEntry("b", 4)); // true
+		out(hash.containsEntry("b", 5)); // false
 		
-		System.out.println(hash.asMap()); // {a=[1], b=[4, 2, 3]} 转换顶级Java集合对象
+		out(hash.asMap()); // {a=[1], b=[4, 2, 3]} 转换顶级Java集合对象
 		
-		System.out.println(hash.size()); // 4 总元素数量
-		System.out.println(hash.entries()); // [a=1, b=4, b=2, b=3] 所有键值对
+		out(hash.size()); // 4 总元素数量
+		out(hash.entries()); // [a=1, b=4, b=2, b=3] 所有键值对
 		
-		System.out.println(hash.keys()); // [a, b x 3] Multiset 键值统计数量
-		System.out.println(hash.keySet()); // [a, b] 所有主键
-		System.out.println(hash.values()); // [1, 4, 2, 3] 所有值
+		out(hash.keys()); // [a, b x 3] Multiset 键值统计数量
+		out(hash.keySet()); // [a, b] 所有主键
+		out(hash.values()); // [1, 4, 2, 3] 所有值
 		
-		System.out.println(hash.remove("b", 2)); // true
-		System.out.println(hash); // {a=[1], b=[4, 3]}
+		out(hash.remove("b", 2)); // true
+		out(hash); // {a=[1], b=[4, 3]}
 		
-		System.out.println(hash.replaceValues("a", Arrays.asList(33, 44))); // [1]
-		System.out.println(hash); // {a=[44, 33], b=[4, 3]}
+		out(hash.replaceValues("a", Arrays.asList(33, 44))); // [1]
+		out(hash); // {a=[44, 33], b=[4, 3]}
 	}
 	
 	@Test
@@ -148,46 +143,46 @@ public class MultimapCollectionsTest {
 		list.put("a", 1);
 		list.putAll("b", Arrays.asList(2, 4, 2, 3));
 		
-		System.out.println(list); // {a=[1], b=[2, 4, 2, 3]}
+		out(list); // {a=[1], b=[2, 4, 2, 3]}
 		
 		// HashSet
 		HashMultimap<String, Integer> hash = HashMultimap.<String, Integer>create();
 		hash.put("a", 1);
 		hash.putAll("b", Arrays.asList(2, 4, 2, 3));
 		
-		System.out.println(hash); // {a=[1], b=[4, 2, 3]}
+		out(hash); // {a=[1], b=[4, 2, 3]}
 		
 		// linkedList
 		LinkedListMultimap<String, Integer> linkedList = LinkedListMultimap.<String, Integer>create();
 		linkedList.put("a", 1);
 		linkedList.putAll("b", Arrays.asList(2, 4, 2, 3));
 		
-		System.out.println(linkedList); // {a=[1], b=[2, 4, 2, 3]}
+		out(linkedList); // {a=[1], b=[2, 4, 2, 3]}
 		
 		// LinkedHashMap
 		LinkedHashMultimap<String, Integer> linkedhash = LinkedHashMultimap.<String, Integer>create();
 		linkedhash.put("a", 1);
 		linkedhash.putAll("b", Arrays.asList(2, 4, 2, 3));
 		
-		System.out.println(linkedhash); // {a=[1], b=[2, 4, 3]}
+		out(linkedhash); // {a=[1], b=[2, 4, 3]}
 		
 		// tree
 		TreeMultimap<String, Integer> tree = TreeMultimap.<String, Integer>create();
 		tree.put("a", 1);
 		tree.putAll("b", Arrays.asList(2, 4, 2, 3));
 		
-		System.out.println(tree); // {a=[1], b=[2, 3, 4]}
+		out(tree); // {a=[1], b=[2, 3, 4]}
 		
 		// 不可变集合
 		ImmutableListMultimap<String, Integer> immulist = ImmutableListMultimap.<String, Integer>builder().put("a", 1).putAll("c", 2, 2, 4, 5).build();
-		System.out.println(immulist); // {a=[1], c=[2, 2, 4, 5]}
+		out(immulist); // {a=[1], c=[2, 2, 4, 5]}
 		
-		System.out.println(immulist.inverse()); // {1=[a], 2=[c, c], 4=[c], 5=[c]} 反转，用值做Key、源Key作Value
+		out(immulist.inverse()); // {1=[a], 2=[c, c], 4=[c], 5=[c]} 反转，用值做Key、源Key作Value
 		
 		ImmutableSetMultimap<String, Integer> immuset = ImmutableSetMultimap.<String, Integer>of("d", 1, "c", 2);
-		System.out.println(immuset); // {d=[1], c=[2]}
+		out(immuset); // {d=[1], c=[2]}
 		
-		System.out.println(immuset.inverse()); // {1=[d], 2=[c]} 反转，用值做Key、源Key作Value
+		out(immuset.inverse()); // {1=[d], 2=[c]} 反转，用值做Key、源Key作Value
 		
 		// Multimaps
 	}
