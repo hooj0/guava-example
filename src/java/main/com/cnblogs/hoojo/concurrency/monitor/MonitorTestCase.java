@@ -1,10 +1,10 @@
 package com.cnblogs.hoojo.concurrency.monitor;
 
-import java.util.concurrent.TimeUnit;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.util.concurrent.Monitor;
 import org.junit.Test;
 
-import com.google.common.util.concurrent.Monitor;
+import java.util.concurrent.TimeUnit;
 
 /**
 Monitor有几个常用的方法
@@ -56,7 +56,8 @@ Monitor有几个常用的方法
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class MonitorTestCase {
+@SuppressWarnings("ALL")
+public class MonitorTestCase extends BasedTest {
 
 	private class MonitorTest<V> {
 		private V value;
@@ -66,7 +67,7 @@ public class MonitorTestCase {
 
 		private final Monitor.Guard valuePresent = new Monitor.Guard(monitor) {
 			public boolean isSatisfied() {
-				System.out.println("valuePresent.isSatisfied");
+				out("valuePresent.isSatisfied");
 				return value != null;
 				// return false; // 返回false 就会一直阻塞，直到返回true
 			}
@@ -74,7 +75,7 @@ public class MonitorTestCase {
 		
 		private final Monitor.Guard valueAbsent = new Monitor.Guard(monitor) {
 			public boolean isSatisfied() {
-				System.out.println("valueAbsent.isSatisfied");
+				out("valueAbsent.isSatisfied");
 				return value == null;
 			}
 		};
@@ -101,7 +102,7 @@ public class MonitorTestCase {
 		
 		public void set2(V newValue) throws InterruptedException {
 			if (monitor.enterIf(valueAbsent)) { // 不阻塞！等候获取锁！ 如果为true立即进入，否则就执行false
-				System.out.println("set2.....");
+				out("set2.....");
 				
 				try {
 					value = newValue;
@@ -115,7 +116,7 @@ public class MonitorTestCase {
 		
 		public V get2() throws InterruptedException {
 			if (monitor.enterIf(valuePresent)) {
-				System.out.println("get2.....");
+				out("get2.....");
 				
 				try {
 					V result = value;
@@ -132,7 +133,7 @@ public class MonitorTestCase {
 		
 		public void set3(V newValue) throws InterruptedException {
 			if (monitor.tryEnterIf(valueAbsent)) { // 不阻塞！ 如果为true立即进入，否则就执行false
-				System.out.println("set2.....");
+				out("set2.....");
 				
 				try {
 					value = newValue;
@@ -146,7 +147,7 @@ public class MonitorTestCase {
 		
 		public V get3() throws InterruptedException {
 			if (monitor.tryEnterIf(valuePresent)) {
-				System.out.println("get2.....");
+				out("get2.....");
 				
 				try {
 					V result = value;
@@ -168,9 +169,9 @@ public class MonitorTestCase {
 			
 			Thread t = new Thread(() -> {
 				try {
-					System.out.println("get....");
+					out("get....");
 					// 被阻塞，直到set方法执行完成
-					System.out.println("get: " + test.get());
+					out("get: " + test.get());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -179,16 +180,16 @@ public class MonitorTestCase {
 			
 			// 等待 上面线程被执行
 			Thread.sleep(1000);
-			System.out.println("sleep...");
+			out("sleep...");
 			Thread.sleep(1000);
 			
 			// 执行set，上面的get不再阻塞
-			System.out.println("set...");
+			out("set...");
 			test.set("test");
 			
 			// 当设置 Monitor(false)， 非公平竞争，下面的代码被优秀抢占资源执行任务
 			// 当设置 Monitor(true)， 公平竞争，下面的代码没有被执行任务，get1 被执行
-			System.out.println("get2: " + test.get());
+			out("get2: " + test.get());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -202,9 +203,9 @@ public class MonitorTestCase {
 			
 			Thread t = new Thread(() -> {
 				try {
-					System.out.println("get....");
+					out("get....");
 					// 无法进入被阻塞，抛出异常 InterruptedException: 无法进入get
-					System.out.println("get: " + test.get2());
+					out("get: " + test.get2());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -213,15 +214,15 @@ public class MonitorTestCase {
 			
 			// 等待 上面线程被执行
 			Thread.sleep(1000);
-			System.out.println("sleep...");
+			out("sleep...");
 			Thread.sleep(1000);
 			
 			// 执行set
-			System.out.println("set...");
+			out("set...");
 			test.set2("test");
 			
 			// 再次get 获取数据
-			System.out.println("get2: " + test.get2());
+			out("get2: " + test.get2());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -235,9 +236,9 @@ public class MonitorTestCase {
 			
 			Thread t = new Thread(() -> {
 				try {
-					System.out.println("get....");
+					out("get....");
 					// 无法进入被阻塞，抛出异常 InterruptedException: 无法进入get
-					System.out.println("get: " + test.get3());
+					out("get: " + test.get3());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -246,15 +247,15 @@ public class MonitorTestCase {
 			
 			// 等待 上面线程被执行
 			Thread.sleep(1000);
-			System.out.println("sleep...");
+			out("sleep...");
 			Thread.sleep(1000);
 			
 			// 执行set
-			System.out.println("set...");
+			out("set...");
 			test.set3("test");
 			
 			// 再次get 获取数据
-			System.out.println("get2: " + test.get3());
+			out("get2: " + test.get3());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -287,7 +288,7 @@ public class MonitorTestCase {
 			public void run() {
 				try {
 					for (int i = 0; i < 50; i++) {
-						System.out.println(this.getName() + ": " + value.add());
+						out(this.getName() + ": " + value.add());
 						Thread.sleep(200);
 					}
 				} catch (InterruptedException e) {
@@ -342,7 +343,7 @@ public class MonitorTestCase {
 			public void run() {
 				try {
 					for (int i = 0; i < 50; i++) {
-						System.out.println(this.getName() + ": " + value.add());
+						out(this.getName() + ": " + value.add());
 						Thread.sleep(200);
 					}
 				} catch (InterruptedException e) {
@@ -405,7 +406,7 @@ public class MonitorTestCase {
 			public void run() {
 				try {
 					for (int i = 0; i < 50; i++) {
-						System.out.println(this.getName() + ": " + value.add());
+						out(this.getName() + ": " + value.add());
 						Thread.sleep(200);
 					}
 				} catch (InterruptedException e) {
@@ -470,7 +471,7 @@ public class MonitorTestCase {
 			public void run() {
 				try {
 					for (int i = 0; i < 50; i++) {
-						System.out.println(this.getName() + ": " + i + "-> " + value.add());
+						out(this.getName() + ": " + i + "-> " + value.add());
 						Thread.sleep(200);
 					}
 				} catch (InterruptedException e) {
@@ -540,7 +541,7 @@ public class MonitorTestCase {
 			public void run() {
 				try {
 					for (int i = 0; i < 50; i++) {
-						System.out.println(this.getName() + ": " + value.add());
+						out(this.getName() + ": " + value.add());
 						Thread.sleep(200);
 					}
 				} catch (InterruptedException e) {
@@ -606,7 +607,7 @@ public class MonitorTestCase {
 			public void run() {
 				try {
 					for (int i = 0; i < 50; i++) {
-						System.out.println(this.getName() + ": " + value.add());
+						out(this.getName() + ": " + value.add());
 						Thread.sleep(200);
 					}
 				} catch (InterruptedException e) {
@@ -672,7 +673,7 @@ public class MonitorTestCase {
 			public void run() {
 				try {
 					for (int i = 0; i < 50; i++) {
-						System.out.println(this.getName() + ": " + i + "->" + value.add());
+						out(this.getName() + ": " + i + "->" + value.add());
 						Thread.sleep(200);
 					}
 				} catch (InterruptedException e) {
@@ -730,7 +731,7 @@ public class MonitorTestCase {
 			public void run() {
 				try {
 					for (int i = 0; i < 50; i++) {
-						System.out.println(this.getName() + ": " + value.add());
+						out(this.getName() + ": " + value.add());
 						Thread.sleep(200);
 					}
 				} catch (InterruptedException e) {
@@ -791,7 +792,7 @@ public class MonitorTestCase {
 			public void run() {
 				try {
 					for (int i = 0; i < 50; i++) {
-						System.out.println(this.getName() + ": " + value.add());
+						out(this.getName() + ": " + value.add());
 						Thread.sleep(200);
 					}
 				} catch (InterruptedException e) {
