@@ -22,6 +22,7 @@ import com.google.common.graph.Traverser;
  * @email hoojo_@126.com
  * @version 1.0
  */
+@SuppressWarnings("ALL")
 public class TraversingValueGraphTest extends AbstractGraphTests {
 
 	private static final String A = "A";
