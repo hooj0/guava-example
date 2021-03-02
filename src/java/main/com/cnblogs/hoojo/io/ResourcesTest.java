@@ -1,15 +1,15 @@
 package com.cnblogs.hoojo.io;
 
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.base.Charsets;
+import com.google.common.io.ByteSource;
+import com.google.common.io.Resources;
+import org.junit.Test;
+
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.function.Consumer;
-
-import org.junit.Test;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.ByteSource;
-import com.google.common.io.Resources;
 
 /**
  * 远程和本地文件资源读取
@@ -22,7 +22,8 @@ import com.google.common.io.Resources;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ResourcesTest {
+@SuppressWarnings("ALL")
+public class ResourcesTest extends BasedTest {
 
 	@Test
 	public void test1() throws Exception {
