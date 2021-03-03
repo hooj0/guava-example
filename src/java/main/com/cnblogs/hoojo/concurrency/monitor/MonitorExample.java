@@ -1,8 +1,9 @@
 package com.cnblogs.hoojo.concurrency.monitor;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.util.concurrent.Monitor;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 数据安全并发
@@ -15,7 +16,8 @@ import com.google.common.util.concurrent.Monitor;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class MonitorExample {
+@SuppressWarnings("ALL")
+public class MonitorExample extends BasedTest {
 
 	private final Monitor monitor = new Monitor();
 	private volatile boolean condition = true;
@@ -32,7 +34,7 @@ public class MonitorExample {
 	};
 
 	public void demoTryEnterIf() throws InterruptedException {
-		System.out.println("* demoTryEnterIf -> " + Thread.currentThread().getName());
+		out("* demoTryEnterIf -> " + Thread.currentThread().getName());
 		
 		if (monitor.tryEnterIf(conditionGuard)) {
 
@@ -40,20 +42,20 @@ public class MonitorExample {
 				simulatedWork();
 				taskDoneCounter++;
 
-				System.err.println(Thread.currentThread().getName() + " -> tryEnterIf ->" + taskDoneCounter + "/" + condition);
+				out(Thread.currentThread().getName() + " -> tryEnterIf ->" + taskDoneCounter + "/" + condition);
 			} finally {
 				monitor.leave();
 			}
 			
 		} else {
-			System.out.println(Thread.currentThread().getName() + " -> No-tryEnterIf: " + taskSkippedCounter.get() + "/" + condition);
+			out(Thread.currentThread().getName() + " -> No-tryEnterIf: " + taskSkippedCounter.get() + "/" + condition);
 			// 自增加1
 			taskSkippedCounter.incrementAndGet();
 		}
 	}
 
 	public void demoEnterIf() throws InterruptedException {
-		System.out.println("* demoEnterIf -> " + Thread.currentThread().getName());
+		out("* demoEnterIf -> " + Thread.currentThread().getName());
 
 		if (monitor.enterIf(conditionGuard)) {
 			
@@ -63,19 +65,19 @@ public class MonitorExample {
 					condition = false;
 				}
 
-				System.out.println(Thread.currentThread().getName() + " -> enterIf: " + taskDoneCounter + "/" + condition);
+				out(Thread.currentThread().getName() + " -> enterIf: " + taskDoneCounter + "/" + condition);
 			} finally {
 				monitor.leave();
 			}
 		} else {
-			System.err.println(Thread.currentThread().getName() + "-> No-demoEnterIf: " + taskSkippedCounter.get() + "/" + condition);
+			out(Thread.currentThread().getName() + "-> No-demoEnterIf: " + taskSkippedCounter.get() + "/" + condition);
 			taskSkippedCounter.incrementAndGet();
 		}
 
 	}
 
 	public void demoEnterWhen() throws InterruptedException {
-		System.out.println("* demoEnterWhen: " + Thread.currentThread().getName());
+		out("* demoEnterWhen: " + Thread.currentThread().getName());
 		
 		monitor.enterWhen(conditionGuard);
 		try {
@@ -84,14 +86,14 @@ public class MonitorExample {
 			if (taskDoneCounter == stopTaskCount) {
 				condition = false;
 			}
-			System.err.println(Thread.currentThread().getName() + "-> enterWhen: " + taskDoneCounter + "/" + condition);
+			out(Thread.currentThread().getName() + "-> enterWhen: " + taskDoneCounter + "/" + condition);
 		} finally {
 			monitor.leave();
 		}
 	}
 
 	private void simulatedWork() throws InterruptedException {
-		System.out.println("sleep->250");
+		out("sleep->250");
 		Thread.sleep(250);
 	}
 
