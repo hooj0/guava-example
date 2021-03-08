@@ -1,5 +1,6 @@
 package com.cnblogs.hoojo.hash;
 
+import com.cnblogs.hoojo.BasedTest;
 import org.junit.Test;
 
 import com.google.common.base.Charsets;
@@ -23,7 +24,8 @@ import com.google.common.hash.PrimitiveSink;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class HashTest {
+@SuppressWarnings({ "ALL", "AlibabaAvoidCommentBehindStatement" })
+public class HashTest extends BasedTest {
 
 	ImmutableMap<String, Object> person = ImmutableMap.<String, Object>of("age", 22, "qi", "1");
 
@@ -121,10 +123,5 @@ public class HashTest {
 		out(friends.approximateElementCount()); // 1
 		out(friends.expectedFpp()); // 1.4028060120101606E-20
 		out(friends.mightContain(person)); // true
-		
-	}
-	
-	private void out(Object o) {
-		System.out.println(o);
 	}
 }
