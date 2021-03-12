@@ -1,13 +1,12 @@
 package com.cnblogs.hoojo.graph;
 
-import java.util.Set;
-
-import org.junit.Test;
-
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.EndpointPair;
 import com.google.common.graph.MutableNetwork;
 import com.google.common.graph.NetworkBuilder;
+import org.junit.Test;
+
+import java.util.Set;
 
 /**
  * network graph test example
@@ -30,6 +29,7 @@ import com.google.common.graph.NetworkBuilder;
  * @email hoojo_@126.com
  * @version 1.0
  */
+@SuppressWarnings("ALL")
 public class NetworkTest extends AbstractGraphTests {
 
 	@Test
