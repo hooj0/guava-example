@@ -1,22 +1,6 @@
 package com.cnblogs.hoojo.concurrency.service._abstract;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.annotation.concurrent.GuardedBy;
-
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -26,6 +10,17 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.Service.Listener;
 import com.google.common.util.concurrent.Service.State;
+import org.junit.Test;
+
+import javax.annotation.concurrent.GuardedBy;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.*;
 
 /**
 抽象服务，可以完成异步线程任务调度，提供开始和停止的方法。
@@ -59,7 +54,8 @@ Service也提供了一些方法用于等待服务状态转换的完成:
 同步使用awaitRunning()。这个方法不能被打断、不强制捕获异常、一旦服务启动就会返回。如果服务没有成功启动，会抛出IllegalStateException异常。
 同样的， awaitTerminated() 方法会等待服务达到终止状态（TERMINATED 或者 FAILED）。两个方法都有重载方法允许传入超时时间。
 */
-public class AbstractServiceTest {
+@SuppressWarnings("ALL")
+public class AbstractServiceTest extends BasedTest {
 
 	private static final long LONG_TIMEOUT_MILLIS = 2500;
 	TimeUnit SECONDS = TimeUnit.SECONDS;
@@ -93,7 +89,7 @@ public class AbstractServiceTest {
 
 		@Override
 		public synchronized void starting() {
-			System.out.println("Listener.starting: " + service.state() + ", isRunning: " + service.isRunning());
+			out("Listener.starting: " + service.state() + ", isRunning: " + service.isRunning());
 			
 			assertTrue(stateHistory.isEmpty()); // empty
 			assertNotSame(State.NEW, service.state()); // NEW
@@ -102,29 +98,29 @@ public class AbstractServiceTest {
 
 		@Override
 		public synchronized void running() {
-			System.out.println("Listener.running: " + service.state() + ", isRunning: " + service.isRunning());
+			out("Listener.running: " + service.state() + ", isRunning: " + service.isRunning());
 			
 			assertEquals(State.STARTING, Iterables.getOnlyElement(stateHistory)); // 仅仅启动一次 STARTING
 			stateHistory.add(State.RUNNING);
 			
-			System.out.println("--------running.awaitRunning--------");
+			out("--------running.awaitRunning--------");
 			service.awaitRunning(); // 运行
 			assertNotSame(State.STARTING, service.state()); // service is STARTING
 		}
 
 		@Override
 		public synchronized void stopping(State from) {
-			System.out.println("Listener.stopping: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
+			out("Listener.stopping: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
 			
 			assertEquals(from, Iterables.getLast(stateHistory)); // TERMINATED 正常
 			stateHistory.add(State.STOPPING);
 			if (from == State.STARTING) { // 如果状态又变为 STARTING 则继续运行
 				try {
-					System.out.println("--------stopping.awaitRunning--------");
+					out("--------stopping.awaitRunning--------");
 					service.awaitRunning();
 					fail();
 				} catch (IllegalStateException expected) {
-					System.out.println("stopping.awaitRunning:" + expected);
+					out("stopping.awaitRunning:" + expected);
 					
 					assertNull(expected.getCause());
 					assertTrue(expected.getMessage().equals("Expected the service " + service + " to be RUNNING, but was STOPPING"));
@@ -135,18 +131,18 @@ public class AbstractServiceTest {
 
 		@Override
 		public synchronized void terminated(State from) {
-			System.out.println("Listener.terminated: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
+			out("Listener.terminated: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
 			
 			assertEquals(from, Iterables.getLast(stateHistory, State.NEW)); // NEW
 			stateHistory.add(State.TERMINATED);
 			assertEquals(State.TERMINATED, service.state()); // TERMINATED
 			if (from == State.NEW) { // 如果是NEW则继续运行
 				try {
-					System.out.println("--------terminated.awaitRunning--------");
+					out("--------terminated.awaitRunning--------");
 					service.awaitRunning();
 					fail();
 				} catch (IllegalStateException expected) {
-					System.out.println("terminated.awaitRunning:" + expected);
+					out("terminated.awaitRunning:" + expected);
 					
 					assertNull(expected.getCause());
 					assertTrue(expected.getMessage().equals("Expected the service " + service + " to be RUNNING, but was TERMINATED"));
@@ -157,7 +153,7 @@ public class AbstractServiceTest {
 
 		@Override
 		public synchronized void failed(State from, Throwable failure) {
-			System.out.println("Listener.failed: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning() + ", error: " + failure);
+			out("Listener.failed: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning() + ", error: " + failure);
 			
 			assertEquals(from, Iterables.getLast(stateHistory));
 			stateHistory.add(State.FAILED);
@@ -165,21 +161,21 @@ public class AbstractServiceTest {
 			assertEquals(failure, service.failureCause()); // Throwable
 			if (from == State.STARTING) {
 				try {
-					System.out.println("--------failed.awaitRunning--------");
+					out("--------failed.awaitRunning--------");
 					service.awaitRunning();
 					fail();
 				} catch (IllegalStateException e) {
-					System.out.println("failed.awaitRunning: " + e);
+					out("failed.awaitRunning: " + e);
 					
 					assertEquals(failure, e.getCause());
 				}
 			}
 			try {
-				System.out.println("--------failed.awaitTerminated--------");
+				out("--------failed.awaitTerminated--------");
 				service.awaitTerminated();
 				fail();
 			} catch (IllegalStateException e) {
-				System.out.println("failed.awaitTerminated: " + e);
+				out("failed.awaitTerminated: " + e);
 				
 				assertEquals(failure, e.getCause());
 			}
@@ -197,225 +193,225 @@ public class AbstractServiceTest {
 
 		@Override
 		protected void doStart() {
-			System.out.println("doStart: " + running + ", state: " + this.state() + ", isRunning: " + this.isRunning());
+			out("doStart: " + running + ", state: " + this.state() + ", isRunning: " + this.isRunning());
 			running = true;
 			
-			System.out.println("--------doStart.notifyStarted--------");
+			out("--------doStart.notifyStarted--------");
 			notifyStarted();
 		}
 
 		@Override
 		protected void doStop() {
-			System.out.println("doStop: " + running + ", state: " + this.state() + ", isRunning: " + this.isRunning());
+			out("doStop: " + running + ", state: " + this.state() + ", isRunning: " + this.isRunning());
 			running = false;
 			
-			System.out.println("--------doStop.notifyStopped--------");
+			out("--------doStop.notifyStopped--------");
 			notifyStopped();
 		}
 
 		public void notifyFailed2(Throwable cause) {
-			System.out.println("1.notifyFailed: " + running + ", state: " + this.state() + ", isRunning: " + this.isRunning());
+			out("1.notifyFailed: " + running + ", state: " + this.state() + ", isRunning: " + this.isRunning());
 
-			System.out.println("--------notifyFailed--------");
+			out("--------notifyFailed--------");
 			super.notifyFailed(cause);
 			
-			System.out.println("2.notifyFailed: " + running + ", state: " + this.state() + ", isRunning: " + this.isRunning());
+			out("2.notifyFailed: " + running + ", state: " + this.state() + ", isRunning: " + this.isRunning());
 		}
 	}
 
 	@Test
 	public void testNoOpServiceStartStop() throws Exception {
 		
-		System.out.println("--------new--------");
+		out("--------new--------");
 		NoOpService service = new NoOpService();
 		RecordingListener listener = RecordingListener.record(service);
 
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
+		out(service.running); // false
 
-		System.out.println("--------startAsync--------");
+		out("--------startAsync--------");
 		// 运行 startAsync 立即运行 doStart，doStart中运行notifyStarted，触发enqueueRunningEvent，状态以被置为 RUNNING
 		service.startAsync();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
-		System.out.println(service.running); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
+		out(service.running); // true
 
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		// 运行 stopAsync 立即运行 doStop，doStart中运行notifyStarted，触发enqueueTerminatedEvent，状态以被置为 TERMINATED
 		service.stopAsync();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
+		out(service.running); // false
 		assertEquals(ImmutableList.of(State.STARTING, State.RUNNING, State.STOPPING, State.TERMINATED), listener.getStateHistory());
 		
-		System.out.println(listener.getStateHistory());
+		out(listener.getStateHistory());
 	}
 	
 	@Test
 	public void testNoOpServiceStartAndWaitStopAndWait() throws Exception {
-		System.out.println("--------new--------");
+		out("--------new--------");
 		NoOpService service = new NoOpService();
 		RecordingListener.record(service);
 		
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
+		out(service.running); // false
 
-		System.out.println("--------startAsync.awaitRunning--------");
+		out("--------startAsync.awaitRunning--------");
 		service.startAsync().awaitRunning(); // 此处的awaitRunning是在doStart方法之后调用，属于重复调用
 		assertEquals(State.RUNNING, service.state());
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
-		System.out.println(service.running); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
+		out(service.running); // true
 		
-		System.out.println("--------stopAsync.awaitTerminated--------");
+		out("--------stopAsync.awaitTerminated--------");
 		service.stopAsync().awaitTerminated(); // 此处的awaitTerminated是在doStop方法之后调用，属于重复调用
 		assertEquals(State.TERMINATED, service.state());
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
+		out(service.running); // false
 	}
 
 	@Test
 	public void testNoOpServiceStartAsyncAndAwaitStopAsyncAndAwait() throws Exception {
-		System.out.println("--------new--------");
+		out("--------new--------");
 		NoOpService service = new NoOpService();
 		
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
+		out(service.running); // false
 
-		System.out.println("--------startAsync.awaitRunning--------");
+		out("--------startAsync.awaitRunning--------");
 		service.startAsync().awaitRunning();
 		assertEquals(State.RUNNING, service.state());
 		
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
-		System.out.println(service.running); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
+		out(service.running); // true
 
-		System.out.println("--------stopAsync.awaitTerminated--------");
+		out("--------stopAsync.awaitTerminated--------");
 		service.stopAsync().awaitTerminated();
 		assertEquals(State.TERMINATED, service.state());
 		
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
+		out(service.running); // false
 	}
 
 	@Test
 	public void testNoOpServiceStopIdempotence() throws Exception {
-		System.out.println("--------new--------");
+		out("--------new--------");
 		NoOpService service = new NoOpService();
 		RecordingListener listener = RecordingListener.record(service);
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
+		out(service.running); // false
 		
-		System.out.println("--------startAsync.awaitRunning--------");
+		out("--------startAsync.awaitRunning--------");
 		service.startAsync().awaitRunning();
 		assertEquals(State.RUNNING, service.state());
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
-		System.out.println(service.running); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
+		out(service.running); // true
 
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		service.stopAsync();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
+		out(service.running); // false
 		
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		service.stopAsync();	// stopAsync被重复调用，底层不执行业务
 		assertEquals(State.TERMINATED, service.state());
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
+		out(service.running); // false
 		
 		assertEquals(ImmutableList.of(State.STARTING, State.RUNNING, State.STOPPING, State.TERMINATED), listener.getStateHistory());
 	}
 
 	@Test
 	public void testNoOpServiceStopIdempotenceAfterWait() throws Exception {
-		System.out.println("--------new--------");
+		out("--------new--------");
 		NoOpService service = new NoOpService();
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
+		out(service.running); // false
 
-		System.out.println("--------startAsync.awaitRunning--------");
+		out("--------startAsync.awaitRunning--------");
 		service.startAsync().awaitRunning();
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
-		System.out.println(service.running); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
+		out(service.running); // true
 
-		System.out.println("--------stopAsync.awaitTerminated--------");
+		out("--------stopAsync.awaitTerminated--------");
 		service.stopAsync().awaitTerminated();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
+		out(service.running); // false
 		
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		service.stopAsync(); // stopAsync被重复调用，底层不执行业务
 		assertEquals(State.TERMINATED, service.state());
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
+		out(service.running); // false
 	}
 
 	@Test
 	public void testNoOpServiceStopIdempotenceDoubleWait() throws Exception {
-		System.out.println("--------new--------");
+		out("--------new--------");
 		NoOpService service = new NoOpService();
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
+		out(service.running); // false
 
-		System.out.println("--------startAsync.awaitRunning--------");
+		out("--------startAsync.awaitRunning--------");
 		service.startAsync().awaitRunning();
 		assertEquals(State.RUNNING, service.state());
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
-		System.out.println(service.running); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
+		out(service.running); // true
 
-		System.out.println("--------stopAsync.awaitTerminated--------");
+		out("--------stopAsync.awaitTerminated--------");
 		service.stopAsync().awaitTerminated();
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
+		out(service.running); // false
 		
-		System.out.println("--------stopAsync.awaitTerminated--------");
+		out("--------stopAsync.awaitTerminated--------");
 		service.stopAsync().awaitTerminated(); // stopAsync被重复调用，底层不执行业务
 		assertEquals(State.TERMINATED, service.state());
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
+		out(service.running); // false
 	}
 
 	@Test
 	public void testNoOpServiceStartStopAndWaitUninterruptible() throws Exception {
-		System.out.println("--------new--------");
+		out("--------new--------");
 		NoOpService service = new NoOpService();
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
+		out(service.running); // false
 
 
 		Thread.currentThread().interrupt();
 		try {
-			System.out.println("--------startAsync--------");
+			out("--------startAsync--------");
 			service.startAsync().awaitRunning();
 			assertEquals(State.RUNNING, service.state());
-			System.out.println(service.state()); // State.RUNNING
-			System.out.println(service.isRunning()); // true
-			System.out.println(service.running); // true
+			out(service.state()); // State.RUNNING
+			out(service.isRunning()); // true
+			out(service.running); // true
 
-			System.out.println("--------stopAsync--------");
+			out("--------stopAsync--------");
 			service.stopAsync().awaitTerminated();
 			assertEquals(State.TERMINATED, service.state());
-			System.out.println(service.state()); // State.TERMINATED
-			System.out.println(service.isRunning()); // false
-			System.out.println(service.running); // false
+			out(service.state()); // State.TERMINATED
+			out(service.isRunning()); // false
+			out(service.running); // false
 
 			assertTrue(Thread.currentThread().isInterrupted());
 		} finally {
@@ -425,11 +421,11 @@ public class AbstractServiceTest {
 	
 	@Test
 	public void testAwaitTerminated() throws Exception {
-		System.out.println("--------new--------");
+		out("--------new--------");
 		final NoOpService service = new NoOpService();
-		System.out.println(service.state()); // State.NEW
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.NEW
+		out(service.isRunning()); // false
+		out(service.running); // false
 		
 		// 在stopAsync后，未调用awaitTerminated 结束线程，会导致长时间等待阻塞
 		Thread waiter = new Thread() {
@@ -448,32 +444,32 @@ public class AbstractServiceTest {
 		// 一直等待 waiter执行完成，由于没有调用stopAsync，导致awaitTerminated长时间等待阻塞
 		//waiter.join();
 		
-		System.out.println("--------startAsync.awaitRunning--------");
+		out("--------startAsync.awaitRunning--------");
 		service.startAsync().awaitRunning();
 		assertEquals(State.RUNNING, service.state());
-		System.out.println(service.state()); // State.RUNNING
-		System.out.println(service.isRunning()); // true
-		System.out.println(service.running); // true
+		out(service.state()); // State.RUNNING
+		out(service.isRunning()); // true
+		out(service.running); // true
 		
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		service.stopAsync();
 		
 		// 正常调用awaitTerminated
 		// service.awaitTerminated();
 		
 		// waiter.start() 后调用 service.awaitTerminated()后，waiter进入阻塞状态
-		System.out.println("waiter state:" + waiter.getState()); // TIMED_WAITING
+		out("waiter state:" + waiter.getState()); // TIMED_WAITING
 		
 		// 正常情况下waiter启动后立即运行就结束， waiter.start() 后调用 service.awaitTerminated()后，waiter进入阻塞状态
 		// 由于waiter.join主线程会等待执行完成
 		// 同时，由于主线程调用service.stopAsync()后，才能运行awaitTerminated() ，故上面代码可以顺利执行
 		waiter.join(LONG_TIMEOUT_MILLIS); // ensure that the await in the other thread is triggered
-		System.out.println("waiter state:" + waiter.getState()); // TERMINATED
+		out("waiter state:" + waiter.getState()); // TERMINATED
 		assertFalse(waiter.isAlive());
 		
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
-		System.out.println(service.running); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
+		out(service.running); // false
 	}
 	
 	@Test
@@ -489,7 +485,7 @@ public class AbstractServiceTest {
 			service.startAsync(); // Service NoOpService [TERMINATED] has already been started
 			fail();
 		} catch (IllegalStateException expected) {
-			System.out.println(expected);
+			out(expected);
 		}
 		assertEquals(State.TERMINATED, Iterables.getOnlyElement(listener.getStateHistory()));
 	}
@@ -499,32 +495,32 @@ public class AbstractServiceTest {
 		NoOpService service = new NoOpService();
 		RecordingListener.record(service);
 		
-		System.out.println("-------startAsync.awaitRunning-------");
+		out("-------startAsync.awaitRunning-------");
 		service.startAsync().awaitRunning();
-		System.out.println(service.state()); // State.STARTING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STARTING
+		out(service.isRunning()); // false
 
-		System.out.println("-------stopAsync.awaitTerminated-------");
+		out("-------stopAsync.awaitTerminated-------");
 		service.stopAsync().awaitTerminated();
-		System.out.println(service.state()); // State.STOPPING
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.STOPPING
+		out(service.isRunning()); // false
 		// 至此，整个流程顺利完成
 		
-		System.out.println("-------notifyFailed2-------");
+		out("-------notifyFailed2-------");
 		try {
 			// notifyFailed() -> state = TERMINATED -> IllegalStateException: Failed while in state:TERMINATED
 			service.notifyFailed2(new Exception("my exception")); // 由于状态 TERMINATED 不触发Listener
 			fail();
 		} catch (IllegalStateException expected) {
 			// failureCause() is only valid if the service has failed, service is TERMINATED
-			//System.out.println(service.failureCause()); // 程序流程顺利完成没有发生异常情况下，再调用该方法会抛出异常
+			//out(service.failureCause()); // 程序流程顺利完成没有发生异常情况下，再调用该方法会抛出异常
 			
-			System.out.println(expected);//java.lang.IllegalStateException: Failed while in state:TERMINATED
-			System.out.println(expected.getCause());
+			out(expected);//java.lang.IllegalStateException: Failed while in state:TERMINATED
+			out(expected.getCause());
 		}
 		
-		System.out.println(service.state()); // State.TERMINATED
-		System.out.println(service.isRunning()); // false
+		out(service.state()); // State.TERMINATED
+		out(service.isRunning()); // false
 	}
 	
 	/**
@@ -539,7 +535,7 @@ public class AbstractServiceTest {
 
 		@Override
 		protected void doStart() {
-			System.out.println("doStart……");
+			out("doStart……");
 			
 			assertFalse(doStartCalled);
 			doStartCalled = true;
@@ -547,7 +543,7 @@ public class AbstractServiceTest {
 
 		@Override
 		protected void doStop() {
-			System.out.println("doStop……");
+			out("doStop……");
 			
 			assertFalse(doStopCalled);
 			doStopCalled = true;
@@ -571,25 +567,25 @@ public class AbstractServiceTest {
 		ManualSwitchedService service = new ManualSwitchedService();
 		RecordingListener listener = RecordingListener.record(service);
 
-		System.out.println("-----------startAsync----------");
+		out("-----------startAsync----------");
 		service.startAsync(); // 1、invoke doStart() & 2、dispatch Listener.starting
 		assertEquals(State.STARTING, service.state());
 		assertFalse(service.isRunning());
 		assertTrue(service.doStartCalled);
 
-		System.out.println("-----------notifyStarted2----------");
+		out("-----------notifyStarted2----------");
 		// dispatch Listener.running
 		service.notifyStarted2(); // usually this would be invoked by another thread
 		assertEquals(State.RUNNING, service.state());
 		assertTrue(service.isRunning());
 
-		System.out.println("-----------stopAsync----------");
+		out("-----------stopAsync----------");
 		service.stopAsync(); // 1、invoke doStop() & 2、dispatch Listener.stopping
 		assertEquals(State.STOPPING, service.state());
 		assertFalse(service.isRunning());
 		assertTrue(service.doStopCalled);
 
-		System.out.println("-----------notifyStopped2----------");
+		out("-----------notifyStopped2----------");
 		// dispatch Listener.terminated
 		service.notifyStopped2(); // usually this would be invoked by another thread
 		assertEquals(State.TERMINATED, service.state());
@@ -603,18 +599,18 @@ public class AbstractServiceTest {
 		ManualSwitchedService service = new ManualSwitchedService();
 		RecordingListener listener = RecordingListener.record(service);
 
-		System.out.println("-----------startAsync----------");
+		out("-----------startAsync----------");
 		service.startAsync(); // 1、invoke doStart() & 2、dispatch Listener.starting
-		System.out.println(service.state()); // STARTING
+		out(service.state()); // STARTING
 		
-		System.out.println("-----------notifyStarted2----------");
+		out("-----------notifyStarted2----------");
 		service.notifyStarted2(); // dispatch event Listener.running
-		System.out.println(service.state()); // RUNNING
+		out(service.state()); // RUNNING
 		
 		// 程序没有调用stopAsync 直接跳过STOPPING进入TERMINATED
-		System.out.println("-----------notifyStopped2----------");
+		out("-----------notifyStopped2----------");
 		service.notifyStopped2(); // dispatch event Listener.terminated
-		System.out.println(service.state()); // TERMINATED
+		out(service.state()); // TERMINATED
 		
 		assertEquals(State.TERMINATED, service.state());
 		assertFalse(service.isRunning());
@@ -628,28 +624,28 @@ public class AbstractServiceTest {
 		ManualSwitchedService service = new ManualSwitchedService();
 		RecordingListener listener = RecordingListener.record(service);
 
-		System.out.println("-----------startAsync----------");
+		out("-----------startAsync----------");
 		// 回调doStart(), 触发Listener.stopping
 		service.startAsync(); // STARTING
 		assertEquals(State.STARTING, service.state());
 		assertFalse(service.isRunning());
 		assertTrue(service.doStartCalled);
 
-		System.out.println("-----------stopAsync----------");
+		out("-----------stopAsync----------");
 		// 触发Listener.stopping
 		service.stopAsync(); // STOPPING
 		assertEquals(State.STOPPING, service.state());
 		assertFalse(service.isRunning());
 		assertFalse(service.doStopCalled);
 
-		System.out.println("-----------notifyStarted2----------");
+		out("-----------notifyStarted2----------");
 		// 回调doStop()，因为shutdownWhenStartupFinishes = false
 		service.notifyStarted2(); //State.STOPPING 
 		assertEquals(State.STOPPING, service.state());
 		assertFalse(service.isRunning());
 		assertTrue(service.doStopCalled);
 
-		System.out.println("-----------notifyStopped2----------");
+		out("-----------notifyStopped2----------");
 		// 触发 Listener.terminated
 		service.notifyStopped2();
 		assertEquals(State.TERMINATED, service.state());
@@ -669,23 +665,23 @@ public class AbstractServiceTest {
 		service.addListener(new Listener() {
 			@Override
 			public void stopping(State from) {
-				System.out.println("stopping……");
+				out("stopping……");
 				stopppingCount.incrementAndGet();
 			}
 		}, MoreExecutors.directExecutor());
 
 		service.startAsync();
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning());//state:STARTING, run:false
+		out("state:" + service.state() + ", run:" + service.isRunning());//state:STARTING, run:false
 		
 		// 在调用stopAsync的时候，前置状态state=STARTING；底层执行enqueueStoppingEvent事件，触发Listener.stopping
 		service.stopAsync();
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning());//state:STOPPING, run:false
+		out("state:" + service.state() + ", run:" + service.isRunning());//state:STOPPING, run:false
 		assertEquals(1, stopppingCount.get());
 		
 		// 再次调用stopAsync的时候，前置状态state=state:STOPPING，底层不执行任何业务，故不触发任何事件。
 		// 最终stopppingCount=1
 		service.stopAsync();
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning());//state:STOPPING, run:false
+		out("state:" + service.state() + ", run:" + service.isRunning());//state:STOPPING, run:false
 		assertEquals(1, stopppingCount.get());
 	}
 
@@ -694,10 +690,10 @@ public class AbstractServiceTest {
 		ManualSwitchedService service = new ManualSwitchedService();
 		RecordingListener listener = RecordingListener.record(service);
 
-		System.out.println("-------stopAsync-------");
+		out("-------stopAsync-------");
 		// 执行stopAsync方法，前置状态为NEW。底层直接触发enqueueTerminatedEvent，调用Listener.terminated
 		service.stopAsync();
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning());//state:TERMINATED, run:false
+		out("state:" + service.state() + ", run:" + service.isRunning());//state:TERMINATED, run:false
 		
 		assertEquals(State.TERMINATED, service.state());
 		assertFalse(service.isRunning());
@@ -711,11 +707,11 @@ public class AbstractServiceTest {
 		ManualSwitchedService service = new ManualSwitchedService();
 		RecordingListener listener = RecordingListener.record(service);
 		
-		System.out.println("--------startAsync-------");
+		out("--------startAsync-------");
 		// doStart & Listener.starting
 		service.startAsync();
 		
-		System.out.println("--------notifyFailed2-------");
+		out("--------notifyFailed2-------");
 		// Listener.failed
 		service.notifyFailed2(EXCEPTION);
 		
@@ -763,10 +759,10 @@ public class AbstractServiceTest {
 
 		// doStart()
 		service.startAsync();
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning());//state:STARTING, run:false
+		out("state:" + service.state() + ", run:" + service.isRunning());//state:STARTING, run:false
 
 		service.notifyStarted2();
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning());//state:RUNNING, run:true
+		out("state:" + service.state() + ", run:" + service.isRunning());//state:RUNNING, run:true
 		
 		assertEquals(State.RUNNING, service.state());
 		assertTrue(service.isRunning());
@@ -774,7 +770,7 @@ public class AbstractServiceTest {
 
 		// previous != STOPPING && previous != RUNNING -> false ---------dispatch terminated/TERMINATED
 		service.notifyStopped2();//state:TERMINATED, run:false
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning());
+		out("state:" + service.state() + ", run:" + service.isRunning());
 		
 		assertEquals(State.TERMINATED, service.state());
 		assertFalse(service.isRunning());
@@ -790,36 +786,36 @@ public class AbstractServiceTest {
 			@Override
 			public void run() {
 				try {
-					System.out.println("awaitTerminated...");
+					out("awaitTerminated...");
 					
 					// 运行awaitTerminated到这里被阻塞
 					service.awaitTerminated(); // Expected the service ManualSwitchedService [FAILED] to be TERMINATED, but the service has FAILED
 					
 					// 下面的无法执行到，正常情况下在notifyStopped会执行到下面的代码块
-					System.out.println("exception...");
+					out("exception...");
 					fail("Expected an IllegalStateException");
 				} catch (Throwable t) {
 					exception.set(t);
-					System.out.println("catch: " + t.getMessage());
+					out("catch: " + t.getMessage());
 				}
 			}
 		};
 		waiter.start();
 		
-		System.out.println("---------startAsync---------");
+		out("---------startAsync---------");
 		// doStart()
 		service.startAsync();
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning());//state:STARTING, run:false
+		out("state:" + service.state() + ", run:" + service.isRunning());//state:STARTING, run:false
 		
-		System.out.println("---------notifyStarted2---------");
+		out("---------notifyStarted2---------");
 		service.notifyStarted2();
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning());//state:RUNNING, run:true
+		out("state:" + service.state() + ", run:" + service.isRunning());//state:RUNNING, run:true
 		assertEquals(State.RUNNING, service.state());
 		
-		System.out.println("---------notifyFailed2---------");
+		out("---------notifyFailed2---------");
 		// fail Exception，导致上面waiter线程中的awaitTerminated阻塞停止
 		service.notifyFailed2(EXCEPTION);
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning());//state:FAILED, run:false
+		out("state:" + service.state() + ", run:" + service.isRunning());//state:FAILED, run:false
 		assertEquals(State.FAILED, service.state());
 		
 		// 正常流程，会运行waiter中的fail Exception
@@ -840,31 +836,31 @@ public class AbstractServiceTest {
 		 */
 		RecordingListener.record(service);
 		
-		System.out.println("---------startAsync--------");
+		out("---------startAsync--------");
 		service.startAsync();
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning()); //state:STARTING, run:false
+		out("state:" + service.state() + ", run:" + service.isRunning()); //state:STARTING, run:false
 		
-		System.out.println("---------notifyFailed2--------");
+		out("---------notifyFailed2--------");
 		// 前置状态 state=STARTING，触发Listener.failed
 		service.notifyFailed2(new Exception("1"));
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning()); //state:FAILED, run:false
+		out("state:" + service.state() + ", run:" + service.isRunning()); //state:FAILED, run:false
 		
-		System.out.println("---------notifyFailed2--------");
+		out("---------notifyFailed2--------");
 		// 前置状态 state=state:FAILED 不做任何处理
 		service.notifyFailed2(new Exception("2"));
-		System.out.println("state:" + service.state() + ", run:" + service.isRunning()); //state:FAILED, run:false
+		out("state:" + service.state() + ", run:" + service.isRunning()); //state:FAILED, run:false
 		
 		// 由于service.notifyFailed2(new Exception("2")) 没有被触发和处理，所以下面的Exception=1
-		System.out.println(service.failureCause()); // java.lang.Exception: 1
+		out(service.failureCause()); // java.lang.Exception: 1
 		// assertThat(service.failureCause()).hasMessage("1");
 		try {
 			service.awaitRunning(); // failure Exception("1")
 			// 由于上面的Exception，此时这里的不被运行
-			System.out.println("un exec");
+			out("un exec");
 			fail();
 		} catch (Exception e) {
 			// assertThat(e.getCause()).hasMessage("1");
-			System.out.println(e.getCause());
+			out(e.getCause());
 		}
 	}
 
@@ -902,13 +898,13 @@ public class AbstractServiceTest {
 		 * 为了避免这种情况，主线程调用这个方法，等待服务执行自己的“运行”检查。
 		 */
 		void awaitRunChecks() throws InterruptedException {
-			System.out.println("---------awaitRunChecks----------");
+			out("---------awaitRunChecks----------");
 			assertTrue("Service thread hasn't finished its checks. " + "Exception status (possibly stale): " + thrownByExecutionThread, hasConfirmedIsRunning.await(1000, SECONDS));
 		}
 
 		@Override
 		protected void doStart() {
-			System.out.println("doStart........");
+			out("doStart........");
 			
 			assertEquals(State.STARTING, state());
 			invokeOnExecutionThreadForTest(new Runnable() {
@@ -921,9 +917,9 @@ public class AbstractServiceTest {
 					}
 					
 					assertEquals(State.STARTING, state());
-					System.out.println("----notifyStarted------start");
+					out("----notifyStarted------start");
 					notifyStarted();
-					System.out.println("----notifyStarted------end");
+					out("----notifyStarted------end");
 					assertEquals(State.RUNNING, state());
 					
 					hasConfirmedIsRunning.countDown();
@@ -933,16 +929,16 @@ public class AbstractServiceTest {
 
 		@Override
 		protected void doStop() {
-			System.out.println("doStop........");
+			out("doStop........");
 			
 			assertEquals(State.STOPPING, state());
 			invokeOnExecutionThreadForTest(new Runnable() {
 				@Override
 				public void run() {
 					assertEquals(State.STOPPING, state());
-					System.out.println("----notifyStopped------start");
+					out("----notifyStopped------start");
 					notifyStopped();
-					System.out.println("----notifyStopped------end");
+					out("----notifyStopped------end");
 					assertEquals(State.TERMINATED, state());
 				}
 			});
@@ -1027,17 +1023,17 @@ public class AbstractServiceTest {
 	private static class StartFailingService extends AbstractService {
 		@Override
 		protected void doStart() {
-			System.out.println("doStart().......");
+			out("doStart().......");
 			
-			System.out.println("------notifyFailed------");
+			out("------notifyFailed------");
 			notifyFailed(EXCEPTION);
 		}
 
 		@Override
 		protected void doStop() {
-			System.out.println("doStop().......");
+			out("doStop().......");
 			
-			System.out.println("------fail------");
+			out("------fail------");
 			fail();
 		}
 	}
@@ -1055,9 +1051,9 @@ public class AbstractServiceTest {
 			service.startAsync().awaitRunning(); 
 			fail(); // 此处不被执行，上面的代码异常
 		} catch (IllegalStateException e) {
-			System.out.println(e.getMessage());
-			System.out.println(e.getCause());
-			System.out.println(service.failureCause());
+			out(e.getMessage());
+			out(e.getCause());
+			out(service.failureCause());
 			
 			assertEquals(EXCEPTION, service.failureCause());
 			assertEquals(EXCEPTION, e.getCause());
@@ -1081,36 +1077,36 @@ public class AbstractServiceTest {
 			@Override
 			public void run() {
 				// Internally stopAsync() grabs a lock, this could be any such method on AbstractService.
-				System.out.println("---run---start");
+				out("---run---start");
 				service.stopAsync();
-				System.out.println("---run---end");
+				out("---run---end");
 			}
 		};
 		thread.start();
 		// 等待 线程运行完成
 		thread.join(LONG_TIMEOUT_MILLIS);
 		
-		System.out.println(thread.isAlive());
+		out(thread.isAlive());
 		assertFalse(thread + " is deadlocked", thread.isAlive());
 	}
 
 	private static class StopFailingService extends AbstractService {
 		@Override
 		protected void doStart() {
-			System.out.println("doStart..........");
+			out("doStart..........");
 			
-			System.out.println("notifyStarted..........start");
+			out("notifyStarted..........start");
 			notifyStarted();
-			System.out.println("notifyStarted..........end");
+			out("notifyStarted..........end");
 		}
 
 		@Override
 		protected void doStop() {
-			System.out.println("doStop..........");
+			out("doStop..........");
 
-			System.out.println("notifyFailed..........start");
+			out("notifyFailed..........start");
 			notifyFailed(EXCEPTION);
-			System.out.println("notifyFailed..........end");
+			out("notifyFailed..........end");
 		}
 	}
 	
@@ -1125,10 +1121,10 @@ public class AbstractServiceTest {
 		try {
 			// stopAsync: invoke doStop() -> invoke notifyFailed() -> dispatch Listener.failed() & dispatch Listener.stopping()
 			service.stopAsync().awaitTerminated(); // awaitTerminated() 遇到异常
-			System.out.println("---fail---");
+			out("---fail---");
 			fail(); // no execute
 		} catch (IllegalStateException e) {
-			System.out.println(e.getCause()); // java.lang.Exception: my exception
+			out(e.getCause()); // java.lang.Exception: my exception
 			
 			assertEquals(EXCEPTION, service.failureCause());
 			assertEquals(EXCEPTION, e.getCause());
@@ -1143,19 +1139,19 @@ public class AbstractServiceTest {
 		
 		try {
 			// failureCause 仅在服务失败failed情况时，有效
-			System.out.println("1.failureCause: " + service.failureCause());
+			out("1.failureCause: " + service.failureCause());
 			fail();
 		} catch (IllegalStateException expected) {
-			System.out.println("1.expected: " + expected);
+			out("1.expected: " + expected);
 		}
 		
 		service.startAsync().awaitRunning();
 		
 		try {
-			System.out.println("2.failureCause: " + service.failureCause());
+			out("2.failureCause: " + service.failureCause());
 			fail();
 		} catch (IllegalStateException expected) {
-			System.out.println("2.expected: " + expected);
+			out("2.expected: " + expected);
 		}
 		
 		try {
@@ -1164,12 +1160,12 @@ public class AbstractServiceTest {
 			// 3、notifyFailed() -> dispatch Listener.failed()
 			service.stopAsync().awaitTerminated();
 			
-			System.out.println("--fail--");
+			out("--fail--");
 			fail(); // 
 		} catch (IllegalStateException e) {
-			System.out.println("3.expected: " + e); // java.lang.Exception: my exception
-			System.out.println("3.expected: " + e.getCause());
-			System.out.println("3.expected: " + service.failureCause());
+			out("3.expected: " + e); // java.lang.Exception: my exception
+			out("3.expected: " + e.getCause());
+			out("3.expected: " + service.failureCause());
 			
 			assertEquals(EXCEPTION, service.failureCause());
 			assertEquals(EXCEPTION, e.getCause());
@@ -1179,20 +1175,20 @@ public class AbstractServiceTest {
 	private static class RunFailingService extends AbstractService {
 		@Override
 		protected void doStart() {
-			System.out.println("--doStart--");
+			out("--doStart--");
 			
-			System.out.println("--notifyStarted--");
+			out("--notifyStarted--");
 			notifyStarted();
 			
-			System.out.println("--notifyFailed--");
+			out("--notifyFailed--");
 			notifyFailed(EXCEPTION);
 		}
 
 		@Override
 		protected void doStop() {
-			System.out.println("--doStop--");
+			out("--doStop--");
 			
-			System.out.println("--doStop.fail--");
+			out("--doStop.fail--");
 			fail();
 		}
 	}
@@ -1210,8 +1206,8 @@ public class AbstractServiceTest {
 			service.awaitRunning(); // java.lang.Exception: my exception
 			fail(); // no execute
 		} catch (IllegalStateException e) {
-			System.out.println("exception: " + e); // java.lang.Exception: my exception
-			System.out.println("exception: " + e.getCause());
+			out("exception: " + e); // java.lang.Exception: my exception
+			out("exception: " + e.getCause());
 			
 			assertEquals(EXCEPTION, service.failureCause());
 			assertEquals(EXCEPTION, e.getCause());
@@ -1225,15 +1221,15 @@ public class AbstractServiceTest {
 
 		@Override
 		protected void doStart() {
-			System.out.println("doStart........");
+			out("doStart........");
 			throw exception;
 		}
 
 		@Override
 		protected void doStop() {
-			System.out.println("doStop........");
+			out("doStop........");
 		
-			System.out.println("doStop.fail........");
+			out("doStop.fail........");
 			fail();
 		}
 	}
@@ -1249,11 +1245,11 @@ public class AbstractServiceTest {
 			// 2、notifyFailed() -> dispatch Listener.failed()  
 			service.startAsync().awaitRunning();
 			
-			System.out.println("---fail---");
+			out("---fail---");
 			fail("un execute");
 		} catch (IllegalStateException e) {
-			System.out.println("exception: " + e); // java.lang.RuntimeException: deliberate
-			System.out.println("exception: " + e.getCause());
+			out("exception: " + e); // java.lang.RuntimeException: deliberate
+			out("exception: " + e.getCause());
 			
 			assertEquals(service.exception, service.failureCause());
 			assertEquals(service.exception, e.getCause());
@@ -1272,7 +1268,7 @@ public class AbstractServiceTest {
 
 		@Override
 		protected void doStop() {
-			System.out.println("doStop....");
+			out("doStop....");
 			throw exception;
 		}
 	}
@@ -1292,8 +1288,8 @@ public class AbstractServiceTest {
 			
 			fail("no execute...");
 		} catch (IllegalStateException e) {
-			System.out.println("exception: " + e); // java.lang.RuntimeException: deliberate
-			System.out.println("exception: " + e.getCause());
+			out("exception: " + e); // java.lang.RuntimeException: deliberate
+			out("exception: " + e.getCause());
 			
 			assertEquals(service.exception, service.failureCause());
 			assertEquals(service.exception, e.getCause());
@@ -1307,18 +1303,18 @@ public class AbstractServiceTest {
 
 		@Override
 		protected void doStart() {
-			System.out.println("doStart.........");
+			out("doStart.........");
 
-			System.out.println("notifyStarted.........");
+			out("notifyStarted.........");
 			notifyStarted();
 			throw exception;
 		}
 
 		@Override
 		protected void doStop() {
-			System.out.println("doStop.........");
+			out("doStop.........");
 
-			System.out.println("doStop.fail.........");
+			out("doStop.fail.........");
 			fail();
 		}
 	}
@@ -1328,19 +1324,19 @@ public class AbstractServiceTest {
 		RunThrowingService service = new RunThrowingService();
 		RecordingListener listener = RecordingListener.record(service);
 
-		System.out.println("---startAsync---");
+		out("---startAsync---");
 		// 0、startAsync() -> doStart() & dispatch Listener.starting()
 		// 1、doStart() -> notifyStarted() & throw Exception -> notifyFailed()
 		// 2、notifyStarted() -> dispatch Listener.running()  
 		// 3、notifyFailed() -> dispatch Listener.failed()  
 		service.startAsync();
 		try {
-			System.out.println("---awaitTerminated---");
+			out("---awaitTerminated---");
 			service.awaitTerminated(); // java.lang.RuntimeException: deliberate
 			fail("no executed");
 		} catch (IllegalStateException e) {
-			System.out.println("exception: " + e); // java.lang.RuntimeException: deliberate
-			System.out.println("exception: " + e.getCause());
+			out("exception: " + e); // java.lang.RuntimeException: deliberate
+			out("exception: " + e.getCause());
 			
 			assertEquals(service.exception, service.failureCause());
 			assertEquals(service.exception, e.getCause());
@@ -1351,26 +1347,26 @@ public class AbstractServiceTest {
 	private static class DefaultService extends AbstractService {
 		@Override
 		protected void doStart() {
-			System.out.println("doStart..........");
+			out("doStart..........");
 		}
 
 		@Override
 		protected void doStop() {
-			System.out.println("doStop..........");
+			out("doStop..........");
 		}
 
 		public void notifyStarted2() {
-			System.out.println("notifyStarted2..........");
+			out("notifyStarted2..........");
 			super.notifyStarted();
 		}
 
 		public void notifyStopped2() {
-			System.out.println("notifyStopped2..........");
+			out("notifyStopped2..........");
 			super.notifyStopped();
 		}
 
 		public void notifyFailed2(Throwable cause) {
-			System.out.println("notifyFailed2..........");
+			out("notifyFailed2..........");
 			super.notifyFailed(cause);
 		}
 	}
@@ -1384,8 +1380,8 @@ public class AbstractServiceTest {
 			service.notifyStarted2(); // java.lang.IllegalStateException: Failed while in state:NEW
 			fail();
 		} catch (IllegalStateException expected) {
-			System.out.println(expected);
-			System.out.println(expected.getCause());
+			out(expected);
+			out(expected.getCause());
 		}
 	}
 
@@ -1400,8 +1396,8 @@ public class AbstractServiceTest {
 			
 			fail();
 		} catch (IllegalStateException expected) {
-			System.out.println(expected);
-			System.out.println(expected.getCause());
+			out(expected);
+			out(expected.getCause());
 		}
 	}
 
@@ -1413,8 +1409,8 @@ public class AbstractServiceTest {
 			service.notifyFailed2(new Exception());
 			fail();
 		} catch (IllegalStateException expected) {
-			System.out.println(expected);
-			System.out.println(expected.getCause());
+			out(expected);
+			out(expected.getCause());
 		}
 	}
 
