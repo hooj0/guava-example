@@ -1,16 +1,16 @@
 package com.cnblogs.hoojo.ordering;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.base.Function;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import org.junit.Test;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 数据排序
@@ -116,7 +116,8 @@ import com.google.common.collect.Ordering;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class OrderingTest {
+@SuppressWarnings("ALL")
+public class OrderingTest extends BasedTest {
 	
 	@Test
 	public void testSort() {
@@ -125,11 +126,11 @@ public class OrderingTest {
 		List<Integer> list = Lists.newArrayList(1, 3, 2, 7, 5, 4);
 		
 		try {
-			System.out.println(list); // [1, 3, 2, 7, 5, 4]
+			out(list); // [1, 3, 2, 7, 5, 4]
 			
 			list.sort(Ordering.natural());
 			
-			System.out.println(list); //[1, 2, 3, 4, 5, 7]
+			out(list); //[1, 2, 3, 4, 5, 7]
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -138,13 +139,13 @@ public class OrderingTest {
 		List<String> list2 = Lists.newArrayList("aa", "abc", "word", "炸弹", "1limt", "3", "哈哈");
 		
 		try {
-			System.out.println(list2); //[aa, abc, word, 炸弹, 1limt, 3, 哈哈]
+			out(list2); //[aa, abc, word, 炸弹, 1limt, 3, 哈哈]
 			
 			list2.sort(Ordering.usingToString());
-			System.out.println(list2); //[1limt, 3, aa, abc, word, 哈哈, 炸弹]
+			out(list2); //[1limt, 3, aa, abc, word, 哈哈, 炸弹]
 			
 			list2.sort(Ordering.usingToString().reversed());
-			System.out.println(list2); //[炸弹, 哈哈, word, abc, aa, 3, 1limt]
+			out(list2); //[炸弹, 哈哈, word, abc, aa, 3, 1limt]
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -159,10 +160,10 @@ public class OrderingTest {
 			}
 		});
 		
-		System.out.println(list); //[1, 3, 2, 7, 5, 4, null]
+		out(list); //[1, 3, 2, 7, 5, 4, null]
 		
 		list.sort(order.nullsFirst());
-		System.out.println(list); //[null, 1, 2, 3, 4, 5, 7]
+		out(list); //[null, 1, 2, 3, 4, 5, 7]
 	}
 	
 	@Test
@@ -172,7 +173,7 @@ public class OrderingTest {
 		List<Entity> list = Lists.newArrayList(new Entity(1, 2), new Entity(4, 3), null, new Entity(2, 1), new Entity(4, 1));
 		
 		try {
-			System.out.println(list); // [E{1, 2}, E{4, 3}, null, E{2, 1}, E{4, 1}]
+			out(list); // [E{1, 2}, E{4, 3}, null, E{2, 1}, E{4, 1}]
 			
 			Ordering<Entity> order = Ordering.from(new Comparator<Entity>() {
 				@Override
@@ -182,7 +183,7 @@ public class OrderingTest {
 			});
 			
 			list.sort(order.nullsFirst());
-			System.out.println(list); //[null, E{1, 2}, E{2, 1}, E{4, 3}, E{4, 1}]
+			out(list); //[null, E{1, 2}, E{2, 1}, E{4, 3}, E{4, 1}]
 			
 			list.sort(order.nullsLast().compound(new Comparator<Entity>() {
 				@Override
@@ -190,7 +191,7 @@ public class OrderingTest {
 					return ComparisonChain.start().compare(o1.b, o2.b).result();
 				}
 			}));
-			System.out.println(list); // [E{1, 2}, E{2, 1}, E{4, 1}, E{4, 3}, null]
+			out(list); // [E{1, 2}, E{2, 1}, E{4, 1}, E{4, 3}, null]
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -200,7 +201,7 @@ public class OrderingTest {
 		list = Lists.newArrayList(new Entity(1, 2), new Entity(4, 3), null, new Entity(2, 1), new Entity(4, 1));
 		
 		try {
-			System.out.println(list); //[E{1, 2}, E{4, 3}, null, E{2, 1}, E{4, 1}]
+			out(list); //[E{1, 2}, E{4, 3}, null, E{2, 1}, E{4, 1}]
 			
 			Ordering<Entity> order = Ordering.natural().nullsFirst().onResultOf(new Function<Entity, Integer>() {
 		
@@ -215,7 +216,7 @@ public class OrderingTest {
 			});
 			
 			list.sort(order);
-			System.out.println(list); //[null, E{2, 1}, E{4, 1}, E{1, 2}, E{4, 3}]
+			out(list); //[null, E{2, 1}, E{4, 1}, E{1, 2}, E{4, 3}]
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -228,9 +229,9 @@ public class OrderingTest {
 		List<Integer> list = Lists.newArrayList(1, 3, 2, 7, 5, 4, 9, 6, 3, 7, 1);
 		
 		// 从大到小的前3个元素
-		System.out.println(Ordering.natural().greatestOf(list.iterator(), 3)); // [9, 7, 7]
+		out(Ordering.natural().greatestOf(list.iterator(), 3)); // [9, 7, 7]
 		// 从小到大的前三个元素
-		System.out.println(Ordering.natural().leastOf(list.iterator(), 3)); // [1, 1, 2]
+		out(Ordering.natural().leastOf(list.iterator(), 3)); // [1, 1, 2]
 		
 		LinkedList<Integer> list2 = Lists.newLinkedList();
 		list2.add(1);
@@ -240,30 +241,30 @@ public class OrderingTest {
 		list2.add(1);
 		
 		// 是否排序过
-		System.out.println(Ordering.natural().isOrdered(list2)); // false
+		out(Ordering.natural().isOrdered(list2)); // false
 		Collections.sort(list);
-		System.out.println(Ordering.natural().isOrdered(list)); // true
+		out(Ordering.natural().isOrdered(list)); // true
 		// 排序并复制
-		System.out.println(Ordering.natural().sortedCopy(list2)); // [1, 1, 3, 4, 5]
+		out(Ordering.natural().sortedCopy(list2)); // [1, 1, 3, 4, 5]
 		// 最大最小值
-		System.out.println(Ordering.natural().max(3, 1)); // 3
-		System.out.println(Ordering.natural().max(list2)); // 5
+		out(Ordering.natural().max(3, 1)); // 3
+		out(Ordering.natural().max(list2)); // 5
 		
-		System.out.println(Ordering.natural().min(list2)); // 1
+		out(Ordering.natural().min(list2)); // 1
 		
 		list = Lists.newArrayList(1, 3, 2, 7, null, 5, 4, 9, null, 6, 3, 7, 1);
 		// 无排序，返回Ordering实例
 		list.sort(Ordering.allEqual());
-		System.out.println(list); // [1, 3, 2, 7, null, 5, 4, 9, null, 6, 3, 7, 1]
+		out(list); // [1, 3, 2, 7, null, 5, 4, 9, null, 6, 3, 7, 1]
 		
 		// 相同的元素排一起
 		list.sort(Ordering.arbitrary());
-		System.out.println(list); // [null, null, 9, 1, 1, 6, 7, 7, 4, 5, 2, 3, 3]
+		out(list); // [null, null, 9, 1, 1, 6, 7, 7, 4, 5, 2, 3, 3]
 		
 		// 根据指定元素的顺序进排序
 		list = Lists.newArrayList(1, 3, 2, 7, 5, 4, 9, 6, 3, 7, 1, 8);
 		list.sort(Ordering.explicit(4, 3, 2, 1, 0, 5, 6, 7, 8, 9));
-		System.out.println(list); // [4, 3, 3, 2, 1, 1, 5, 6, 7, 7, 8, 9]
+		out(list); // [4, 3, 3, 2, 1, 1, 5, 6, 7, 7, 8, 9]
 	}
 	
 	class Entity {
