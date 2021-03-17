@@ -1,5 +1,6 @@
 package com.cnblogs.hoojo.nullable;
 
+import com.cnblogs.hoojo.BasedTest;
 import org.junit.Test;
 
 import com.google.common.base.Optional;
@@ -131,7 +132,8 @@ import com.google.common.base.Optional;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class OptionalTest {
+@SuppressWarnings("ALL")
+public class OptionalTest extends BasedTest {
 
 	@Test
 	public void testNull() {
@@ -139,20 +141,20 @@ public class OptionalTest {
 			
 			Optional<Integer> a = Optional.fromNullable(3);
 			
-			System.out.println(a.isPresent()); // 是否存在 true
-			System.out.println(a.get()); // 获取源对象 3
-			System.out.println(a.or(2)); // 如果源对象为空就返回 2
-			System.out.println(a.orNull()); // 如果源对象为空就返回null
+			out(a.isPresent()); // 是否存在 true
+			out(a.get()); // 获取源对象 3
+			out(a.or(2)); // 如果源对象为空就返回 2
+			out(a.orNull()); // 如果源对象为空就返回null
 			
-			System.out.println(a.asSet());	// [3]
+			out(a.asSet());	// [3]
 			
 			Optional<Integer> b = Optional.fromNullable(null);
 			
-			System.out.println(b.isPresent()); // false
-			System.out.println(b.or(1)); // 1
-			System.out.println(b.orNull()); // null
+			out(b.isPresent()); // false
+			out(b.or(1)); // 1
+			out(b.orNull()); // null
 			
-			System.out.println(b.get()); // Exception
+			out(b.get()); // Exception
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -163,14 +165,14 @@ public class OptionalTest {
 		
 		try {
 			Optional<Integer> a = Optional.absent();
-			System.out.println(a.isPresent()); // false
-			System.out.println(a.or(3)); // 3
+			out(a.isPresent()); // false
+			out(a.or(3)); // 3
 			
-			System.out.println(a.asSet()); // []
+			out(a.asSet()); // []
 			
-			System.out.println(Optional.fromNullable(null).or(333)); // 333
-			System.out.println(Optional.fromNullable(444).or(333)); // 444
-			System.out.println(a.get());
+			out(Optional.fromNullable(null).or(333)); // 333
+			out(Optional.fromNullable(444).or(333)); // 444
+			out(a.get());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -180,15 +182,15 @@ public class OptionalTest {
 	public void testNotNull() {
 		try {
 			Optional<Integer> a = Optional.of(null);
-			System.out.println(a.isPresent()); // exception
+			out(a.isPresent()); // exception
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
 			Optional<Integer> a = Optional.of(666);
-			System.out.println(a.isPresent()); // true
-			System.out.println(a.get()); // 666
+			out(a.isPresent()); // true
+			out(a.get()); // 666
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
