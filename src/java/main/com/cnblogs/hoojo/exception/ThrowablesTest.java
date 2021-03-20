@@ -1,11 +1,11 @@
 package com.cnblogs.hoojo.exception;
 
-import java.io.PrintStream;
-import java.util.List;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.base.Throwables;
 import org.junit.Test;
 
-import com.google.common.base.Throwables;
+import java.io.PrintStream;
+import java.util.List;
 
 /**
  * Throwables 异常类处理
@@ -119,7 +119,8 @@ import com.google.common.base.Throwables;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ThrowablesTest {
+@SuppressWarnings("ALL")
+public class ThrowablesTest extends BasedTest {
 
 	// 异常链（异常信息值栈）
 	@Test
@@ -133,7 +134,7 @@ public class ThrowablesTest {
 			// 异常信息值栈
 			List<Throwable> list = Throwables.getCausalChain(e);
 			for (Throwable th : list) {
-				System.out.println("输出：" + th.getMessage());
+				out("输出：" + th.getMessage());
 				
 				th.printStackTrace(writer);
 			}
@@ -153,7 +154,7 @@ public class ThrowablesTest {
 			Throwables.getRootCause(e).printStackTrace(writer);
 			
 			// 将异常转换为字符串
-			System.out.println(Throwables.getStackTraceAsString(e));
+			out(Throwables.getStackTraceAsString(e));
 		}
 	}
 	
