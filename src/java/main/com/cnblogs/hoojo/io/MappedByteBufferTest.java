@@ -1,15 +1,15 @@
 package com.cnblogs.hoojo.io;
 
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.File;
 import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel.MapMode;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 
 /**
  * 文件映射为内存映像文件
@@ -54,7 +54,8 @@ import com.google.common.io.Files;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class MappedByteBufferTest {
+@SuppressWarnings("ALL")
+public class MappedByteBufferTest extends BasedTest {
 
 	File file;
 	
@@ -283,9 +284,5 @@ public class MappedByteBufferTest {
 		out("执行clear后的，缓冲区内容没有清除：" + buffer.get(2));
 		out("执行clear后的，limit：" + buffer.limit());
 		out("执行clear后的，position：" + buffer.position());
-	}
-	
-	private void out(Object o) {
-		System.out.println(o);
 	}
 }
