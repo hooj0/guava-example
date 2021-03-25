@@ -1,17 +1,17 @@
 package com.cnblogs.hoojo.functional;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * 集合查找
@@ -24,7 +24,8 @@ import com.google.common.primitives.Ints;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class CollectFindFunctinalTest {
+@SuppressWarnings("ALL")
+public class CollectFindFunctinalTest extends BasedTest {
 
 	private Iterable<?> records;
 	private Map<String, Integer> maps;
@@ -47,10 +48,6 @@ public class CollectFindFunctinalTest {
 			}
 			return false;
 		};
-	}
-	
-	private void print(Object text) {
-		System.out.println(text);
 	}
 	
 	@Test
