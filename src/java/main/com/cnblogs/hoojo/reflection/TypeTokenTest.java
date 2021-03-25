@@ -140,8 +140,4 @@ public class TypeTokenTest extends BasedTest {
 		out(setToken.getRawType());
 		out(setToken.getType());
 	}
-	
-	private void out(Object o) {
-		System.out.println(o);
-	}
 }
