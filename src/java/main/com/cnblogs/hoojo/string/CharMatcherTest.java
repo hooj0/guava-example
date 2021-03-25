@@ -1,11 +1,11 @@
 package com.cnblogs.hoojo.string;
 
-import java.io.UnsupportedEncodingException;
-
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Predicate;
+import org.junit.Test;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * 字符匹配器
@@ -18,12 +18,9 @@ import com.google.common.base.Predicate;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class CharMatcherTest {
+@SuppressWarnings("ALL")
+public class CharMatcherTest extends BasedTest {
 
-	private static void print(Object text) {
-		System.out.println(text);
-	}
-	
 	/**
 	<table class="src" style="box-sizing: border-box; border-collapse: collapse; border-spacing: 0px;  border-color: rgb(214, 214, 214); width: 603.333374023438px; vertical-align: top; margin-top: 8px; margin-bottom: 8px; color: rgb(49, 49, 49);    font-size: 14.4444446563721px; line-height: 22px; background-color: rgb(247, 247, 247);">
 		<tbody style="box-sizing: border-box;">
