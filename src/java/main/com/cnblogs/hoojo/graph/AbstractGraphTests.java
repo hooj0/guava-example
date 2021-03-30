@@ -1,11 +1,11 @@
 package com.cnblogs.hoojo.graph;
 
+import com.cnblogs.hoojo.BasedTest;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import com.cnblogs.hoojo.BasedTest;
 
 /**
  * abstract based tests
@@ -18,6 +18,7 @@ import com.cnblogs.hoojo.BasedTest;
  * @email hoojo_@126.com
  * @version 1.0
  */
+@SuppressWarnings("ALL")
 public class AbstractGraphTests extends BasedTest {
 
 	// 格式化节点函数：
