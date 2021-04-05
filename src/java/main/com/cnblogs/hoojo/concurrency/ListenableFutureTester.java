@@ -16,29 +16,22 @@
 
 package com.cnblogs.hoojo.concurrency;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.*;
 
-import com.google.common.util.concurrent.ListenableFuture;
+import static com.google.common.base.Preconditions.*;
+import static org.junit.Assert.*;
 
 /**
  * Used to test listenable future implementations.
  *
  * @author Sven Mawson
  */
-public class ListenableFutureTester {
+@SuppressWarnings("ALL")
+public class ListenableFutureTester extends BasedTest {
 
 	private final ExecutorService exec;
 	private final ListenableFuture<?> future;
