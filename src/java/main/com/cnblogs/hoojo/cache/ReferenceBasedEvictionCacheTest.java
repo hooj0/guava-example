@@ -1,18 +1,14 @@
 package com.cnblogs.hoojo.cache;
 
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.cache.*;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSortedSet;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSortedSet;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 【基于容量回收-数量】缓存回收策略 超出指定size后回收
@@ -60,7 +56,8 @@ import com.google.common.collect.ImmutableSortedSet;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ReferenceBasedEvictionCacheTest {
+@SuppressWarnings("ALL")
+public class ReferenceBasedEvictionCacheTest extends BasedTest {
 
 	private LoadingCache<String, User> cache; 
 	private static Long sleepTimed = null;
@@ -100,12 +97,12 @@ public class ReferenceBasedEvictionCacheTest {
 						 *  weakKeys 回收模式情况下，notification.getKey() 会为空。因为避免对一些key进行引用导致无法回收缓存
 						 *  weakValues、softValues 回收模式下，
 						 */
-						System.out.println("remove cache: " + notification.getKey() + "=" + notification.getValue() + ", wasEvicted: " + notification.wasEvicted() + ", cache view: " + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+						out("remove cache: " + notification.getKey() + "=" + notification.getValue() + ", wasEvicted: " + notification.wasEvicted() + ", cache view: " + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 					}
 				}).build(new CacheLoader<String, User>() { // 缓存加载方式
 					@Override
 					public User load(String key) throws RuntimeException {
-						System.out.println("load:" + key);
+						out("load:" + key);
 						return map.get(key);
 					}
 				});
@@ -125,7 +122,7 @@ public class ReferenceBasedEvictionCacheTest {
 	@Test
 	public void testWriteEvictionCacheGC() throws InterruptedException {
 		
-		System.out.println("cache size: " + cache.size());
+		out("cache size: " + cache.size());
 		
 		User foo = new User(0);
 		User bar = new User(-1);
@@ -146,8 +143,8 @@ public class ReferenceBasedEvictionCacheTest {
 			}
 		}
 		
-		System.out.println("size:" + cache.size() + ", cache view:" + cache.asMap().keySet());
-		System.out.println("finish...");
+		out("size:" + cache.size() + ", cache view:" + cache.asMap().keySet());
+		out("finish...");
 	}
 	
 	/**
@@ -173,10 +170,10 @@ public class ReferenceBasedEvictionCacheTest {
 			}
 			cache.getIfPresent("cache-1");
 		}
-		System.out.println(tmp + "#" + key);
+		out(tmp + "#" + key);
 		
-		System.out.println("size:" + cache.size() + ", cache view:" + cache.asMap().keySet());
-		System.out.println("finish...");
+		out("size:" + cache.size() + ", cache view:" + cache.asMap().keySet());
+		out("finish...");
 	}
 	
 	/**
@@ -192,6 +189,6 @@ public class ReferenceBasedEvictionCacheTest {
 			}
 		}
 		
-		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 }
