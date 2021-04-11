@@ -1,39 +1,10 @@
 package com.cnblogs.hoojo.collections;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.collect.*;
 import org.junit.Test;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ClassToInstanceMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableClassToInstanceMap;
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableMultiset;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSetMultimap;
-import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.ImmutableSortedMultiset;
-import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Ordering;
-import com.google.common.collect.SetMultimap;
-import com.google.common.collect.SortedMultiset;
-import com.google.common.collect.Table;
-import com.google.common.collect.Tables;
+import java.util.*;
 
 /**
  * 不可变集合
@@ -127,7 +98,8 @@ import com.google.common.collect.Tables;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ImmutableCollectionsTest {
+@SuppressWarnings("ALL")
+public class ImmutableCollectionsTest extends BasedTest {
 
 	// 创建不可变集合
 	@Test
@@ -135,7 +107,7 @@ public class ImmutableCollectionsTest {
 		// copyOf 
 		try {
 			Set<String> sets = ImmutableSet.<String>copyOf(new String[] { "a", "b" });
-			System.out.println(sets); // [a, b]
+			out(sets); // [a, b]
 			
 			sets.add("d"); // throw UnsupportedOperationException 不可变不能添加对象
 		} catch (Exception e) {
@@ -145,7 +117,7 @@ public class ImmutableCollectionsTest {
 		// of
 		try {
 			Set<String> sets = ImmutableSet.of("a", "c");
-			System.out.println(sets); // [a, c]
+			out(sets); // [a, c]
 			
 			sets.add("d"); // throw UnsupportedOperationException 不可变不能添加对象
 		} catch (Exception e) {
@@ -155,7 +127,7 @@ public class ImmutableCollectionsTest {
 		// builder
 		try {
 			Set<String> sets = ImmutableSet.<String>builder().add("a").add("e", "f").addAll(Arrays.asList("1", "2")).build();
-			System.out.println(sets); // [a, e, f, 1, 2]
+			out(sets); // [a, e, f, 1, 2]
 			
 			sets.add("d"); // throw UnsupportedOperationException 不可变不能添加对象
 		} catch (Exception e) {
@@ -169,7 +141,7 @@ public class ImmutableCollectionsTest {
 		// 不可变集合不能排序
 		try {
 			List<String> list = ImmutableList.<String>copyOf(new String[] { "0", "a", "b", "1", "2" });
-			System.out.println(list); // [0, a, b, 1, 2]
+			out(list); // [0, a, b, 1, 2]
 			
 			Collections.sort(list, Ordering.<String>natural()); // throw UnsupportedOperationException 不可变集合不能排序
 		} catch (Exception e) {
@@ -178,10 +150,10 @@ public class ImmutableCollectionsTest {
 		
 		try {
 			List<String> list = ImmutableList.<String>copyOf(new String[] { "0", "a", "b", "1", "2" });
-			System.out.println(list); // [0, a, b, 1, 2]
+			out(list); // [0, a, b, 1, 2]
 			
 			// copy 不可变集合并进行排序
-			System.out.println(Ordering.<String>natural().immutableSortedCopy(list));
+			out(Ordering.<String>natural().immutableSortedCopy(list));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -189,12 +161,12 @@ public class ImmutableCollectionsTest {
 		// 不可变集合不能排序
 		try {
 			ImmutableSet<String> sets = ImmutableSet.of("0", "a", "b", "1", "2");
-			System.out.println(sets); // [0, 1, 2, a, b]
+			out(sets); // [0, 1, 2, a, b]
 			
 			List<String> list = sets.asList();
 			Collections.sort(list, Ordering.<String>natural());
 			
-			System.out.println(list);
+			out(list);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -206,67 +178,67 @@ public class ImmutableCollectionsTest {
 		
 		// collection
 		ImmutableCollection<Integer> collection = ImmutableSet.<Integer>of(4, 1, 2, 3);
-		System.out.println(collection); // [4, 1, 2, 3]
+		out(collection); // [4, 1, 2, 3]
 		// 转换为ImmutableList
-		System.out.println(collection.asList()); //[4, 1, 2, 3]
+		out(collection.asList()); //[4, 1, 2, 3]
 		// 长度
-		System.out.println(collection.size()); // 4
+		out(collection.size()); // 4
 		// iterator 迭代器
-		System.out.println(collection.iterator().hasNext());
-		collection.forEach(x -> System.out.println("print: " + x));
+		out(collection.iterator().hasNext());
+		collection.forEach(x -> out("print: " + x));
 		
 		// list -> jdk -> ImmutableList
 		List<Integer> list = ImmutableList.sortedCopyOf(collection);
-		System.out.println(list); // [1, 2, 3, 4]
+		out(list); // [1, 2, 3, 4]
 		
 		// set -> jdk -> ImmutableSet
 		Set<Integer> set = ImmutableSet.<Integer>of(4, 1, 2, 3, 3);
-		System.out.println(set); // [4, 1, 2, 3]
+		out(set); // [4, 1, 2, 3]
 		
 		//SortedSet/NavigableSet-> jdk -> ImmutableSortedSet
 		SortedSet<Integer> sortedSet = ImmutableSortedSet.<Integer>of(4, 1, 2, 3, 3);
-		System.out.println(sortedSet); // [1, 2, 3, 4]
+		out(sortedSet); // [1, 2, 3, 4]
 		
 		// map-> jdk -> ImmutableMap
 		Map<String, Integer> map = ImmutableMap.<String, Integer>of("key", 30);
-		System.out.println(map); // {key=30}
+		out(map); // {key=30}
 		
 		// SortedMap-> jdk -> ImmutableSortedMap
 		SortedMap<String, Integer> sortedMap = ImmutableSortedMap.<String, Integer>copyOf(map);
-		System.out.println(sortedMap); // {key=30}
+		out(sortedMap); // {key=30}
 		
 		// Multiset 	Guava 	ImmutableMultiset
 		Multiset<Integer> multiset = ImmutableMultiset.<Integer>of(1, 2, 3, 1, 3);
-		System.out.println(multiset); // [1 x 2, 2, 3 x 2]
+		out(multiset); // [1 x 2, 2, 3 x 2]
 		
 		// SortedMultiset 	Guava 	ImmutableSortedMultiset 有序
 		SortedMultiset<Integer> sortedMultiset = ImmutableSortedMultiset.<Integer>of(4, 1, 2, 3, 1, 3);
-		System.out.println(sortedMultiset); // [1 x 2, 2, 3 x 2, 4]
+		out(sortedMultiset); // [1 x 2, 2, 3 x 2, 4]
 		
 		// Multimap 	Guava 	ImmutableMultimap
 		Multimap<Integer, Integer> multimap = ImmutableMultimap.<Integer, Integer>of(4, 1, 2, 3, 4, 0);
-		System.out.println(multimap); // {4=[1, 0], 2=[3]}
+		out(multimap); // {4=[1, 0], 2=[3]}
 		
 		// ListMultimap 	Guava 	ImmutableListMultimap //List
 		ListMultimap<Integer, Integer> listMultimap = ImmutableListMultimap.<Integer, Integer>of(4, 1, 2, 3, 4, 0, 4, 0);
-		System.out.println(listMultimap); // {4=[1, 0, 0], 2=[3]}
+		out(listMultimap); // {4=[1, 0, 0], 2=[3]}
 		
 		// SetMultimap 	Guava 	ImmutableSetMultimap set构造去重
 		SetMultimap<Integer, Integer> setMultimap = ImmutableSetMultimap.<Integer, Integer>of(4, 1, 2, 3, 4, 0, 4, 0);
-		System.out.println(setMultimap); // {4=[1, 0], 2=[3]}
+		out(setMultimap); // {4=[1, 0], 2=[3]}
 		
 		// BiMap 	Guava 	ImmutableBiMap
 		BiMap<Integer, Integer> bimap = ImmutableBiMap.<Integer, Integer>of(4, 1, 2, 3, 5, 0);
-		System.out.println(bimap); // {4=1, 2=3, 5=0}
+		out(bimap); // {4=1, 2=3, 5=0}
 		
 		// ClassToInstanceMap 	Guava 	ImmutableClassToInstanceMap
 		ClassToInstanceMap<String> instanceMap = ImmutableClassToInstanceMap.of(String.class, "--");
-		System.out.println(instanceMap); // {class java.lang.String=--}
+		out(instanceMap); // {class java.lang.String=--}
 		
 		// Table 	Guava 	ImmutableTable
 		Table<String, String, Integer> table = ImmutableTable.<String, String, Integer>builder().put(Tables.immutableCell("2", "3", 2)).build();
 		Table<String, String, Integer> table2 = ImmutableTable.<String, String, Integer>of("2", "3", 2).of("2", "3", 2);
-		System.out.println(table); // {2={3=2}}
-		System.out.println(table2); // {2={3=2}}
+		out(table); // {2={3=2}}
+		out(table2); // {2={3=2}}
 	}
 }
