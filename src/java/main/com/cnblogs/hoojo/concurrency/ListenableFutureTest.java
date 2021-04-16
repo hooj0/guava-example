@@ -1,26 +1,15 @@
 package com.cnblogs.hoojo.concurrency;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.base.Function;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
-import com.google.common.util.concurrent.SettableFuture;
+import com.google.common.util.concurrent.*;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * 线程任务调用监听服务
@@ -37,7 +26,8 @@ import com.google.common.util.concurrent.SettableFuture;
 	platformThreadFactory()：返回一个默认的线程工厂用于创建新的线程。
 	shutdownAndAwaitTermination( ExecutorService service, long timeout, TimeUnit unit)：逐渐关闭指定的ExecutorService，首先会禁用新的提交， 然后会取消现有的任务。
  */
-public class ListenableFutureTest {
+@SuppressWarnings("ALL")
+public class ListenableFutureTest extends BasedTest {
 
 	@SuppressWarnings("deprecation")
 	@Test
@@ -65,12 +55,12 @@ public class ListenableFutureTest {
 		Futures.addCallback(result, new FutureCallback<Integer>() {
 			@Override
 			public void onSuccess(Integer result) {
-				System.out.println("success:" + result);
+				out("success:" + result);
 			}
 
 			@Override
 			public void onFailure(Throwable t) {
-				System.out.println("failure:" + Throwables.getStackTraceAsString(t));
+				out("failure:" + Throwables.getStackTraceAsString(t));
 			}
 		}, Executors.newCachedThreadPool());
 		
@@ -106,7 +96,7 @@ public class ListenableFutureTest {
 			}
 		}, Executors.newCachedThreadPool());
 		
-		System.out.println("finished!");
+		out("finished!");
 		Thread.sleep(1000 * 7);
 	}
 	
@@ -133,12 +123,12 @@ public class ListenableFutureTest {
 		Futures.addCallback(result, new FutureCallback<Integer>() {
 			@Override
 			public void onSuccess(Integer result) {
-				System.out.println("success:" + result);
+				out("success:" + result);
 			}
 
 			@Override
 			public void onFailure(Throwable t) {
-				System.out.println("failure:" + Throwables.getStackTraceAsString(t));
+				out("failure:" + Throwables.getStackTraceAsString(t));
 			}
 		}, MoreExecutors.directExecutor());
 		
@@ -146,7 +136,7 @@ public class ListenableFutureTest {
 		Futures.catching(result, RuntimeException.class, new Function<Exception, Integer>() {
 			@Override
 			public Integer apply(Exception input) {
-				System.out.println("catch:" + input.getMessage());
+				out("catch:" + input.getMessage());
 				return -1;
 			}
 			
@@ -156,7 +146,7 @@ public class ListenableFutureTest {
 		Futures.catchingAsync(result, RuntimeException.class, new AsyncFunction<Exception, Integer>() {
 			@Override
 			public ListenableFuture<Integer> apply(Exception input) throws Exception {
-				System.out.println("AsyncFunction->" + input.getMessage());
+				out("AsyncFunction->" + input.getMessage());
 				
 				return service.submit(new Callable<Integer>() {
 					@Override
@@ -167,7 +157,7 @@ public class ListenableFutureTest {
 			}
 		}, executorService);
 		
-		System.out.println("finished!");
+		out("finished!");
 		Thread.sleep(1000 * 7);
 	}
 	
@@ -193,23 +183,23 @@ public class ListenableFutureTest {
 		result.addListener(new Runnable() {
 			@Override
 			public void run() {
-				System.out.println("exec...");
+				out("exec...");
 			}
 		}, MoreExecutors.directExecutor());
 		
 		Futures.addCallback(result, new FutureCallback<Integer>() {
 			@Override
 			public void onSuccess(Integer result) {
-				System.out.println("success:" + result);
+				out("success:" + result);
 			}
 
 			@Override
 			public void onFailure(Throwable t) {
-				System.out.println("failure:" + Throwables.getStackTraceAsString(t));
+				out("failure:" + Throwables.getStackTraceAsString(t));
 			}
 		}, MoreExecutors.directExecutor());
 		
-		System.out.println("finished!");
+		out("finished!");
 		Thread.sleep(1000 * 7);
 	}
 	
@@ -235,19 +225,19 @@ public class ListenableFutureTest {
 		Futures.addCallback(result, new FutureCallback<Integer>() {
 			@Override
 			public void onSuccess(Integer result) {
-				System.out.println("success:" + result);
+				out("success:" + result);
 			}
 
 			@Override
 			public void onFailure(Throwable t) {
-				System.out.println("failure:" + Throwables.getStackTraceAsString(t));
+				out("failure:" + Throwables.getStackTraceAsString(t));
 			}
 		}, executorService);
 		
-		System.out.println(result.isCancelled());
-		System.out.println(result.isDone());
+		out(result.isCancelled());
+		out(result.isDone());
 		
-		System.out.println("finished!");
+		out("finished!");
 		Thread.sleep(1000 * 7);
 	}
 	
@@ -260,7 +250,7 @@ public class ListenableFutureTest {
 		Future<Integer> futrue = executorService.submit(new Callable<Integer>() {
 			@Override
 			public Integer call() throws Exception {
-				System.out.println("call...");
+				out("call...");
 				//Thread.sleep(1000 * 5);
 				
 				return now.intValue();
@@ -283,10 +273,10 @@ public class ListenableFutureTest {
 			e.printStackTrace();
 		}
 		
-		System.out.println(result.isCancelled());
-		System.out.println(result.isDone());
+		out(result.isCancelled());
+		out(result.isDone());
 		
-		System.out.println("finished!");
+		out("finished!");
 		
 		Thread.sleep(1000 * 7);
 	}
