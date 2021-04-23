@@ -1,23 +1,19 @@
 package com.cnblogs.hoojo.cache;
 
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.base.Optional;
 import com.google.common.base.Ticker;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
+import com.google.common.cache.*;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 模拟时间测试
@@ -30,7 +26,8 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class TickerTest {
+@SuppressWarnings("ALL")
+public class TickerTest extends BasedTest {
 
 	private LoadingCache<String, Integer> cache;
 	private MyTicker ticker;
@@ -64,18 +61,18 @@ public class TickerTest {
 				.removalListener(new RemovalListener<String, Integer>() { // 删除缓存给予监听通知
 					@Override
 					public void onRemoval(RemovalNotification<String, Integer> notification) {
-						System.out.println("remove cache key: " + notification.getKey() + "=" + notification.getValue() + ", wasEvicted:" + notification.wasEvicted());
+						out("remove cache key: " + notification.getKey() + "=" + notification.getValue() + ", wasEvicted:" + notification.wasEvicted());
 					}
 				}).build(new CacheLoader<String, Integer>() { // 缓存加载方式
 					@Override
 					public Integer load(String key) throws RuntimeException {
-						System.out.println("load:" + key);
+						out("load:" + key);
 						return Optional.fromNullable(map.get(key)).or(System.identityHashCode(key));
 					}
 					
 					@Override
 					public ListenableFuture<Integer> reload(String key, Integer oldValue) throws Exception {
-						System.out.println("reload cache:" + key  + "#" + oldValue);
+						out("reload cache:" + key  + "#" + oldValue);
 						return Futures.immediateFuture(-oldValue);
 					}
 				});
@@ -87,7 +84,7 @@ public class TickerTest {
 		for (int i = 0; i < 15; i++) {
 			cache.put(i + "_", i);
 		}
-		System.out.println(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 		
 		// 模拟时间流逝25 分钟，数据没有被刷新
 		// ticker.addElapsedTime(TimeUnit.NANOSECONDS.convert(25, TimeUnit.MINUTES));
@@ -97,12 +94,12 @@ public class TickerTest {
 		for (int i = 0; i < 15; i++) {
 			try {
 				// 会reload当前get的缓存数据
-				System.out.println("get:" + cache.get(i + "_"));
+				out("get:" + cache.get(i + "_"));
 			} catch (Exception e) {
-				System.out.println(e);
+				out(e);
 			}
 		}
-		System.out.println(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 	
 	@Test
@@ -111,7 +108,7 @@ public class TickerTest {
 		for (int i = 0; i < 15; i++) {
 			cache.put(i + "_", i);
 		}
-		System.out.println(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 		
 		// 模拟时间流逝35 分钟，数据没有被刷新
 		// ticker.addElapsedTime(TimeUnit.NANOSECONDS.convert(35, TimeUnit.MINUTES));
@@ -119,6 +116,6 @@ public class TickerTest {
 		ticker.addElapsedTime(TimeUnit.NANOSECONDS.convert(62, TimeUnit.MINUTES));
 		
 		cache.cleanUp();
-		System.out.println(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 }
