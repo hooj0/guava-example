@@ -1,5 +1,6 @@
 package com.cnblogs.hoojo.concurrency.ratelimiter;
 
+import com.cnblogs.hoojo.BasedTest;
 import org.junit.Test;
 
 import com.google.common.util.concurrent.RateLimiter;
@@ -35,7 +36,8 @@ import com.google.common.util.concurrent.RateLimiter;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class RateLimiterTest {
+@SuppressWarnings("ALL")
+public class RateLimiterTest extends BasedTest {
 
 	/**
 	 * 创建具有指定稳定吞吐量的RateLimiter类，传入允许每秒提交的任务数量。
@@ -51,7 +53,7 @@ public class RateLimiterTest {
 
 			public int add() {
 				
-				System.out.println("进入数量：" + limiter.acquire());
+				out("进入数量：" + limiter.acquire());
 				this.value++;
 				return this.value;
 			}
@@ -69,7 +71,7 @@ public class RateLimiterTest {
 			public void run() {
 				try {
 					for (int i = 0; i < 50; i++) {
-						System.out.println(this.getName() + ": " + value.add());
+						out(this.getName() + ": " + value.add());
 						Thread.sleep(300);
 					}
 				} catch (InterruptedException e) {
@@ -133,7 +135,7 @@ public class RateLimiterTest {
 			public void run() {
 				try {
 					for (int i = 0; i < 50; i++) {
-						System.out.println(this.getName() + ": " + value.add());
+						out(this.getName() + ": " + value.add());
 						Thread.sleep(800);
 					}
 				} catch (InterruptedException e) {
@@ -176,7 +178,7 @@ public class RateLimiterTest {
 
 			public int add() {
 				
-				System.out.println("进入数量：" + limiter.acquire(2));
+				out("进入数量：" + limiter.acquire(2));
 				this.value++;
 				return this.value;
 			}
@@ -194,7 +196,7 @@ public class RateLimiterTest {
 			public void run() {
 				try {
 					for (int i = 0; i < 50; i++) {
-						System.out.println(this.getName() + ": " + value.add());
+						out(this.getName() + ": " + value.add());
 						Thread.sleep(300);
 					}
 				} catch (InterruptedException e) {
