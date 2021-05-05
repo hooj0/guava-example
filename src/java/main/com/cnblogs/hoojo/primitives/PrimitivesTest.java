@@ -1,23 +1,10 @@
 package com.cnblogs.hoojo.primitives;
 
-import java.util.Arrays;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.primitives.*;
 import org.junit.Test;
 
-import com.google.common.primitives.Booleans;
-import com.google.common.primitives.Bytes;
-import com.google.common.primitives.Chars;
-import com.google.common.primitives.Doubles;
-import com.google.common.primitives.Floats;
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
-import com.google.common.primitives.Shorts;
-import com.google.common.primitives.SignedBytes;
-import com.google.common.primitives.UnsignedBytes;
-import com.google.common.primitives.UnsignedInteger;
-import com.google.common.primitives.UnsignedInts;
-import com.google.common.primitives.UnsignedLong;
-import com.google.common.primitives.UnsignedLongs;
+import java.util.Arrays;
 
 /**
  * 原生类型测试
@@ -42,7 +29,8 @@ Comparator<prim[]>   lexicographicalComparator() 	按字典序比较原生类型
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class PrimitivesTest {
+@SuppressWarnings("ALL")
+public class PrimitivesTest extends BasedTest {
 
 	@Test
 	public void testByte() {
@@ -279,44 +267,5 @@ public class PrimitivesTest {
 		// true 的数量
 		out(Booleans.countTrue(true, false, true)); // 2
 		out(Booleans.trueFirst());
-	}
-	
-	private void out(Object obj) {
-		System.out.println(obj);
-	}
-	
-	private void out(byte[] obj) {
-		for (Object o : obj) {
-			System.out.print(o + ", ");
-		}
-		System.out.println();
-	}
-	
-	private void out(int[] obj) {
-		for (Object o : obj) {
-			System.out.print(o + ", ");
-		}
-		System.out.println();
-	}
-	
-	private void out(long[] obj) {
-		for (Object o : obj) {
-			System.out.print(o + ", ");
-		}
-		System.out.println();
-	}
-	
-	private void out(float[] obj) {
-		for (Object o : obj) {
-			System.out.print(o + ", ");
-		}
-		System.out.println();
-	}
-	
-	private void out(short[] obj) {
-		for (Object o : obj) {
-			System.out.print(o + ", ");
-		}
-		System.out.println();
 	}
 }
