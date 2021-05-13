@@ -1,22 +1,17 @@
 ﻿package com.cnblogs.hoojo.cache;
 
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.base.Ticker;
+import com.google.common.cache.*;
+import com.google.common.collect.ImmutableMap;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import org.junit.Test;
-
-import com.google.common.base.Ticker;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalListeners;
-import com.google.common.cache.RemovalNotification;
-import com.google.common.collect.ImmutableMap;
 
 /**
  * LoadingCache
@@ -89,7 +84,8 @@ import com.google.common.collect.ImmutableMap;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class LoadingCacheTest {
+@SuppressWarnings("ALL")
+public class LoadingCacheTest extends BasedTest {
 
 	@Test
 	public void testApi() throws ExecutionException, InterruptedException {
@@ -105,22 +101,22 @@ public class LoadingCacheTest {
 			.removalListener(new RemovalListener<String, Integer>() { // 删除缓存给予监听通知
 				@Override
 				public void onRemoval(RemovalNotification<String, Integer> notification) {
-					System.out.println("是否是回收缓存：" + notification.wasEvicted()); // 显示的删除缓存时，值为 false
-					System.out.println("remove cache key: " + notification.getKey() + ", value: " + notification.getValue());
+					out("是否是回收缓存：" + notification.wasEvicted()); // 显示的删除缓存时，值为 false
+					out("remove cache key: " + notification.getKey() + ", value: " + notification.getValue());
 				}
 			})
 			.ticker(new Ticker() {
 				
 				@Override
 				public long read() {
-					System.out.println("ticker...");
+					out("ticker...");
 					return 1000L;
 				}
 			})
 			.build(new CacheLoader<String, Integer>() { // 缓存加载方式
 				@Override
 				public Integer load(String key) throws RuntimeException {
-					System.out.println("loading......");
+					out("loading......");
 					return map.get(key); 
 				}
 			});
@@ -129,22 +125,23 @@ public class LoadingCacheTest {
 		 * 因为缓存的维护和请求响应通常是同时进行的，代价高昂的监听器方法在同步模式下会拖慢正常的缓存请求。
 		 * 在这种情况下，你可以使用RemovalListeners.asynchronous(RemovalListener, Executor)把监听器装饰为异步操作
 		 */
+		//noinspection AlibabaThreadPoolCreation
 		RemovalListener<String, Integer> listener = RemovalListeners.asynchronous(new RemovalListener<String, Integer>() { // 删除缓存给予监听通知
 			@Override
 			public void onRemoval(RemovalNotification<String, Integer> notification) {
-				System.out.println("是否是回收缓存：" + notification.wasEvicted()); // 显示的删除缓存时，值为 false
-				System.out.println("remove cache key: " + notification.getKey() + ", value: " + notification.getValue());
+				out("是否是回收缓存：" + notification.wasEvicted()); // 显示的删除缓存时，值为 false
+				out("remove cache key: " + notification.getKey() + ", value: " + notification.getValue());
 			}
 		}, Executors.newFixedThreadPool(5));
 		
 		CacheBuilder.newBuilder().removalListener(listener);
 		
 		// 获取缓存
-		System.out.println(cache.get("a")); // 10
+		out(cache.get("a")); // 10
 		try {
-			System.out.println(cache.get("e")); // CacheLoader$InvalidCacheLoadException
+			out(cache.get("e")); // CacheLoader$InvalidCacheLoadException
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			out(e.getMessage());
 		}
 		
 		/**
@@ -155,7 +152,7 @@ public class LoadingCacheTest {
 		 * 否则运算、缓存、然后返回"
 		 */
 		try {
-			System.out.println(cache.get("e", new Callable<Integer>() {
+			out(cache.get("e", new Callable<Integer>() {
 				@Override
 				public Integer call() throws Exception {
 					//return null; // Can not be null, otherwise it will throw an InvalidCacheLoadException
@@ -163,51 +160,51 @@ public class LoadingCacheTest {
 				}
 			}));
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			out(e.getMessage());
 		}
 		
 		// 存在数据就返回，不能存在就为null
-		System.out.println(cache.getIfPresent("a"));
-		System.out.println(cache.getIfPresent("xx"));
+		out(cache.getIfPresent("a"));
+		out(cache.getIfPresent("xx"));
 		
 		// 由于CacheLoader可能抛出异常，LoadingCache.get(K)也声明为抛出ExecutionException异常。
 		// 如果你定义的CacheLoader没有声明任何检查型异常，则可以通过getUnchecked(K)查找缓存；
 		// 但必须注意，一旦CacheLoader声明了检查型异常，就不可以调用getUnchecked(K)
-		System.out.println(cache.getUnchecked("a"));
-		//System.out.println(cache.getUnchecked("z"));
+		out(cache.getUnchecked("a"));
+		//out(cache.getUnchecked("z"));
 		
 		// 缓存视图，调用过的、已被缓存过的缓存数据
-		System.out.println(cache.asMap()); // {e=-1, a=10}
+		out(cache.asMap()); // {e=-1, a=10}
 		
 		// ImmutableMap<String, Integer> 没有数据将抛出异常
-		System.out.println(cache.getAll(Arrays.asList("a", "b"))); // {a=10, b=20} 
+		out(cache.getAll(Arrays.asList("a", "b"))); // {a=10, b=20}
 		
 		// x 没有数据，就不处理；默认getAll 中的元素没有数据将抛出异常
-		System.out.println(cache.getAllPresent(Arrays.asList("a", "b", "x"))); // {a=10, b=20}
+		out(cache.getAllPresent(Arrays.asList("a", "b", "x"))); // {a=10, b=20}
 		
 		// 缓存统计 需要开启 recordStats()
 		// hitRate()：缓存命中率；averageLoadPenalty()：加载新值的平均时间，单位为纳秒；evictionCount()：缓存项被回收的总数，不包括显式清除
-		System.out.println(cache.stats());
+		out(cache.stats());
 		
 		// 缓存的数量
-		System.out.println(cache.size());
+		out(cache.size());
 		
-		System.out.println(cache.asMap()); // {e=-1, b=20, a=10}
+		out(cache.asMap()); // {e=-1, b=20, a=10}
 		cache.invalidate("e"); // 显式地清除指定key的缓存对象
-		System.out.println(cache.asMap()); // {b=20, a=10}
+		out(cache.asMap()); // {b=20, a=10}
 		
 		// 清除指定key集合缓存
 		cache.invalidateAll(Arrays.asList("a", "b", "x"));
 		
 		cache.invalidateAll(); // 清楚所有缓存
-		System.out.println(cache.asMap());
+		out(cache.asMap());
 		
 		Thread.sleep(1000 * 10);
 		
 		// 显式插入，手动push数据
 		cache.put("z", 11);
 		cache.putAll(ImmutableMap.<String, Integer>of("xx", 22, "zz", 33));
-		System.out.println(cache.asMap());
+		out(cache.asMap());
 		
 		/**
 		 * 刷新指定key的缓存对象,刷新和回收不太一样。
@@ -249,6 +246,6 @@ public class LoadingCacheTest {
 	public void testCleanCache() {
 		
 		long a = 2 & 3 & 4;
-		System.out.println(a);
+		out(a);
 	}
 }
