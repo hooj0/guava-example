@@ -1,15 +1,14 @@
 package com.cnblogs.hoojo.graph.example;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Test;
-
 import com.cnblogs.hoojo.graph.AbstractGraphTests;
 import com.google.common.base.Strings;
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * prim 普里姆 算法
@@ -26,6 +25,7 @@ import com.google.common.graph.ValueGraphBuilder;
  * @email hoojo_@126.com
  * @version 1.0
  */
+@SuppressWarnings("ALL")
 public class PrimValueGraphTest extends AbstractGraphTests {
 
 	private static final String V1 = "v1";
