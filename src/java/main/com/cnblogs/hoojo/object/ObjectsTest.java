@@ -1,12 +1,12 @@
 package com.cnblogs.hoojo.object;
 
-import java.util.Arrays;
-
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
+import org.junit.Test;
+
+import java.util.Arrays;
 
 /**
  * Objects 工具类
@@ -19,25 +19,26 @@ import com.google.common.collect.ComparisonChain;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ObjectsTest {
+@SuppressWarnings("ALL")
+public class ObjectsTest extends BasedTest {
 
 	@Test
 	public void testEq() {
 		
 		try {
-			System.out.println(Objects.equal(1, 2)); //false
+			out(Objects.equal(1, 2)); //false
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			System.out.println(Objects.equal(null, 2)); //false
+			out(Objects.equal(null, 2)); //false
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			System.out.println(Objects.equal(1, 1)); // true
+			out(Objects.equal(1, 1)); // true
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -48,16 +49,16 @@ public class ObjectsTest {
 		String[] a = { "a", "b", "c" };
 		String[] b = { "a", "b", "c" };
 		
-		System.out.println(a.equals(b)); // false
-		System.out.println(Objects.equal(a, b)); // false
-		System.out.println(java.util.Objects.deepEquals(a, b)); // true
+		out(a.equals(b)); // false
+		out(Objects.equal(a, b)); // false
+		out(java.util.Objects.deepEquals(a, b)); // true
 		
 		a = new String[] { "a", "b", "c",  };
 		b = new String[] { "a", "b", "c", "" };
 		
-		System.out.println(a.equals(b)); // false
-		System.out.println(Objects.equal(a, b)); // false
-		System.out.println(java.util.Objects.deepEquals(a, b)); // false
+		out(a.equals(b)); // false
+		out(Objects.equal(a, b)); // false
+		out(java.util.Objects.deepEquals(a, b)); // false
 	}
 	
 	@Test
@@ -76,23 +77,23 @@ public class ObjectsTest {
 		}
 		
 		try {
-			System.out.println(java.util.Objects.nonNull(null)); // false
+			out(java.util.Objects.nonNull(null)); // false
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		System.out.println(java.util.Objects.isNull(null)); // true
+		out(java.util.Objects.isNull(null)); // true
 		
-		System.out.println(ComparisonChain.start().compare(0, 1).compare(2.2, 3.0).result());
+		out(ComparisonChain.start().compare(0, 1).compare(2.2, 3.0).result());
 	}
 	
 	@Test
 	public void testHash() {
 		
-		System.out.println(Objects.hashCode("A", "b", 1, 2)); //2954147
+		out(Objects.hashCode("A", "b", 1, 2)); //2954147
 		
-		System.out.println(java.util.Objects.hash("A", "b", 1, 2)); //2954147
-		System.out.println(java.util.Objects.hashCode(Arrays.asList("A", "b", 1, 2))); //2954147
+		out(java.util.Objects.hash("A", "b", 1, 2)); //2954147
+		out(java.util.Objects.hashCode(Arrays.asList("A", "b", 1, 2))); //2954147
 	}
 	
 	@Test
@@ -104,7 +105,7 @@ public class ObjectsTest {
 			Object o = MoreObjects.firstNonNull("a", "2"); // return a
 			// Object o = MoreObjects.firstNonNull(null, "2"); // return 2
 			// Object o = MoreObjects.firstNonNull(null, null); // NullPointException
-			System.out.println(o);
+			out(o);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -112,7 +113,7 @@ public class ObjectsTest {
 		// 构造字符串，通常在toString方法中使用
 		try {
 			Object o = MoreObjects.toStringHelper(this).add("name", "hoo").add("age", 11).addValue(100).omitNullValues(); // ObjectsTest{name=hoo, age=11, 100}
-			System.out.println(o);
+			out(o);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
