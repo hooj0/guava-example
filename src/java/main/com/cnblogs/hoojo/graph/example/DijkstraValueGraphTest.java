@@ -1,15 +1,14 @@
 package com.cnblogs.hoojo.graph.example;
 
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.Test;
-
 import com.cnblogs.hoojo.graph.AbstractGraphTests;
 import com.google.common.collect.Maps;
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
+import org.junit.Test;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 求最短路径算法：Dijkstra（迪杰斯特拉）算法
@@ -27,6 +26,7 @@ import com.google.common.graph.ValueGraphBuilder;
  * @email hoojo_@126.com
  * @version 1.0
  */
+@SuppressWarnings("ALL")
 public class DijkstraValueGraphTest extends AbstractGraphTests {
 
 	// 引入一个临时结构来记录每个节点运算的中间结果
