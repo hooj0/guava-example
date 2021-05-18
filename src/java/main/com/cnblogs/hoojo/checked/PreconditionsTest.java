@@ -1,17 +1,12 @@
 package com.cnblogs.hoojo.checked;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkElementIndex;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkPositionIndex;
-import static com.google.common.base.Preconditions.checkPositionIndexes;
-import static com.google.common.base.Preconditions.checkState;
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.collect.Lists;
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import com.google.common.collect.Lists;
+import static com.google.common.base.Preconditions.*;
 
 /**
  * 数据校验或检查
@@ -63,7 +58,8 @@ import com.google.common.collect.Lists;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class PreconditionsTest {
+@SuppressWarnings("ALL")
+public class PreconditionsTest extends BasedTest {
 
 	@Test
 	public void testCheckArgs() {
