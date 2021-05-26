@@ -1,24 +1,20 @@
 package com.cnblogs.hoojo.cache;
 
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.base.Optional;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
+import com.google.common.cache.*;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListenableFutureTask;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 刷新缓存与自动加载缓存
@@ -31,7 +27,8 @@ import com.google.common.util.concurrent.ListenableFutureTask;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class RefreshCacheTest {
+@SuppressWarnings("ALL")
+public class RefreshCacheTest extends BasedTest {
 
 	private LoadingCache<String, Integer> cache; 
 	
@@ -48,12 +45,12 @@ public class RefreshCacheTest {
 				.removalListener(new RemovalListener<String, Integer>() { // 删除缓存给予监听通知
 					@Override
 					public void onRemoval(RemovalNotification<String, Integer> notification) {
-						System.out.println("remove cache key: " + notification.getKey() + "=" + notification.getValue() + ", wasEvicted:" + notification.wasEvicted());
+						out("remove cache key: " + notification.getKey() + "=" + notification.getValue() + ", wasEvicted:" + notification.wasEvicted());
 					}
 				}).build(new CacheLoader<String, Integer>() { // 缓存加载方式
 					@Override
 					public Integer load(String key) throws RuntimeException {
-						System.out.println("load:" + key);
+						out("load:" + key);
 						return Optional.fromNullable(map.get(key)).or(System.identityHashCode(key));
 					}
 					
@@ -62,17 +59,17 @@ public class RefreshCacheTest {
 						//return super.reload(key, oldValue);
 						
 						if (oldValue.intValue() % 2 != 0) { // 使用旧数据
-							System.out.println("reload old cache:" + key  + "#" + oldValue);
+							out("reload old cache:" + key  + "#" + oldValue);
 							
 							return Futures.immediateFuture(-oldValue);
 						} else {
-							System.out.println("reload new cache:" + key  + "#" + (oldValue));
+							out("reload new cache:" + key  + "#" + (oldValue));
 							
 							// asynchronous!
 							return ListenableFutureTask.create(new Callable<Integer>() { // 异步加载新数据
 								public Integer call() {
 									
-									System.out.println("reload create cache:" + key  + "#" + (oldValue + 2000));
+									out("reload create cache:" + key  + "#" + (oldValue + 2000));
 									//return Optional.fromNullable(map.get(key)).or(System.identityHashCode(key));
 									return oldValue + 2000;
 								}
@@ -99,21 +96,21 @@ public class RefreshCacheTest {
 		for (int i = 0; i < 15; i++) {
 			cache.put(i + "_", i);
 		}
-		System.out.println(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 		
 		for (int i = 0; i < 15; i++) {
 			try {
 				// 会reload当前get的缓存数据
-				System.out.println("get:" + cache.get(i + "_"));
+				out("get:" + cache.get(i + "_"));
 				
 				if (i > 5) {
 					Thread.sleep(500);
 				}
 			} catch (Exception e) {
-				System.out.println(e);
+				out(e);
 			}
 		}
-		System.out.println(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 	
 	/**
@@ -131,7 +128,7 @@ public class RefreshCacheTest {
 		for (int i = 0; i < 15; i++) {
 			cache.put(i + "_", i);
 		}
-		System.out.println(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 		
 		for (int i = 0; i < 15; i++) {
 			try {
@@ -141,10 +138,10 @@ public class RefreshCacheTest {
 					Thread.sleep(500);
 				}
 			} catch (Exception e) {
-				System.out.println(e);
+				out(e);
 			}
 		}
-		System.out.println(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 	
 	/**
@@ -156,7 +153,7 @@ public class RefreshCacheTest {
 		for (int i = 0; i < 15; i++) {
 			cache.put(i + "_", i);
 		}
-		System.out.println(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 		
 		new Thread(() -> {
 			for (int i = 0; i < 15; i++) {
@@ -164,7 +161,7 @@ public class RefreshCacheTest {
 					cache.refresh(i + "_");
 					Thread.sleep(100);
 				} catch (Exception e) {
-					System.out.println(e);
+					out(e);
 				}
 			}
 		}).start();
@@ -178,15 +175,15 @@ public class RefreshCacheTest {
 			
 			for (int i = 0; i < 15; i++) {
 				try {
-					System.out.println("get:" + cache.get(i + "_"));
+					out("get:" + cache.get(i + "_"));
 					Thread.sleep(300);
 				} catch (Exception e) {
-					System.out.println(e);
+					out(e);
 				}
 			}
 		}).start();
 		
 		Thread.sleep(1000 * 100);
-		System.out.println(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 }
