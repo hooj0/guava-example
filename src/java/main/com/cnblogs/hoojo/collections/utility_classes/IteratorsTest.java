@@ -1,18 +1,18 @@
 package com.cnblogs.hoojo.collections.utility_classes;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Consumer;
-
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.PeekingIterator;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * 集合Iterators工具类
@@ -25,7 +25,8 @@ import com.google.common.collect.PeekingIterator;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class IteratorsTest {
+@SuppressWarnings("ALL")
+public class IteratorsTest extends BasedTest {
 
 	Iterator<String> iter = Arrays.asList("a", "b", "c").iterator();
 	
@@ -65,7 +66,7 @@ public class IteratorsTest {
 				System.out.print(t + ", ");
 			}
 		}); // 1, 2, a, b, c, 
-		System.out.println();
+		out();
 		
 		Iterators.concat(list.iterator(), iter).forEachRemaining(new Consumer<String>() {
 			@Override
@@ -73,7 +74,7 @@ public class IteratorsTest {
 				System.out.print(t + ", ");
 			}
 		}); // 1, 2, a, b, c, 
-		System.out.println();
+		out();
 		
 		// 构建一次性的iterator，在迭代时就移除元素
 		Iterator<String> temp = Iterators.consumingIterator(list.iterator());
@@ -83,22 +84,22 @@ public class IteratorsTest {
 		if (temp.hasNext()) {
 			System.out.print("element");
 		} // empty
-		System.out.println();
+		out();
 		
 		// 构建无限循环的iterator元素，移除指定元素将释放循环
 		Iterator<String> iter2 = Iterators.cycle("1", "2");
 		while(iter2.hasNext()) {
-			System.out.println(iter2.next());
+			out(iter2.next());
 			iter2.remove(); // 不移除将死循环
 		}
 		
 		// 不可变iterator
 		Iterators.forArray(1, 2, "a", "b").forEachRemaining(System.out::print); // 12ab
-		System.out.println();
+		out();
 		
 		// 枚举转换Iterator
 		Iterators.forEnumeration(Iterators.asEnumeration(list.iterator())).forEachRemaining(System.out::print); // 12
-		System.out.println();
+		out();
 		
 		// 合并迭代
 		List<Iterator<Integer>> iterList = Lists.newArrayList(Arrays.asList(2, 8, 5, 1, 10, 7).iterator(), Arrays.asList(1, 7, 5).iterator());
@@ -201,13 +202,13 @@ public class IteratorsTest {
 		// 按类型过滤元素
 		Iterator<?> iterObj = Iterators.filter(Lists.newArrayList(1, 2, "a", "3").iterator(), Integer.class);
 		iterObj.forEachRemaining(item -> { System.out.print(item + ", "); }); // 1, 2,
-		System.out.println();
+		out();
 		
 		// 自定义过滤元素
 		iterObj = Iterators.filter(Lists.newArrayList(1, 2, "a", "3").iterator(), pred);
 		
 		iterObj.forEachRemaining(item -> { System.out.print(item + ", "); }); // 1, 2, 3, 
-		System.out.println();
+		out();
 		
 		// 查找元素，返回第一个匹配的元素
 		out(Iterators.find(Lists.newArrayList(1, 2, "a", "3").iterator(), pred)); // 1
@@ -244,9 +245,5 @@ public class IteratorsTest {
 		
 		// 尝试查找，返回Optional
 		out(Iterators.tryFind(list.iterator(), pred).get()); // 1
-	}
-	
-	private void out(Object o) {
-		System.out.println(o);
 	}
 }
