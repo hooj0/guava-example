@@ -1,23 +1,18 @@
 package com.cnblogs.hoojo.cache;
 
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.cache.*;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.ImmutableSortedSet;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.LongAdder;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
-import com.google.common.cache.Weigher;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.ImmutableSortedSet;
 
 /**
  * 【基于容量回收-权重】缓存回收策略 超出指定weights后回收
@@ -65,7 +60,8 @@ import com.google.common.collect.ImmutableSortedSet;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class WeigherBasedEvictionCacheTest {
+@SuppressWarnings("ALL")
+public class WeigherBasedEvictionCacheTest extends BasedTest {
 
 	private LoadingCache<Integer, Integer> cache; 
 	private LongAdder adder = new LongAdder();
@@ -97,7 +93,7 @@ public class WeigherBasedEvictionCacheTest {
 						Map<Integer, Integer> cacheView = new TreeMap<Integer, Integer>(cache.asMap());
 						cacheView.put(key, value);
 						
-						System.out.println("put cache: " + key + "=" + value + ", weigh: " + adder.sum() + ", cache view: " + cacheView.keySet());
+						out("put cache: " + key + "=" + value + ", weigh: " + adder.sum() + ", cache view: " + cacheView.keySet());
 						
 						try {
 							Thread.sleep(1000);
@@ -112,14 +108,14 @@ public class WeigherBasedEvictionCacheTest {
 					@Override
 					public void onRemoval(RemovalNotification<Integer, Integer> notification) {
 						long size = adder.sum() + notification.getValue();
-						System.out.println("remove cache: " + notification.getKey() + "=" + notification.getValue() + ", weigh: " + size + ", wasEvicted: " + notification.wasEvicted() + ", cache view: " + ImmutableSortedSet.copyOf(cache.asMap().keySet()) + "\n");
+						out("remove cache: " + notification.getKey() + "=" + notification.getValue() + ", weigh: " + size + ", wasEvicted: " + notification.wasEvicted() + ", cache view: " + ImmutableSortedSet.copyOf(cache.asMap().keySet()) + "\n");
 						
 						adder.add(-notification.getValue());
 					}
 				}).build(new CacheLoader<Integer, Integer>() { // 缓存加载方式
 					@Override
 					public Integer load(Integer key) throws RuntimeException {
-						System.out.println("load: " + key);
+						out("load: " + key);
 						return map.get(key);
 					}
 				});
@@ -130,47 +126,47 @@ public class WeigherBasedEvictionCacheTest {
 	public void testWriteEvictionCacheGC() throws InterruptedException {
 		System.gc();
 		
-		System.out.println("cache init value: " + cache.asMap());
+		out("cache init value: " + cache.asMap());
 		
 		// 默认最先被缓存的数据被回收，后面的缓存会挤走最前面的
 		for (int i = 1; i < 15; i++) {
 			int size = (int) (Math.random() * 9 + 1L);
 			cache.put(i, size);
 			
-			//System.out.println("keys bytes length: " + cache.asMap().keySet().size() * 2 + ", cache view: " + cache.asMap());
+			//out("keys bytes length: " + cache.asMap().keySet().size() * 2 + ", cache view: " + cache.asMap());
 			//Thread.sleep(1000);
 		}
-		System.out.println("cache size: " + cache.size());
-		System.out.println("cache final view: " + ImmutableSortedMap.copyOf(cache.asMap()));
+		out("cache size: " + cache.size());
+		out("cache final view: " + ImmutableSortedMap.copyOf(cache.asMap()));
 	}
 	
 	@Test
 	public void testWriteEvictionCacheGC2() throws InterruptedException, ExecutionException {
 		
-		System.out.println("cache init value: " + cache.asMap());
+		out("cache init value: " + cache.asMap());
 		
 		// 默认最先被缓存的数据被回收，后面的缓存会挤走最前面的
 		for (int i = 1; i <= 10; i++) {
 			cache.put(i, 2);
 		}
-		System.out.println("put 1-10 limit cache：" + ImmutableSortedMap.copyOf(cache.asMap()) + "\n");
+		out("put 1-10 limit cache：" + ImmutableSortedMap.copyOf(cache.asMap()) + "\n");
 
 		for (int i = 11; i <= 15; i++) {
 			cache.put(i, 1); // 再次put cache，之前的cache会被回收
 		}
-		System.out.println("put 11-15 limit cache：" + ImmutableSortedMap.copyOf(cache.asMap()));
+		out("put 11-15 limit cache：" + ImmutableSortedMap.copyOf(cache.asMap()));
 	}
 	
 	@Test
 	public void testReadWriteEvictionCacheGC() throws InterruptedException, ExecutionException {
 		
-		System.out.println("cache init value: " + cache.asMap());
+		out("cache init value: " + cache.asMap());
 		
 		// 默认最先被缓存的数据被回收，后面的缓存会挤走最前面的
 		for (int i = 1; i <= 10; i++) {
 			cache.put(i, 2);
 		}
-		System.out.println("put 1-10 limit cache：" + ImmutableSortedMap.copyOf(cache.asMap()) + "\n");
+		out("put 1-10 limit cache：" + ImmutableSortedMap.copyOf(cache.asMap()) + "\n");
 
 		for (int i = 11; i <= 15; i++) {
 			// 访问特定的某些cache，这些访问的cache将没有被系统回收
@@ -178,6 +174,6 @@ public class WeigherBasedEvictionCacheTest {
 
 			cache.put(i, 2); // 再次put cache，之前的cache会被回收
 		}
-		System.out.println("put 11-15 limit cache：" + ImmutableSortedMap.copyOf(cache.asMap()));
+		out("put 11-15 limit cache：" + ImmutableSortedMap.copyOf(cache.asMap()));
 	}
 }
