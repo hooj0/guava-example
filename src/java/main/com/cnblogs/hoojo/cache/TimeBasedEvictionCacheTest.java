@@ -1,19 +1,15 @@
 package com.cnblogs.hoojo.cache;
 
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.cache.*;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSortedSet;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSortedSet;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 【基于容量回收-数量】缓存回收策略 超出指定size后回收
@@ -60,7 +56,8 @@ import com.google.common.collect.ImmutableSortedSet;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class TimeBasedEvictionCacheTest {
+@SuppressWarnings("ALL")
+public class TimeBasedEvictionCacheTest extends BasedTest {
 
 	private LoadingCache<String, Integer> cache; 
 	
@@ -76,12 +73,12 @@ public class TimeBasedEvictionCacheTest {
 				.removalListener(new RemovalListener<String, Integer>() { // 删除缓存给予监听通知
 					@Override
 					public void onRemoval(RemovalNotification<String, Integer> notification) {
-						System.out.println("==> size:" + cache.size() + ", remove cache: " + notification.getKey() + "=" + notification.getValue() + ", wasEvicted: " + notification.wasEvicted());
+						out("==> size:" + cache.size() + ", remove cache: " + notification.getKey() + "=" + notification.getValue() + ", wasEvicted: " + notification.wasEvicted());
 					}
 				}).build(new CacheLoader<String, Integer>() { // 缓存加载方式
 					@Override
 					public Integer load(String key) throws RuntimeException {
-						//System.out.println("load: " + key);
+						//out("load: " + key);
 						//return Optional.fromNullable(map.get(key)).or(System.identityHashCode(key));
 						return map.get(key);
 					}
@@ -98,7 +95,7 @@ public class TimeBasedEvictionCacheTest {
 		// expireAfterWrite 默认没有被创建的缓存
 		for (int i = 1; i <= 15; i++) {
 			cache.put("cache-" + i, i);
-			System.out.println(cache.asMap());
+			out(cache.asMap());
 		}
 
 		// 开启独立线程进行回收操作
@@ -127,13 +124,13 @@ public class TimeBasedEvictionCacheTest {
 					
 					// 手动清理缓存：由于长时间没有写入或读取操作，系统不能顺手帮忙清理过期的缓存
 					cache.cleanUp();
-					System.out.println(i + "-cleanUp...");
+					out(i + "-cleanUp...");
 				}
 			}
 		}).start();
 		
 		Thread.sleep(1000 * 60);
-		System.out.println("finish...");
+		out("finish...");
 		
 		cache.put("cache-1", 23);
 		cache.put("cache-2", 55);
@@ -142,7 +139,7 @@ public class TimeBasedEvictionCacheTest {
 		cache.getIfPresent("cache-3");
 		cache.getIfPresent("cache-4");
 		
-		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 	
 	/**
@@ -155,7 +152,7 @@ public class TimeBasedEvictionCacheTest {
 		// expireAfterAccess 默认没有被读/写访问，则回收
 		for (int i = 1; i <= 15; i++) {
 			cache.put("cache-" + i, i);
-			System.out.println(cache.asMap());
+			out(cache.asMap());
 		}
 
 		// 开启独立线程进行回收操作
@@ -183,15 +180,15 @@ public class TimeBasedEvictionCacheTest {
 					
 					// 手动清理缓存
 					cache.cleanUp();
-					System.out.println(i + "-cleanUp...");
+					out(i + "-cleanUp...");
 				}
 			}
 		}).start();
 		
 		Thread.sleep(1000 * 60);
-		System.out.println("finish...");
+		out("finish...");
 		
-		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 	
 	/**
@@ -205,10 +202,10 @@ public class TimeBasedEvictionCacheTest {
 	public void testPeriodEvictionCacheGC() throws InterruptedException {
 		
 		// 1、模拟写入一部分缓存
-		System.out.println("init");
+		out("init");
 		for (int i = 1; i <= 15; i++) {
 			cache.put("cache-" + i, i);
-			System.out.println(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+			out(ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 		}
 
 		/*new Thread(new Runnable() {
@@ -218,7 +215,7 @@ public class TimeBasedEvictionCacheTest {
 				while (true) {
 					try {
 						Thread.sleep(100);
-						System.out.println("==> size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+						out("==> size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 					} catch (InterruptedException e) {
 					}
 				}
@@ -227,11 +224,11 @@ public class TimeBasedEvictionCacheTest {
 		
 		// 2、超过指定缓存时间后
 		Thread.sleep(1000 * 12);
-		System.out.println("expired");
-		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out("expired");
+		out("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 		
 		Thread.sleep(1000);
-		System.out.println("read/write");
+		out("read/write");
 		
 		// 由于之前的缓存过期，在访问之前的缓存的时候，系统顺带清理下其他缓存 
 		try {
@@ -242,15 +239,15 @@ public class TimeBasedEvictionCacheTest {
 			// 回收部分过期资源，必触发RemovalListener
 			//cache.get("cache-" + 5);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			out(e.getMessage());
 		}
 
 		// 回收部分过期的资源，触发RemovalListener
 		//cache.put("cache-1", 23);
 		//cache.put("cache-2", 55);
 
-		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
-		System.out.println("read");
+		out("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out("read");
 		for (int i = 4; i <= 8; i++) {
 			// 访问会导致缓存回收，但有可能不触发 RemovalListener
 			cache.getIfPresent("cache-" + i);
@@ -261,15 +258,15 @@ public class TimeBasedEvictionCacheTest {
 				// 回收过期资源，必触发RemovalListener
 				//cache.get("cache-" + i);
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				out(e.getMessage());
 			}
 		}
 		
-		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 		
 		Thread.sleep(1000);
-		System.out.println("finish");
-		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out("finish");
+		out("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 	
 	/**
@@ -293,7 +290,7 @@ public class TimeBasedEvictionCacheTest {
 			Thread.sleep(100);
 		}
 		
-		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 	
 	/**
@@ -316,6 +313,6 @@ public class TimeBasedEvictionCacheTest {
 			Thread.sleep(100);
 		}
 		
-		System.out.println("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
+		out("size:" + cache.size() + ", cache view:" + ImmutableSortedSet.copyOf(cache.asMap().keySet()));
 	}
 }
