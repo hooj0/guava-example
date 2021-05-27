@@ -1,15 +1,16 @@
 package com.cnblogs.hoojo.concurrency;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.cnblogs.hoojo.concurrency.service._abstract.MyService;
 import com.cnblogs.hoojo.concurrency.service.execution.MyExecutionThreadService;
 import com.cnblogs.hoojo.concurrency.service.idle.MyIdleService;
 import com.cnblogs.hoojo.concurrency.service.scheduled.MyScheduledService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
-import com.google.common.util.concurrent.ServiceManager.Listener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
 服务管理器示例：
@@ -41,7 +42,8 @@ import com.google.common.util.concurrent.ServiceManager.Listener;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ServiceManagerTest {
+@SuppressWarnings("ALL")
+public class ServiceManagerTest extends BasedTest {
 	
 	public static void main(String[] args) {
 
@@ -54,54 +56,54 @@ public class ServiceManagerTest {
 		ServiceManager manager = new ServiceManager(services);
 		
 		// 监听各服务状态切换
-		manager.addListener(new Listener() {
+		manager.addListener(new ServiceManager.Listener() {
 			@Override
 			public void healthy() {
 				super.healthy();
 				
-				System.out.println("healthy...");
+				out("healthy...");
 			}
 
 			@Override
 			public void stopped() {
 				super.stopped();
 				
-				System.out.println("stopped...");
+				out("stopped...");
 			}
 
 			@Override
 			public void failure(Service service) {
 				super.failure(service);
 				
-				System.out.println("failure..." + service);
+				out("failure..." + service);
 			}
-		});
+		}, MoreExecutors.directExecutor());
 		
 		// 状态为索引返回当前所有服务的快照
-		System.out.println(manager.servicesByState());
+		out(manager.servicesByState());
 
 		// 开启服务
 		manager.startAsync();
-		System.out.println(manager.servicesByState());
+		out(manager.servicesByState());
 		
 		// 统计启动各服务时间
-		System.out.println(manager.startupTimes());
+		out(manager.startupTimes());
 		
 		// 会等待所有的服务达到Running状态
 		manager.awaitHealthy();
 		
 		// 返回一个Map对象，记录被管理的服务启动的耗时、以毫秒为单位，同时Map默认按启动时间排序。
-		System.out.println(manager.servicesByState());
+		out(manager.servicesByState());
 		
 		// 判断所有服务是否都在运行，如果所有的服务处于Running状态、会返回True
-		System.out.println(manager.isHealthy());
+		out(manager.isHealthy());
 
 		// 会等待所有服务达到终止状态
 		manager.awaitStopped();
-		System.out.println(manager.servicesByState());
+		out(manager.servicesByState());
 		
 		// 停止服务
 		manager.stopAsync();
-		System.out.println(manager.servicesByState());
+		out(manager.servicesByState());
 	}
 }
