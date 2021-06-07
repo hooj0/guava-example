@@ -1,21 +1,15 @@
 package com.cnblogs.hoojo.functional;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.base.Joiner;
+import com.google.common.collect.*;
+import com.google.common.collect.Maps.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Maps.EntryTransformer;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * 集合函数式编程
@@ -28,7 +22,8 @@ import com.google.common.collect.Maps.EntryTransformer;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class CollectTransformFunctionalTest {
+@SuppressWarnings("ALL")
+public class CollectTransformFunctionalTest extends BasedTest {
 
 	private Iterable<Object> records;
 	private Map<String, Integer> maps;
@@ -43,10 +38,6 @@ public class CollectTransformFunctionalTest {
 		maps.put("z", 2);
 		maps.put("x", 3);
 		maps.put("y", 5);
-	}
-	
-	private void print(Object text) {
-		System.out.println(text);
 	}
 	
 	@Test
