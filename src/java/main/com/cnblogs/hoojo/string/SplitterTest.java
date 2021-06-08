@@ -1,5 +1,6 @@
 package com.cnblogs.hoojo.string;
 
+import com.cnblogs.hoojo.BasedTest;
 import org.junit.Test;
 
 import com.google.common.base.CharMatcher;
@@ -133,12 +134,9 @@ import com.google.common.base.Splitter;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class SplitterTest {
+@SuppressWarnings("ALL")
+public class SplitterTest extends BasedTest {
 	
-	private static void print(Object text) {
-		System.out.println(text);
-	}
-
 	@SuppressWarnings("static-access")
 	@Test
 	public void testAPI() {
