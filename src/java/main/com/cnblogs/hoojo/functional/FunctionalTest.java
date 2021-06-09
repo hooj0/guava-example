@@ -1,22 +1,16 @@
 package com.cnblogs.hoojo.functional;
 
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.base.*;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Ordering;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
-
-import org.junit.Test;
-
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Equivalence;
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.base.Supplier;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Ordering;
 
 /**
  * 函数式编程
@@ -29,14 +23,15 @@ import com.google.common.collect.Ordering;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class FunctionalTest {
+@SuppressWarnings("ALL")
+public class FunctionalTest extends BasedTest {
 
 	@Test
 	public void testFun() {
 		Function<Character, Integer> fun = new Function<Character, Integer>() {
 			@Override
 			public Integer apply(Character input) {
-				System.out.println("fun-Character:" + input);
+				out("fun-Character:" + input);
 				return (int) input.charValue();
 			}
 		};
@@ -44,7 +39,7 @@ public class FunctionalTest {
 		Function<Number, Integer> after = new Function<Number, Integer>() {
 			@Override
 			public Integer apply(Number input) {
-				System.out.println("andThen-Number:" + input);
+				out("andThen-Number:" + input);
 				return input.intValue();
 			}
 		};
@@ -52,21 +47,21 @@ public class FunctionalTest {
 		Function<Number, Character> before = new Function<Number, Character>() {
 			@Override
 			public Character apply(Number input) {
-				System.out.println("compose-Number:" + input);
+				out("compose-Number:" + input);
 				return (char) input.intValue();
 			}
 		};
 		
-		System.out.println("fun result:" + fun.apply('a')); // fun result:97
-		System.out.println();
+		out("fun result:" + fun.apply('a')); // fun result:97
+		out();
 		
-		System.out.println("andThen-result:" + fun.andThen(after).apply('A'));
-		System.out.println();
+		out("andThen-result:" + fun.andThen(after).apply('A'));
+		out();
 		
-		System.out.println("compose-result:" + fun.compose(before).apply(65));
+		out("compose-result:" + fun.compose(before).apply(65));
 		
-		System.out.println("-------------------------");
-		System.out.println(fun.andThen(after).compose(before).apply(122));
+		out("-------------------------");
+		out(fun.andThen(after).compose(before).apply(122));
 	}
 	
 	@Test
@@ -85,29 +80,29 @@ public class FunctionalTest {
 			}
 		};
 		
-		System.out.println(foo.apply("jdk")); // true
-		System.out.println(foo.apply("api")); // false
+		out(foo.apply("jdk")); // true
+		out(foo.apply("api")); // false
 		
-		System.out.println(foo.test("jdk")); // true
-		System.out.println(foo.test("api")); // false
+		out(foo.test("jdk")); // true
+		out(foo.test("api")); // false
 		
 		// contains a && k
-		System.out.println(foo.and(bar).test("api")); // false
+		out(foo.and(bar).test("api")); // false
 		// contains a && k
-		System.out.println(foo.and(bar).test("api jdk")); // true
+		out(foo.and(bar).test("api jdk")); // true
 		
 		// not foo.test() = !foo.test()
-		System.out.println(foo.negate().test("api")); // true
-		System.out.println(foo.negate().test("jdk")); // false
+		out(foo.negate().test("api")); // true
+		out(foo.negate().test("jdk")); // false
 		
 		// ||
-		System.out.println(foo.or(bar).test("api")); // true
-		System.out.println(foo.or(bar).test("jdk")); // true
-		System.out.println(foo.or(bar).test("open")); // false
-		System.out.println(foo.or(bar).test("open jkd api")); // true
+		out(foo.or(bar).test("api")); // true
+		out(foo.or(bar).test("jdk")); // true
+		out(foo.or(bar).test("open")); // false
+		out(foo.or(bar).test("open jkd api")); // true
 		
 		// !(foo && bar || foo)
-		System.out.println(foo.and(bar).or(foo).negate().test("abcd"));
+		out(foo.and(bar).or(foo).negate().test("abcd"));
 	}
 	
 	@Test
@@ -120,7 +115,7 @@ public class FunctionalTest {
 			}
 		};
 		
-		System.out.println(currentTimeMillis.get());
+		out(currentTimeMillis.get());
 	}
 	
 	@Test
@@ -131,14 +126,14 @@ public class FunctionalTest {
 			@Override
 			public Character apply(Number input) {
 				Character data = (char) (input.intValue() + 1);
-				System.out.println("Number->Character:" + input + "->" + data);
+				out("Number->Character:" + input + "->" + data);
 				return data;
 			}
 		}, new Function<String, Integer>() {
 			@Override
 			public Integer apply(String input) {
 				int data = input.codePointAt(0) + 1;
-				System.out.println("String->Integer:" + input + "->" + data);
+				out("String->Integer:" + input + "->" + data);
 				return data;
 			}
 		});
@@ -146,22 +141,22 @@ public class FunctionalTest {
 		// String->Integer:A->66
 		// Number->Character:66->C
 		// C
-		System.out.println(comp.apply("A"));
-		System.out.println(comp.apply("a"));
+		out(comp.apply("A"));
+		out(comp.apply("a"));
 		
 		// 常量
 		Function<Object, Integer> cost = Functions.constant(12);
-		System.out.println(cost.apply(2)); // 12
+		out(cost.apply(2)); // 12
 		
 		Map<Object, Object> map = ImmutableMap.of("name", "jack", 65, 'A');
 		// map
-		System.out.println(Functions.forMap(map).apply(65)); // A
-		System.out.println(Functions.forMap(map, "NotFound").apply("age")); // NotFound
+		out(Functions.forMap(map).apply(65)); // A
+		out(Functions.forMap(map, "NotFound").apply("age")); // NotFound
 		
 		// default fun
-		System.out.println(Functions.identity().apply(3)); // 3
+		out(Functions.identity().apply(3)); // 3
 		// Object -> String
-		System.out.println(Functions.toStringFunction().apply(67) + 1); // 671
+		out(Functions.toStringFunction().apply(67) + 1); // 671
 		
 		Function<String, Boolean> bool = Functions.forPredicate(new Predicate<String>() {
 			@Override
@@ -170,11 +165,11 @@ public class FunctionalTest {
 			}
 		});
 		
-		System.out.println(bool.apply("jdk")); // true
-		System.out.println(bool.apply("api")); // false
+		out(bool.apply("jdk")); // true
+		out(bool.apply("api")); // false
 		
 		// factory
-		System.out.println(Functions.forSupplier(new Supplier<String>() {
+		out(Functions.forSupplier(new Supplier<String>() {
 			@Override
 			public String get() {
 				return "hi, guava examples!";
@@ -197,81 +192,81 @@ public class FunctionalTest {
 		};
 		
 		// const false
-		System.out.println(Predicates.alwaysFalse().test(null)); // false
+		out(Predicates.alwaysFalse().test(null)); // false
 		// const true
-		System.out.println(Predicates.alwaysTrue().apply(null)); // true
+		out(Predicates.alwaysTrue().apply(null)); // true
 		
 		// and &&
-		System.out.println(Predicates.and(foo, bar).apply("jdk api")); // true
-		System.out.println(Predicates.and(foo, bar).apply("guava api")); // false
+		out(Predicates.and(foo, bar).apply("jdk api")); // true
+		out(Predicates.and(foo, bar).apply("guava api")); // false
 		
 		// foo && bar && anonymous 
-		System.out.println(Predicates.and(foo, bar, (input) -> {
+		out(Predicates.and(foo, bar, (input) -> {
 			return input.contains("g");
 		}).test("jdk8 guava api")); // true
 		
-		System.out.println(Predicates.and(foo, bar, (input) -> {
+		out(Predicates.and(foo, bar, (input) -> {
 			return input.contains("g");
 		}).test("my guava api")); // false
 		
 		// or ||
-		System.out.println(Predicates.or(bar, foo).test("open")); // false
-		System.out.println(Predicates.or(bar, foo).test("jdk")); // true
-		System.out.println(Predicates.or(bar, foo, (input) -> { return input.contains("g"); }).test("guava")); // true
+		out(Predicates.or(bar, foo).test("open")); // false
+		out(Predicates.or(bar, foo).test("jdk")); // true
+		out(Predicates.or(bar, foo, (input) -> { return input.contains("g"); }).test("guava")); // true
 		
 		// assignable class
-		System.out.println(Predicates.subtypeOf(Number.class).apply(String.class)); // false
-		System.out.println(Predicates.subtypeOf(Number.class).apply(Integer.class)); // true
-		System.out.println(Predicates.subtypeOf(Number.class).apply(Long.class)); // true
-		System.out.println(Predicates.subtypeOf(Number.class).apply(Number.class)); // true
-		System.out.println(Predicates.subtypeOf(Number.class).apply(Object.class)); // false
+		out(Predicates.subtypeOf(Number.class).apply(String.class)); // false
+		out(Predicates.subtypeOf(Number.class).apply(Integer.class)); // true
+		out(Predicates.subtypeOf(Number.class).apply(Long.class)); // true
+		out(Predicates.subtypeOf(Number.class).apply(Number.class)); // true
+		out(Predicates.subtypeOf(Number.class).apply(Object.class)); // false
 		
-		System.out.println(Predicates.compose(foo, (Character input) -> {
+		out(Predicates.compose(foo, (Character input) -> {
 			return input + "";
 		}).test('z')); // false
 		
-		System.out.println(Predicates.compose(foo, (Character input) -> {
+		out(Predicates.compose(foo, (Character input) -> {
 			return input.toString();
 		}).test('k')); // true
 		
 		// contains
 		Predicate<CharSequence> regex = Predicates.contains(Pattern.compile("[a-z][0-9]"));
-		System.out.println(regex.test("jdk9")); // true
-		System.out.println(regex.test("KFC")); // false
+		out(regex.test("jdk9")); // true
+		out(regex.test("KFC")); // false
 		
 		// contains
-		System.out.println(Predicates.containsPattern("[0-9]").test("abc")); // false
-		System.out.println(Predicates.containsPattern("[0-9]").test("guava23")); // true
+		out(Predicates.containsPattern("[0-9]").test("abc")); // false
+		out(Predicates.containsPattern("[0-9]").test("guava23")); // true
 		
 		// equal
-		System.out.println(Predicates.equalTo("A").test("Z")); // false
-		System.out.println(Predicates.equalTo("A").test("A")); // true
+		out(Predicates.equalTo("A").test("Z")); // false
+		out(Predicates.equalTo("A").test("A")); // true
 		
 		// in
-		System.out.println(Predicates.in(Arrays.asList(1, 3, 5)).test(2)); // false
-		System.out.println(Predicates.in(Arrays.asList(1, 3, 5)).test(3)); // true
+		out(Predicates.in(Arrays.asList(1, 3, 5)).test(2)); // false
+		out(Predicates.in(Arrays.asList(1, 3, 5)).test(3)); // true
 		
 		// instanceOf
-		System.out.println(Predicates.instanceOf(Number.class).test("33")); // false
-		System.out.println(Predicates.instanceOf(Number.class).test(22)); // true
+		out(Predicates.instanceOf(Number.class).test("33")); // false
+		out(Predicates.instanceOf(Number.class).test(22)); // true
 		
 		// is null
-		System.out.println(Predicates.isNull().test(null)); // true
-		System.out.println(Predicates.isNull().test("")); // false
-		System.out.println(Predicates.isNull().test(2)); // false
+		out(Predicates.isNull().test(null)); // true
+		out(Predicates.isNull().test("")); // false
+		out(Predicates.isNull().test(2)); // false
 		
 		// not !
-		System.out.println(Predicates.not((input) -> {
+		out(Predicates.not((input) -> {
 			return input.toString().contains("u");
 		}).test("guava")); // false
 
-		System.out.println(Predicates.not((input) -> {
+		out(Predicates.not((input) -> {
 			return input.toString().contains("u");
 		}).test("jdk")); // true
 		
 		// not null
-		System.out.println(Predicates.notNull().test(null)); // false
-		System.out.println(Predicates.notNull().test("")); // true
+		out(Predicates.notNull().test(null)); // false
+		out(Predicates.notNull().test("")); // true
 	}
 	
 	@Test
@@ -286,7 +281,7 @@ public class FunctionalTest {
 				return false;
 			}
 		}).replaceFrom("abcdef", "#");
-		System.out.println(result); // #bcdef
+		out(result); // #bcdef
 		
 		Ordering<Integer> ordering = Ordering.<String>natural().onResultOf(new Function<Integer, String>() {
 			@Override
@@ -296,16 +291,16 @@ public class FunctionalTest {
 		});
 		
 		List<Integer> list = Arrays.asList(1, 5, 2, 0);
-		System.out.println(ordering.sortedCopy(list)); // [0, 1, 2, 5]
+		out(ordering.sortedCopy(list)); // [0, 1, 2, 5]
 		
-		System.out.println(Equivalence.identity().onResultOf(new Function<Integer, String>() {
+		out(Equivalence.identity().onResultOf(new Function<Integer, String>() {
 			@Override
 			public String apply(Integer input) {
 				return "cast-" + input;
 			}
 		}).equivalent(1, 2)); // false
 		
-		System.out.println(Equivalence.identity().onResultOf(new Function<Integer, String>() {
+		out(Equivalence.identity().onResultOf(new Function<Integer, String>() {
 			@Override
 			public String apply(Integer input) {
 				return "cast-" + input;
