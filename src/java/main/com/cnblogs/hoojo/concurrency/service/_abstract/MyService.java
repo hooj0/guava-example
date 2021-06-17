@@ -1,15 +1,13 @@
 package com.cnblogs.hoojo.concurrency.service._abstract;
 
-import java.util.List;
-
-import javax.annotation.concurrent.GuardedBy;
-
-import org.junit.Assert;
-
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
+import org.junit.Assert;
+
+import javax.annotation.concurrent.GuardedBy;
+import java.util.List;
 
 /**
  * 自定义的线程管理
@@ -39,6 +37,7 @@ import com.google.common.util.concurrent.Service;
  * @email hoojo_@126.com
  * @version 1.0
  */
+@SuppressWarnings("ALL")
 public class MyService extends AbstractService {
 
 	String fail;
