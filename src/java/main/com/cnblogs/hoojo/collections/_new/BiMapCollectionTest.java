@@ -1,5 +1,6 @@
 package com.cnblogs.hoojo.collections._new;
 
+import com.cnblogs.hoojo.BasedTest;
 import org.junit.Test;
 
 import com.google.common.collect.EnumBiMap;
@@ -49,7 +50,8 @@ import com.google.common.collect.ImmutableBiMap;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class BiMapCollectionTest {
+@SuppressWarnings("ALL")
+public class BiMapCollectionTest extends BasedTest {
 
 	@Test
 	public void testAPI() {
@@ -59,47 +61,47 @@ public class BiMapCollectionTest {
 		hash.put("a", 3);
 		hash.put("b", 4);
 		
-		System.out.println(hash); // {a=3, b=4}
-		System.out.println(hash.inverse()); // {3=a, 4=b}
-		System.out.println(hash.inverse().get(3)); // a
+		out(hash); // {a=3, b=4}
+		out(hash.inverse()); // {3=a, 4=b}
+		out(hash.inverse().get(3)); // a
 		
 		hash.put("b", 55);
-		System.out.println(hash); // {a=3, b=55}
+		out(hash); // {a=3, b=55}
 		
 		hash.forcePut("b", 23); // {a=3, b=23}
-		System.out.println(hash);
+		out(hash);
 		
-		System.out.println(hash.containsKey("a")); // true
-		System.out.println(hash.containsValue(4)); // false
-		System.out.println(hash.entrySet()); // [a=3, b=23]
-		System.out.println(hash.get("b")); // 23
-		System.out.println(hash.getOrDefault("c", 11)); // 11
+		out(hash.containsKey("a")); // true
+		out(hash.containsValue(4)); // false
+		out(hash.entrySet()); // [a=3, b=23]
+		out(hash.get("b")); // 23
+		out(hash.getOrDefault("c", 11)); // 11
 		
-		System.out.println(hash.putIfAbsent("99", 100)); // null
-		System.out.println(hash.putIfAbsent("99", 5)); // 100
-		System.out.println(hash); // {a=3, b=23, 99=100}
+		out(hash.putIfAbsent("99", 100)); // null
+		out(hash.putIfAbsent("99", 5)); // 100
+		out(hash); // {a=3, b=23, 99=100}
 		
 	}
 	
 	@Test
 	public void testBiMap() {
 		ImmutableBiMap<String, Integer> immu = ImmutableBiMap.of("z", 22, "b", 33);
-		System.out.println(immu); // {z=22, b=33}
-		System.out.println(immu.inverse()); // {22=z, 33=b}
+		out(immu); // {z=22, b=33}
+		out(immu.inverse()); // {22=z, 33=b}
 		
 	 	EnumBiMap<KeyEnum, ValEnum> enums = EnumBiMap.create(KeyEnum.class, ValEnum.class);
 	 	enums.put(KeyEnum.A, ValEnum._1);
 	 	//enums.put(KeyEnum.B, ValEnum._1); // exception，相同的值已经存在，不能直接用put方法，改用  forcePut
 	 	enums.forcePut(KeyEnum.B, ValEnum._1);
 	 	
-	 	System.out.println(enums); // {B=_1}
-	 	System.out.println(enums.inverse()); // {_1=B}
+	 	out(enums); // {B=_1}
+	 	out(enums.inverse()); // {_1=B}
 	 	
 	 	EnumHashBiMap<KeyEnum, String> hash = EnumHashBiMap.create(KeyEnum.class);
 	 	hash.put(KeyEnum.A, "china");
 	 	hash.put(KeyEnum.B, "jap");
 	 	
-	 	System.out.println(hash); // {A=china, B=jap}
+	 	out(hash); // {A=china, B=jap}
 	}
 	
 	enum KeyEnum {
