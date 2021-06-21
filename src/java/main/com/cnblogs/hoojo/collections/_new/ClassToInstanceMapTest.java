@@ -1,5 +1,6 @@
 package com.cnblogs.hoojo.collections._new;
 
+import com.cnblogs.hoojo.BasedTest;
 import org.junit.Test;
 
 import com.google.common.collect.MutableClassToInstanceMap;
@@ -15,7 +16,8 @@ import com.google.common.collect.MutableClassToInstanceMap;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ClassToInstanceMapTest {
+@SuppressWarnings("ALL")
+public class ClassToInstanceMapTest extends BasedTest {
 
 	// MutableClassToInstanceMap和 ImmutableClassToInstanceMap。
 	@Test
@@ -25,8 +27,8 @@ public class ClassToInstanceMapTest {
 		map.put(Object.class, "str");
 		map.put(Integer.class, 2);
 		
-		System.out.println(map); // {class java.lang.Object=str, class java.lang.Integer=2}
+		out(map); // {class java.lang.Object=str, class java.lang.Integer=2}
 		
-		System.out.println(map.getInstance(Integer.class)); // 2
+		out(map.getInstance(Integer.class)); // 2
 	}
 }
