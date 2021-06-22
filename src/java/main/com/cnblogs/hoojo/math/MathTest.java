@@ -1,14 +1,14 @@
 package com.cnblogs.hoojo.math;
 
-import java.math.BigInteger;
-import java.math.RoundingMode;
-
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.math.BigIntegerMath;
 import com.google.common.math.DoubleMath;
 import com.google.common.math.IntMath;
 import com.google.common.math.LongMath;
+import org.junit.Test;
+
+import java.math.BigInteger;
+import java.math.RoundingMode;
 
 /**
  * 数学运算工具类
@@ -165,7 +165,8 @@ import com.google.common.math.LongMath;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class MathTest {
+@SuppressWarnings("ALL")
+public class MathTest extends BasedTest {
 
 	@Test
 	public void testCheck() {
@@ -308,9 +309,5 @@ public class MathTest {
 	@Test
 	public void testBigIntegerMath() {
 		out(BigIntegerMath.ceilingPowerOfTwo(new BigInteger("20")));
-	}
-	
-	private void out(Object o) {
-		System.out.println(o);
 	}
 }
