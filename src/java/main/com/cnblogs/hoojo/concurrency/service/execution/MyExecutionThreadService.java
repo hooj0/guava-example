@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.AbstractExecutionThreadService;
  * @email hoojo_@126.com
  * @version 1.0
  */
+@SuppressWarnings("ALL")
 public class MyExecutionThreadService extends AbstractExecutionThreadService {
 
 	@Override
