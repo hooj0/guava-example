@@ -1,18 +1,10 @@
 package com.cnblogs.hoojo.collections._new;
 
-import java.util.Arrays;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.collect.*;
 import org.junit.Test;
 
-import com.google.common.collect.BoundType;
-import com.google.common.collect.ConcurrentHashMultiset;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableMultiset;
-import com.google.common.collect.ImmutableSortedMultiset;
-import com.google.common.collect.LinkedHashMultiset;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
-import com.google.common.collect.TreeMultiset;
+import java.util.Arrays;
 
 /**
  * 新集合对象
@@ -99,7 +91,8 @@ implement：
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class MultisetConllectonsTest {
+@SuppressWarnings("ALL")
+public class MultisetConllectonsTest extends BasedTest {
 
 	@Test
 	public void testMultisetAPI() {
@@ -111,33 +104,33 @@ public class MultisetConllectonsTest {
 			hash.add("china", 2);
 			hash.addAll(Arrays.asList("world", "java", "world"));
 			
-			System.out.println(hash); // [world x 2, java, china x 2, home]
+			out(hash); // [world x 2, java, china x 2, home]
 			
 			// 总数量、长度
-			System.out.println(hash.size()); // 6
+			out(hash.size()); // 6
 			// 去掉重复的元素
-			System.out.println(hash.elementSet()); // [world, java, china, home]
+			out(hash.elementSet()); // [world, java, china, home]
 			// entrySet 元素的集合
-			System.out.println(hash.entrySet()); // [world x 2, java, china x 2, home]
+			out(hash.entrySet()); // [world x 2, java, china x 2, home]
 
 			// 查看元素 java的数量
-			System.out.println(hash.count("java")); // 1
+			out(hash.count("java")); // 1
 			
 			hash.setCount("java", 5); // 设置 java 元素数量为 5
-			System.out.println(hash.count("java"));  // 5
+			out(hash.count("java"));  // 5
 			
 			// 设置home x 1 的元素个数为3
-			System.out.println(hash.setCount("home", 1, 3)); // true
-			System.out.println(hash); // [world x 2, java x 5, china x 2, home x 3]
+			out(hash.setCount("home", 1, 3)); // true
+			out(hash); // [world x 2, java x 5, china x 2, home x 3]
 			
 			hash.remove("java"); // 删除1个元素
-			System.out.println(hash.count("java")); // 4
+			out(hash.count("java")); // 4
 			
 			hash.remove("java", 2); // 删除2个元素
-			System.out.println(hash.count("java")); // 2
+			out(hash.count("java")); // 2
 			
 			hash.setCount("home", 0); // 等于 删除 home
-			hash.forEach(s -> System.out.println(s));
+			hash.forEach(s -> out(s));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -159,29 +152,29 @@ public class MultisetConllectonsTest {
 			tree.add("china", 2);
 			tree.addAll(Arrays.asList("world", "java", "world", "zbus", "zday", "zday"));
 			
-			System.out.println("tree: " + tree); // [china x 2, home, java, world x 2, zbus, zday x 2]
-			System.out.println(tree.descendingMultiset()); // 倒序 [zday x 2, zbus, world x 2, java, home, china x 2]
+			out("tree: " + tree); // [china x 2, home, java, world x 2, zbus, zday x 2]
+			out(tree.descendingMultiset()); // 倒序 [zday x 2, zbus, world x 2, java, home, china x 2]
 			
-			System.out.println("------------截取元素--------");
-			System.out.println(tree); // [china x 2, home, java, world x 2, zbus, zday x 2]
+			out("------------截取元素--------");
+			out(tree); // [china x 2, home, java, world x 2, zbus, zday x 2]
 			// 取从头部到指定元素区间的元素(上限)
-			System.out.println(tree.headMultiset("java", BoundType.CLOSED)); // 闭区间  <= java  [china x 2, home, java]
-			System.out.println(tree.headMultiset("java", BoundType.OPEN)); // 开区间 < java   [china x 2, home]
+			out(tree.headMultiset("java", BoundType.CLOSED)); // 闭区间  <= java  [china x 2, home, java]
+			out(tree.headMultiset("java", BoundType.OPEN)); // 开区间 < java   [china x 2, home]
 			
-			System.out.println(tree.tailMultiset("java", BoundType.CLOSED)); // 闭区间  >= java	[java, world x 2, zbus, zday x 2]
-			System.out.println(tree.tailMultiset("java", BoundType.OPEN)); // 开区间 > java		[world x 2, zbus, zday x 2]
+			out(tree.tailMultiset("java", BoundType.CLOSED)); // 闭区间  >= java	[java, world x 2, zbus, zday x 2]
+			out(tree.tailMultiset("java", BoundType.OPEN)); // 开区间 > java		[world x 2, zbus, zday x 2]
 			
-			System.out.println(tree.subMultiset("home", BoundType.CLOSED, "world", BoundType.CLOSED)); // [home, java, world x 2] 获取 home 到 world 元素中间的节点，包含起始元素
-			System.out.println(tree.subMultiset("home", BoundType.OPEN, "world", BoundType.OPEN)); // [java] 获取 home 到 world 元素中间的节点
-			System.out.println("------------截取元素--------");
+			out(tree.subMultiset("home", BoundType.CLOSED, "world", BoundType.CLOSED)); // [home, java, world x 2] 获取 home 到 world 元素中间的节点，包含起始元素
+			out(tree.subMultiset("home", BoundType.OPEN, "world", BoundType.OPEN)); // [java] 获取 home 到 world 元素中间的节点
+			out("------------截取元素--------");
 			
-			System.out.println(tree.firstEntry()); // china x 2 取到首个元素
+			out(tree.firstEntry()); // china x 2 取到首个元素
 			
-			System.out.println(tree.pollFirstEntry()); // china x 2 拉出首个元素
-			System.out.println("tree: " + tree); // [home, java, world x 2, zbus, zday x 2]
+			out(tree.pollFirstEntry()); // china x 2 拉出首个元素
+			out("tree: " + tree); // [home, java, world x 2, zbus, zday x 2]
 			
-			System.out.println(tree.pollLastEntry()); // zday x 2 拉出最后一个元素
-			System.out.println("tree: " + tree); // [home, java, world x 2, zbus]
+			out(tree.pollLastEntry()); // zday x 2 拉出最后一个元素
+			out("tree: " + tree); // [home, java, world x 2, zbus]
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -197,7 +190,7 @@ public class MultisetConllectonsTest {
 			linked.add(1);
 			linked.addAll(Lists.newArrayList(9, 99, 55));
 			
-			System.out.println(linked); // [2 x 2, 3 x 2, 5, 1 x 2, 7, 9, 99, 55]
+			out(linked); // [2 x 2, 3 x 2, 5, 1 x 2, 7, 9, 99, 55]
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -209,7 +202,7 @@ public class MultisetConllectonsTest {
 			concurrent.add(1);
 			concurrent.addAll(Lists.newArrayList(9, 99, 55));
 			
-			System.out.println(concurrent); // [1 x 2, 2 x 2, 3 x 2, 99, 5, 7, 55, 9]
+			out(concurrent); // [1 x 2, 2 x 2, 3 x 2, 99, 5, 7, 55, 9]
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -219,22 +212,22 @@ public class MultisetConllectonsTest {
 		try {
 			ImmutableMultiset<Integer> immutable = ImmutableMultiset.<Integer>builder().add(2, 3, 5, 1, 7, 2, 3).build();
 			
-			System.out.println(immutable); // [2 x 2, 3 x 2, 5, 1, 7]
-			System.out.println(immutable.asList()); // [2, 2, 3, 3, 5, 1, 7]
+			out(immutable); // [2 x 2, 3 x 2, 5, 1, 7]
+			out(immutable.asList()); // [2, 2, 3, 3, 5, 1, 7]
 			// immutable.of(2, 3);
 			
 			// 排序
 			ImmutableSortedMultiset<Integer> sort = ImmutableSortedMultiset.<Integer>of(2, 3, 5, 1, 7, 2, 3);
 			
-			System.out.println(sort); // [1, 2 x 2, 3 x 2, 5, 7]
-			System.out.println(sort.asList()); // [1, 2, 2, 3, 3, 5, 7]
+			out(sort); // [1, 2 x 2, 3 x 2, 5, 7]
+			out(sort.asList()); // [1, 2, 2, 3, 3, 5, 7]
 			
 			// 逆序
 			sort = ImmutableSortedMultiset.orderedBy(Ordering.<Integer>natural().reverse()).add(2, 3, 5, 1, 7, 2, 3).build();
-			System.out.println(sort); // [7, 5, 3 x 2, 2 x 2, 1]
+			out(sort); // [7, 5, 3 x 2, 2 x 2, 1]
 			
 			sort = ImmutableSortedMultiset.<Integer>reverseOrder().add(2, 3, 5, 1, 7, 2, 3, 77, 99).build();
-			System.out.println(sort); // [99, 77, 7, 5, 3 x 2, 2 x 2, 1]
+			out(sort); // [99, 77, 7, 5, 3 x 2, 2 x 2, 1]
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
