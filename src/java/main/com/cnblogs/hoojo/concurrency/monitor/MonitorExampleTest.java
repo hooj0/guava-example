@@ -1,19 +1,15 @@
 package com.cnblogs.hoojo.concurrency.monitor;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-
+import com.cnblogs.hoojo.BasedTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import java.lang.reflect.Method;
+import java.util.concurrent.*;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * 多线程并发测试用例
@@ -26,7 +22,8 @@ import static org.hamcrest.MatcherAssert.*;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class MonitorExampleTest {
+@SuppressWarnings("ALL")
+public class MonitorExampleTest extends BasedTest {
 
 	private MonitorExample monitorExample;
 	private ExecutorService executorService;
