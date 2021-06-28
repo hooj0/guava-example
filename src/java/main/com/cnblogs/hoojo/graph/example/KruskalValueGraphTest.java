@@ -1,20 +1,10 @@
 package com.cnblogs.hoojo.graph.example;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.cnblogs.hoojo.graph.AbstractGraphTests;
+import com.google.common.graph.*;
 import org.junit.Test;
 
-import com.cnblogs.hoojo.graph.AbstractGraphTests;
-import com.google.common.graph.ElementOrder;
-import com.google.common.graph.EndpointPair;
-import com.google.common.graph.MutableValueGraph;
-import com.google.common.graph.ValueGraph;
-import com.google.common.graph.ValueGraphBuilder;
+import java.util.*;
 
 /**
  * Kruskal（克鲁斯卡尔）算法
@@ -30,6 +20,7 @@ import com.google.common.graph.ValueGraphBuilder;
  * @email hoojo_@126.com
  * @version 1.0
  */
+@SuppressWarnings("ALL")
 public class KruskalValueGraphTest extends AbstractGraphTests {
 
 	private static final String V1 = "v1";
