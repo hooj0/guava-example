@@ -1,12 +1,12 @@
 package com.cnblogs.hoojo.range;
 
-import java.util.Arrays;
-
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
+import org.junit.Test;
+
+import java.util.Arrays;
 
 /**
  * Range 区间测试
@@ -32,7 +32,8 @@ import com.google.common.collect.Range;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class RangeTest {
+@SuppressWarnings("ALL")
+public class RangeTest extends BasedTest {
 
 	@Test
 	public void testCreate() {
@@ -154,9 +155,5 @@ public class RangeTest {
 		// 组合区间
 		out(Range.<Integer>closed(3, 5).span(Range.<Integer>open(4, 8))); // [3..8)
 		out(Range.<Integer>closed(3, 5).span(Range.<Integer>open(7, 8))); // [3..8)
-	}
-	
-	private void out(Object o) {
-		System.out.println(o);
 	}
 }
