@@ -1,13 +1,13 @@
 package com.cnblogs.hoojo.string;
 
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Arrays;
-
-import org.junit.Test;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Joiner 连接器
@@ -151,12 +151,9 @@ import com.google.common.collect.ImmutableMap;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class JoinerTest {
+@SuppressWarnings("ALL")
+public class JoinerTest extends BasedTest {
 
-	private static void print(Object text) {
-		System.out.println(text);
-	}
-	
 	@Test
 	public void testAPI() throws IOException {
 		// 跳过Null值，用“;”链接
