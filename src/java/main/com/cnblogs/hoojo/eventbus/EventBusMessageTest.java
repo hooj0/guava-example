@@ -1,5 +1,6 @@
 package com.cnblogs.hoojo.eventbus;
 
+import com.cnblogs.hoojo.BasedTest;
 import org.junit.Test;
 
 import com.google.common.eventbus.DeadEvent;
@@ -19,7 +20,8 @@ import com.google.common.eventbus.SubscriberExceptionHandler;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class EventBusMessageTest {
+@SuppressWarnings("ALL")
+public class EventBusMessageTest extends BasedTest {
 
 	/** 事件监听者 */
 	class EventBusMessageListeners {
@@ -31,8 +33,8 @@ public class EventBusMessageTest {
 			eventBus = new EventBus(new SubscriberExceptionHandler() {
 				@Override
 				public void handleException(Throwable exception, SubscriberExceptionContext context) {
-					System.out.println("事件：" + context.getEvent() + ", Subscriber：" + context.getSubscriber() + ", SubscriberMethod：" + context.getSubscriberMethod());
-					System.out.println("发生异常：" + exception.getMessage());
+					out("事件：" + context.getEvent() + ", Subscriber：" + context.getSubscriber() + ", SubscriberMethod：" + context.getSubscriberMethod());
+					out("发生异常：" + exception.getMessage());
 				}
 			});
 			
@@ -48,24 +50,24 @@ public class EventBusMessageTest {
 		// 监听特定事件
 		@Subscribe
 		public void handlerMessage(MessageEvent event) {
-			System.out.println("handlerMessage: " + event.getEvent() + ": " + event.getMessage());
+			out("handlerMessage: " + event.getEvent() + ": " + event.getMessage());
 		}
 		
 		// 监听Error 类型事件
 		@Subscribe
 		public void handlerErrorMessage(ErrorMessageEvent event) {
-			System.out.println("handlerErrorMessage: " + event.getEvent() + ": " + event.getMessage());
+			out("handlerErrorMessage: " + event.getEvent() + ": " + event.getMessage());
 		}
 		
 		// 监听 Info类型事件
 		@Subscribe
 		public void handlerInfoMessage(InfoMessageEvent event) {
-			System.out.println("handlerErrorMessage: " + event.getEvent() + ": " + event.getMessage());
+			out("handlerErrorMessage: " + event.getEvent() + ": " + event.getMessage());
 		}
 		
 		@Subscribe
 		public void handerDeadEvent(DeadEvent deadEvent) {
-			System.out.println("unknow event: " + deadEvent.getEvent() + ", source: " + deadEvent.getSource());
+			out("unknow event: " + deadEvent.getEvent() + ", source: " + deadEvent.getSource());
 		}
 
 		public EventBus getEventBus() {
