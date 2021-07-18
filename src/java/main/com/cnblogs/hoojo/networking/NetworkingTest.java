@@ -18,6 +18,7 @@ import com.google.common.net.InternetDomainName;
  * @email hoojo_@126.com
  * @version 1.0
  */
+@SuppressWarnings({ "ALL", "AlibabaAvoidCommentBehindStatement" })
 public class NetworkingTest extends BasedTest {
 
 	/*
