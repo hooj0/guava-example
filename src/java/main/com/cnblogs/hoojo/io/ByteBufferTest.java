@@ -1,9 +1,10 @@
 package com.cnblogs.hoojo.io;
 
+import com.cnblogs.hoojo.BasedTest;
+import org.junit.Test;
+
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
-
-import org.junit.Test;
 
 /**
  * nio byte buffer
@@ -53,7 +54,8 @@ import org.junit.Test;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ByteBufferTest {
+@SuppressWarnings("ALL")
+public class ByteBufferTest extends BasedTest {
 
 	@Test
 	public void test1() {
@@ -635,17 +637,5 @@ public class ByteBufferTest {
 		out(buffer.getShort(5));
 		
 		out(buffer);
-	}
-       
-	
-	private void out(ByteBuffer buff) {
-		for (int i = 0; i < buff.limit(); i++) {
-			System.out.print(buff.get(i) + ", ");
-		}
-		System.out.println();
-	}
-	
-	private void out(Object o) {
-		System.out.println(o);
 	}
 }
