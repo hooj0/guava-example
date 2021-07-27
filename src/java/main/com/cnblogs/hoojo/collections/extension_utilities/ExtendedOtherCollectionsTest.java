@@ -1,18 +1,13 @@
 package com.cnblogs.hoojo.collections.extension_utilities;
 
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.base.Joiner;
+import com.google.common.collect.*;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
-import org.junit.Test;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.AbstractSequentialIterator;
-import com.google.common.collect.ForwardingList;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-import com.google.common.collect.PeekingIterator;
 
 /**
  * 其他扩展工具类
@@ -25,7 +20,8 @@ import com.google.common.collect.PeekingIterator;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ExtendedOtherCollectionsTest {
+@SuppressWarnings("ALL")
+public class ExtendedOtherCollectionsTest extends BasedTest {
 
 	// PeekingIterator 能让你事先窥视[peek()]到下一次调用next()返回的元素
 	@Test
@@ -39,7 +35,7 @@ public class ExtendedOtherCollectionsTest {
 			
 		    if (iter.hasNext()) {
 		    	Integer next = iter.peek();
-		    	System.out.println("current->" + current + ", next->" + next);
+		    	out("current->" + current + ", next->" + next);
 		    }
 		}
 		/*output：
@@ -64,7 +60,7 @@ public class ExtendedOtherCollectionsTest {
 		    result.add(current);
 		}
 		
-		System.out.println(result); // [1, 2, 3, 2, 5]
+		out(result); // [1, 2, 3, 2, 5]
 	}
 	
 	// 自定义Iterator
@@ -118,13 +114,13 @@ public class ExtendedOtherCollectionsTest {
 		MyGuavaList<Integer> list = new MyGuavaList<Integer>();
 		list.addAll(Arrays.asList(1, 5, null, 3, 3, 2, null));
 		
-		System.out.println(list); // [1, 5, null, 3, 3, 2, null]
-		System.out.println(list.iterator().hasNext()); // true
-		System.out.println(list.myGuavaIter().peek()); // 1
+		out(list); // [1, 5, null, 3, 3, 2, null]
+		out(list.iterator().hasNext()); // true
+		out(list.myGuavaIter().peek()); // 1
 		
 		Iterator<Integer> iter = list.iterator(); // filter Null element
 		while (iter.hasNext()) {
-			System.out.println("elements: " + iter.next());
+			out("elements: " + iter.next());
 		}
 		/*
 			elements: 1
@@ -163,7 +159,7 @@ public class ExtendedOtherCollectionsTest {
 	                	result = s * previous;
 	                } 
 	                
-	                System.out.println("前一个元素: " + previous + ", 当前元素: " + s + ", 结果：" + result);
+	                out("前一个元素: " + previous + ", 当前元素: " + s + ", 结果：" + result);
 	                return result;
 	            }
 				
@@ -171,7 +167,7 @@ public class ExtendedOtherCollectionsTest {
 			}
 		};
 		
-		System.out.println(list); // [1, 5, null, 3, 3, 2, null]
+		out(list); // [1, 5, null, 3, 3, 2, null]
 		while (iter2.hasNext()) {
 			iter2.next();
 		}
@@ -186,7 +182,7 @@ public class ExtendedOtherCollectionsTest {
 			前一个元素: 90, 当前元素: null, 结果：90
 		 */
 		
-		System.out.println("---------------------------------");
+		out("---------------------------------");
 		Iterator<Integer> powersOfTwo = new AbstractSequentialIterator<Integer>(1) { // note the initial value!
 			protected Integer computeNext(Integer previous) {
 				return (previous == 1 << 10) ? null : previous * 2;
@@ -198,9 +194,9 @@ public class ExtendedOtherCollectionsTest {
 			result.add(powersOfTwo.next());
 		}
 		// elements: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024
-		System.out.println("elements: " + Joiner.on(", ").join(result));
+		out("elements: " + Joiner.on(", ").join(result));
 		
-		System.out.println("---------------------------------");
+		out("---------------------------------");
 		Iterator<Integer> iter3 = new AbstractSequentialIterator<Integer>(1) { // note the initial value!
 			protected Integer computeNext(Integer previous) {
 				//return (previous > 10000) ? null : (previous * 2 + 1);
@@ -213,6 +209,6 @@ public class ExtendedOtherCollectionsTest {
 			result.add(iter3.next());
 		}
 		// elements: 1, 2, 5, 26, 677, 458330
-		System.out.println("elements: " + Joiner.on(", ").join(result));
+		out("elements: " + Joiner.on(", ").join(result));
 	}
 }
