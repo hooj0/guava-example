@@ -1,18 +1,14 @@
 package com.cnblogs.hoojo.concurrency;
 
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.*;
+import org.junit.Test;
+
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.junit.Test;
-
-import com.google.common.base.Function;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 
 /**
  * 任务调度服务示例
@@ -25,7 +21,8 @@ import com.google.common.util.concurrent.MoreExecutors;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ApplicationTest {
+@SuppressWarnings("ALL")
+public class ApplicationTest extends BasedTest {
 
 	@SuppressWarnings("unused")
 	@Test
