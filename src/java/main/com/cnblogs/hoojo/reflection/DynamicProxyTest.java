@@ -1,13 +1,13 @@
 package com.cnblogs.hoojo.reflection;
 
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.reflect.AbstractInvocationHandler;
+import com.google.common.reflect.Reflection;
+import org.junit.Test;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
-import org.junit.Test;
-
-import com.google.common.reflect.AbstractInvocationHandler;
-import com.google.common.reflect.Reflection;
 
 /**
  * 动态代理
@@ -22,7 +22,8 @@ import com.google.common.reflect.Reflection;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class DynamicProxyTest {
+@SuppressWarnings("ALL")
+public class DynamicProxyTest extends BasedTest {
 
 	interface Foo {
 		
@@ -60,9 +61,5 @@ public class DynamicProxyTest {
 		};
 		
 		out(handler);
-	}
-	
-	private void out(Object o) {
-		System.out.println(o);
 	}
 }

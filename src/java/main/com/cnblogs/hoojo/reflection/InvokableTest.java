@@ -1,18 +1,17 @@
 package com.cnblogs.hoojo.reflection;
 
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.collect.Maps;
+import com.google.common.reflect.Invokable;
+import com.google.common.reflect.TypeToken;
+import org.junit.Test;
+
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
-
-import javax.annotation.Nullable;
-
-import org.junit.Test;
-
-import com.google.common.collect.Maps;
-import com.google.common.reflect.Invokable;
-import com.google.common.reflect.TypeToken;
 
 /**
  * 对象反射
@@ -27,7 +26,8 @@ import com.google.common.reflect.TypeToken;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class InvokableTest {
+@SuppressWarnings("ALL")
+public class InvokableTest extends BasedTest {
 
 	@SuppressWarnings("serial")
 	@Test
@@ -120,9 +120,5 @@ public class InvokableTest {
 		
 		// Invokable
 		out(invokable.getParameters().get(0).isAnnotationPresent(Nullable.class));
-	}
-	
-	private void out(Object o) {
-		System.out.println(o);
 	}
 }

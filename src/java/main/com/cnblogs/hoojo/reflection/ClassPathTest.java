@@ -1,10 +1,10 @@
 package com.cnblogs.hoojo.reflection;
 
-import java.io.IOException;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.reflect.ClassPath;
 import org.junit.Test;
 
-import com.google.common.reflect.ClassPath;
+import java.io.IOException;
 
 /**
  * 尽最大努力的类路径扫描
@@ -19,7 +19,8 @@ import com.google.common.reflect.ClassPath;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ClassPathTest {
+@SuppressWarnings("ALL")
+public class ClassPathTest extends BasedTest {
 
 	@Test
 	public void test1() throws IOException {
@@ -39,9 +40,5 @@ public class ClassPathTest {
 		for (ClassPath.ClassInfo classInfo : classPath.getTopLevelClassesRecursive("com.cnblogs.hoojo.functional")) {
 			out(classInfo.getName());
 		}
-	}
-	
-	private void out(Object o) {
-		System.out.println(o);
 	}
 }

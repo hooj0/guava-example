@@ -1,17 +1,17 @@
 package com.cnblogs.hoojo.reflection;
 
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.google.common.reflect.TypeParameter;
+import com.google.common.reflect.TypeToken;
+import org.junit.Test;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.junit.Test;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.google.common.reflect.TypeParameter;
-import com.google.common.reflect.TypeToken;
 
 /**
  * TypeToken是创建，操作，查询泛型类型（以及，隐含的类）对象的方法。
@@ -26,7 +26,8 @@ import com.google.common.reflect.TypeToken;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class TypeTokenTest {
+@SuppressWarnings("ALL")
+public class TypeTokenTest extends BasedTest {
 
 	@SuppressWarnings("serial")
 	@Test

@@ -1,5 +1,6 @@
 package com.cnblogs.hoojo.reflection;
 
+import com.cnblogs.hoojo.BasedTest;
 import org.junit.Test;
 
 import com.google.common.reflect.Reflection;
@@ -16,7 +17,8 @@ import com.google.common.reflect.Reflection;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class ClassLoadingTest {
+@SuppressWarnings("ALL")
+public class ClassLoadingTest extends BasedTest {
 
 	@Test
 	public void test1() {
