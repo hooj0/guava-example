@@ -1,22 +1,15 @@
 package com.cnblogs.hoojo.io;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel.MapMode;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.common.primitives.Bytes;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel.MapMode;
 
 /**
  * 文件操作
@@ -54,7 +47,8 @@ import com.google.common.primitives.Bytes;
 </tbody>
 </table>
  */
-public class FilesTest {
+@SuppressWarnings("ALL")
+public class FilesTest extends BasedTest {
 
 	File file;
 	
@@ -175,10 +169,5 @@ public class FilesTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	
-	private void out(Object o) {
-		System.out.println(o);
 	}
 }
