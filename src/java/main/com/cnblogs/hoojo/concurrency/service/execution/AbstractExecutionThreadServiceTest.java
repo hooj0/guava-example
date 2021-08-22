@@ -1,21 +1,6 @@
 package com.cnblogs.hoojo.concurrency.service.execution;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.cnblogs.hoojo.concurrency.testing.TearDown;
 import com.cnblogs.hoojo.concurrency.testing.TearDownStack;
 import com.cnblogs.hoojo.concurrency.testing.TestingExecutors;
@@ -24,6 +9,12 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.Service.Listener;
 import com.google.common.util.concurrent.Service.State;
+import org.junit.Test;
+
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.concurrent.*;
+
+import static org.junit.Assert.*;
 
 /**
  * AbstractExecutionThreadService 异步线程任务执行器示例
@@ -36,7 +27,8 @@ import com.google.common.util.concurrent.Service.State;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class AbstractExecutionThreadServiceTest {
+@SuppressWarnings("ALL")
+public class AbstractExecutionThreadServiceTest extends BasedTest {
 
 	private final TearDownStack tearDownStack = new TearDownStack(true);
 	private final CountDownLatch enterRun = new CountDownLatch(1);
@@ -60,28 +52,28 @@ public class AbstractExecutionThreadServiceTest {
 
 		@Override
 		public synchronized void starting() {
-			System.out.println("Listener.starting: " + service.state() + ", isRunning: " + service.isRunning());
+			out("Listener.starting: " + service.state() + ", isRunning: " + service.isRunning());
 		}
 
 		@Override
 		public synchronized void running() {
-			System.out.println("Listener.running: " + service.state() + ", isRunning: " + service.isRunning());
+			out("Listener.running: " + service.state() + ", isRunning: " + service.isRunning());
 		}
 
 		@Override
 		public synchronized void stopping(State from) {
-			System.out.println("Listener.stopping: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
+			out("Listener.stopping: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
 		}
 
 		@Override
 		public synchronized void terminated(State from) {
-			System.out.println("Listener.terminated: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
+			out("Listener.terminated: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
 		}
 
 		@Override
 		public synchronized void failed(State from, Throwable failure) {
-			System.out.println("Listener.failed: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
-			System.out.println("Listener.failed: " + failure.getMessage());
+			out("Listener.failed: " + service.state() + ", from:" + from + ", isRunning: " + service.isRunning());
+			out("Listener.failed: " + failure.getMessage());
 		}
 	}
 	
@@ -93,7 +85,7 @@ public class AbstractExecutionThreadServiceTest {
 				@Override
 				public void uncaughtException(Thread thread, Throwable e) {
 					thrownByExecutionThread = e;
-					System.out.println("uncaughtException: " + thread + ", Throwable: " + e);
+					out("uncaughtException: " + thread + ", Throwable: " + e);
 				}
 			});
 			executionThread.start();
@@ -114,64 +106,64 @@ public class AbstractExecutionThreadServiceTest {
 
 		@Override
 		protected void startUp() {
-			System.out.println("---------startUp--------");
+			out("---------startUp--------");
 			
-			System.out.println("startUpCalled: " + startUpCalled); // false
-			System.out.println("runCalled: " + runCalled); // false
-			System.out.println("shutDownCalled: " + shutDownCalled); // false
-			System.out.println("state: " + state()); // State.STARTING
+			out("startUpCalled: " + startUpCalled); // false
+			out("runCalled: " + runCalled); // false
+			out("shutDownCalled: " + shutDownCalled); // false
+			out("state: " + state()); // State.STARTING
 
 			startUpCalled = true;
 		}
 
 		@Override
 		protected void run() {
-			System.out.println("---------run--------start");
+			out("---------run--------start");
 			
-			System.out.println("startUpCalled: " + startUpCalled); // true
-			System.out.println("runCalled: " + runCalled); // false
-			System.out.println("shutDownCalled: " + shutDownCalled); // false
-			System.out.println("state: " + state()); // State.RUNNING
+			out("startUpCalled: " + startUpCalled); // true
+			out("runCalled: " + runCalled); // false
+			out("shutDownCalled: " + shutDownCalled); // false
+			out("state: " + state()); // State.RUNNING
 			
 			runCalled = true;
 
-			System.out.println("-----run-enterRun.countDown------");
+			out("-----run-enterRun.countDown------");
 			enterRun.countDown();
 			try {
-				System.out.println("-----run-exitRun.await------");
+				out("-----run-exitRun.await------");
 				exitRun.await();
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
 			}
 			
-			System.out.println("---------run---------finish");
+			out("---------run---------finish");
 		}
 
 		@Override
 		protected void shutDown() {
-			System.out.println("---------shutDown--------");
+			out("---------shutDown--------");
 			
 			shutDownCalled = true;
 
-			System.out.println("startUpCalled: " + startUpCalled); // true
-			System.out.println("runCalled: " + runCalled); // true
-			System.out.println("shutDownCalled: " + shutDownCalled); // true
-			System.out.println("state: " + state()); // State.RUNNING expectedShutdownState
+			out("startUpCalled: " + startUpCalled); // true
+			out("runCalled: " + runCalled); // true
+			out("shutDownCalled: " + shutDownCalled); // true
+			out("state: " + state()); // State.RUNNING expectedShutdownState
 			
 			assertEquals(expectedShutdownState, state());
 		}
 
 		@Override
 		protected void triggerShutdown() {
-			System.out.println("---------triggerShutdown--------");
+			out("---------triggerShutdown--------");
 			
-			System.out.println("-----triggerShutdown-exitRun.countDown------");
+			out("-----triggerShutdown-exitRun.countDown------");
 			exitRun.countDown(); // 导致triggerShutdown方法在run结束前运行完成
 		}
 
 		@Override
 		protected Executor executor() {
-			System.out.println("---------executor--------");
+			out("---------executor--------");
 			
 			return exceptionCatchingExecutor;
 		}
@@ -192,7 +184,7 @@ public class AbstractExecutionThreadServiceTest {
 		assertEquals(Service.State.RUNNING, service.state());
 
 		// 等待run函数运行完毕
-		System.out.println("-------test-enterRun.await------");
+		out("-------test-enterRun.await------");
 		enterRun.await(); // to avoid stopping the service until run() is invoked
 
 		// 1、stopAsync() -> doStop() & dispatch Lisener.stopping()
@@ -209,7 +201,7 @@ public class AbstractExecutionThreadServiceTest {
 
 		service.startAsync().awaitRunning();
 		// 在stopAsync 之前 ，run方法被执行完成
-		System.out.println("-------test-enterRun.await------");
+		out("-------test-enterRun.await------");
 		enterRun.await(); // to avoid stopping the service until run() is invoked
 
 		// stopAsync 只执行一次，triggerShutdown 也就触发运行一次
@@ -235,7 +227,7 @@ public class AbstractExecutionThreadServiceTest {
 		assertEquals(Service.State.RUNNING, service.state());
 
 		// run()运行结束，导致 triggerShutdown 没有在run之前完成
-		System.out.println("-------test-exitRun.countDown------");
+		out("-------test-exitRun.countDown------");
 		exitRun.countDown(); // the service will exit voluntarily
 		executionThread.join();
 
@@ -262,19 +254,19 @@ public class AbstractExecutionThreadServiceTest {
 		protected void startUp() {
 			startUpCalled = true;
 			
-			System.out.println("------startUp-----");
+			out("------startUp-----");
 			throw new UnsupportedOperationException("kaboom!");
 		}
 
 		@Override
 		protected void run() {
-			System.out.println("------run-----");
+			out("------run-----");
 			throw new AssertionError("run() should not be called");
 		}
 
 		@Override
 		protected Executor executor() {
-			System.out.println("------executor-----");
+			out("------executor-----");
 			return exceptionCatchingExecutor;
 		}
 	}
@@ -288,18 +280,18 @@ public class AbstractExecutionThreadServiceTest {
 
 		// startAsync() -> doStart() -> startUp() -> exception -> shutDown() -> notifyFailed()
 		service.startAsync();
-		System.out.println(service.state());
+		out(service.state());
 		try {
 			service.awaitRunning(); // 由于 notifyFailed() 没有执行 notifyStart() , 所以这里执行异常
 			fail();
 		} catch (IllegalStateException expected) {
-			System.out.println(expected.getCause()); // UnsupportedOperationException: kaboom!
+			out(expected.getCause()); // UnsupportedOperationException: kaboom!
 		}
 		executionThread.join();
 
 		assertTrue(service.startUpCalled);
 		assertEquals(Service.State.FAILED, service.state());
-		System.out.println(service.failureCause());
+		out(service.failureCause());
 	}
 
 	private class ThrowOnRunService extends AbstractExecutionThreadService {
@@ -308,24 +300,24 @@ public class AbstractExecutionThreadServiceTest {
 
 		@Override
 		protected void run() {
-			System.out.println("-----run----");
+			out("-----run----");
 			throw new UnsupportedOperationException("kaboom!");
 		}
 
 		@Override
 		protected void shutDown() {
-			System.out.println("-----shutDown----");
+			out("-----shutDown----");
 			
 			shutDownCalled = true;
 			if (throwOnShutDown) {
-				System.out.println("-----throwOnShutDown----");
+				out("-----throwOnShutDown----");
 				throw new UnsupportedOperationException("double kaboom!");
 			}
 		}
 
 		@Override
 		protected Executor executor() {
-			System.out.println("-----executor----");
+			out("-----executor----");
 			
 			return exceptionCatchingExecutor;
 		}
@@ -344,7 +336,7 @@ public class AbstractExecutionThreadServiceTest {
 		} catch (IllegalStateException expected) {
 			executionThread.join();
 			assertEquals(service.failureCause(), expected.getCause());
-			System.out.println(expected.getCause());
+			out(expected.getCause());
 		}
 		assertTrue(service.shutDownCalled);
 		assertEquals(Service.State.FAILED, service.state());
@@ -381,7 +373,7 @@ public class AbstractExecutionThreadServiceTest {
 		} catch (IllegalStateException expected) {
 			executionThread.join();
 			assertEquals(service.failureCause(), expected.getCause());
-			System.out.println(expected.getCause());
+			out(expected.getCause());
 		}
 
 		assertTrue(service.shutDownCalled);
@@ -392,9 +384,9 @@ public class AbstractExecutionThreadServiceTest {
 		
 		@Override
 		protected void run() {
-			System.out.println("--------run-------");
+			out("--------run-------");
 			try {
-				System.out.println("-----run-enterRun.await------");
+				out("-----run-enterRun.await------");
 				enterRun.await();
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
@@ -403,13 +395,13 @@ public class AbstractExecutionThreadServiceTest {
 
 		@Override
 		protected void shutDown() {
-			System.out.println("------shutDown------");
+			out("------shutDown------");
 			throw new UnsupportedOperationException("kaboom!");
 		}
 
 		@Override
 		protected Executor executor() {
-			System.out.println("------executor------");
+			out("------executor------");
 			return exceptionCatchingExecutor;
 		}
 	}
@@ -423,14 +415,14 @@ public class AbstractExecutionThreadServiceTest {
 		service.startAsync().awaitRunning();
 		assertEquals(Service.State.RUNNING, service.state());
 
-		System.out.println("----stopAsync----");
+		out("----stopAsync----");
 		service.stopAsync();
 		
 		enterRun.countDown();
 		executionThread.join();
 
 		assertEquals(Service.State.FAILED, service.state()); // 触发notifyFailed后，状态为 FAILED
-		System.out.println(service.failureCause()); // UnsupportedOperationException: kaboom!
+		out(service.failureCause()); // UnsupportedOperationException: kaboom!
 	}
 
 	private class TimeoutOnStartUp extends AbstractExecutionThreadService {
@@ -439,7 +431,7 @@ public class AbstractExecutionThreadServiceTest {
 			return new Executor() {
 				@Override
 				public void execute(Runnable command) {
-					System.out.println("executor.Runnable......." + command);
+					out("executor.Runnable......." + command);
 					
 					/*
 					不运行任务导致超时
@@ -452,7 +444,7 @@ public class AbstractExecutionThreadServiceTest {
 
 		@Override
 		protected void run() throws Exception {
-			System.out.println("run..............");
+			out("run..............");
 		}
 	}
 	
@@ -466,7 +458,7 @@ public class AbstractExecutionThreadServiceTest {
 			service.startAsync().awaitRunning(1, TimeUnit.MILLISECONDS);
 			//fail();
 		} catch (TimeoutException e) {
-			System.out.println(e.getMessage());//Timed out waiting for TimeoutOnStartUp [STARTING] to reach the RUNNING state.
+			out(e.getMessage());//Timed out waiting for TimeoutOnStartUp [STARTING] to reach the RUNNING state.
 		}
 	}
 
@@ -484,50 +476,50 @@ public class AbstractExecutionThreadServiceTest {
 
 		@Override
 		protected void startUp() throws Exception {
-			System.out.println("startUp……");
+			out("startUp……");
 			
 			assertEquals(0, startupCalled);
 			assertEquals(0, runCalled);
 			assertEquals(0, shutdownCalled);
 			startupCalled++;
 			
-			System.out.println("startUp…end…");
+			out("startUp…end…");
 		}
 
 		@Override
 		protected void run() throws Exception {
-			System.out.println("run……");
+			out("run……");
 			
 			assertEquals(1, startupCalled);
 			assertEquals(0, runCalled);
 			assertEquals(0, shutdownCalled);
 			runCalled++;
 			
-			System.out.println("run…end…");
+			out("run…end…");
 		}
 
 		@Override
 		protected void shutDown() throws Exception {
-			System.out.println("shutDown……");
+			out("shutDown……");
 			
 			assertEquals(1, startupCalled);
 			assertEquals(0, shutdownCalled);
 			assertEquals(Service.State.STOPPING, state());
 			shutdownCalled++;
 			
-			System.out.println("shutDown…end…");
+			out("shutDown…end…");
 		}
 
 		@Override
 		protected Executor executor() {
-			System.out.println("executor……");
+			out("executor……");
 			
 			return executor;
 		}
 
 		@Override
 		public void tearDown() throws Exception {
-			System.out.println("tearDown……");
+			out("tearDown……");
 			
 			executor.shutdown();
 		}
@@ -539,12 +531,12 @@ public class AbstractExecutionThreadServiceTest {
 		FakeService service = new FakeService() {
 			@Override
 			protected void startUp() throws Exception {
-				System.out.println("@Override.startUp.....");
+				out("@Override.startUp.....");
 				
 				super.startUp();
 				started.await(); // 线程进入等待
 				
-				System.out.println("@Override.startUp.....end");
+				out("@Override.startUp.....end");
 			}
 		};
 		
@@ -553,16 +545,16 @@ public class AbstractExecutionThreadServiceTest {
 		// startAsync() -> doStart() -> startUp() & if (isRunning()) { run() } & shutDown() & notifyFailed()
 		// 由于 Override.startUp 方法进入等待，导致程序无法进入running状态
 		// 程序没有进入 running状态，导致run方法不被运行
-		System.out.println("--------startAsync--------");
+		out("--------startAsync--------");
 		service.startAsync();
 		
-		System.out.println("--------stopAsync--------");
+		out("--------stopAsync--------");
 		service.stopAsync();
 		
-		System.out.println("--------countDown--------");
+		out("--------countDown--------");
 		started.countDown(); // Override.startUp() 执行完成，但程序已被转入STOPPING状态
 		
-		System.out.println("--------awaitTerminated--------");
+		out("--------awaitTerminated--------");
 		service.awaitTerminated(); // 程序运行完成
 		
 		assertEquals(Service.State.TERMINATED, service.state());
@@ -575,11 +567,11 @@ public class AbstractExecutionThreadServiceTest {
 	public void testStop_noStart() {
 		
 		FakeService service = new FakeService();
-		System.out.println(service.state());
+		out(service.state());
 		
 		// NEW 状态调用stop 直接完成
 		service.stopAsync().awaitTerminated();
-		System.out.println(service.state());
+		out(service.state());
 		
 		assertEquals(Service.State.TERMINATED, service.state());
 		assertEquals(0, service.startupCalled);
@@ -608,12 +600,12 @@ public class AbstractExecutionThreadServiceTest {
 		
 		RecordingListener.record(service);
 		try {
-			System.out.println("---------startAsync--------");
+			out("---------startAsync--------");
 			// 因为 executor 方法没有执行异步线程; TestingExecutors.NoOpScheduledExecutorService.execute()
 			service.startAsync().awaitRunning(1, TimeUnit.MILLISECONDS);
 			fail("Expected timeout"); // no executed
 		} catch (Exception e) {
-			System.out.println(e); //TimeoutException: Timed out waiting for Foo [STARTING] to reach the RUNNING state.
+			out(e); //TimeoutException: Timed out waiting for Foo [STARTING] to reach the RUNNING state.
 		}
 	}
 
