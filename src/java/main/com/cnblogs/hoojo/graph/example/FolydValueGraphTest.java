@@ -20,6 +20,7 @@ import com.cnblogs.hoojo.graph.AbstractGraphTests;
  * @email hoojo_@126.com
  * @version 1.0
  */
+@SuppressWarnings("ALL")
 public class FolydValueGraphTest extends AbstractGraphTests {
 
 	@Test
