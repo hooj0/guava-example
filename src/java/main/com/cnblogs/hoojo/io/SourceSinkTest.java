@@ -1,29 +1,6 @@
 package com.cnblogs.hoojo.io;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.CharBuffer;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import com.cnblogs.hoojo.BasedTest;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
@@ -32,16 +9,18 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import com.google.common.hash.Hashing;
-import com.google.common.io.ByteProcessor;
-import com.google.common.io.ByteSink;
-import com.google.common.io.ByteSource;
-import com.google.common.io.CharSink;
-import com.google.common.io.CharSource;
-import com.google.common.io.CharStreams;
-import com.google.common.io.FileWriteMode;
-import com.google.common.io.Files;
-import com.google.common.io.LineProcessor;
-import com.google.common.io.Resources;
+import com.google.common.io.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.CharBuffer;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * 源 与 汇 测试
@@ -190,7 +169,8 @@ import com.google.common.io.Resources;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class SourceSinkTest {
+@SuppressWarnings("ALL")
+public class SourceSinkTest extends BasedTest {
 
 	File file;
 	
@@ -581,9 +561,5 @@ public class SourceSinkTest {
 		
 		// 包装字符源
 		CharSource.wrap("");
-	}
-	
-	private void out(Object o) {
-		System.out.println(o);
 	}
 }
