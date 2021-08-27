@@ -1,33 +1,16 @@
 package com.cnblogs.hoojo.io;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import com.google.common.io.*;
+import org.junit.Test;
+
+import java.io.*;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.function.Consumer;
-
-import org.junit.Test;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteProcessor;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.CharStreams;
-import com.google.common.io.Files;
-import com.google.common.io.LineProcessor;
 
 /**
  * 字符流、字节流测试
@@ -75,7 +58,8 @@ import com.google.common.io.LineProcessor;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class StreamsTest {
+@SuppressWarnings("ALL")
+public class StreamsTest extends BasedTest {
 
 	@SuppressWarnings("resource")
 	@Test
@@ -264,9 +248,5 @@ public class StreamsTest {
 		out("------------------------------");
 		from = new FileReader("c://d.txt");
 		out(CharStreams.toString(from));
-	}
-
-	private void out(Object o) {
-		System.out.println(o);
 	}
 }
