@@ -1,15 +1,10 @@
 package com.cnblogs.hoojo.io;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
+import com.cnblogs.hoojo.BasedTest;
+import com.google.common.io.Closer;
 import org.junit.Test;
 
-import com.google.common.io.Closer;
+import java.io.*;
 
 /**
  * file & stream close resouces
@@ -24,7 +19,8 @@ import com.google.common.io.Closer;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class CloserTest {
+@SuppressWarnings("ALL")
+public class CloserTest extends BasedTest {
 
 	@Test
 	public void test1() throws IOException {
