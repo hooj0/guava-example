@@ -65,4 +65,22 @@ public class MoreExecutorsTest {
 			System.out.println("cancel");
 		});
 	}
+
+	@Test
+	public void test2() {
+		ExecutorService service = Executors.newFixedThreadPool(3);
+        service.submit(() -> {
+
+            while (true) {
+                System.out.println("...1.....");
+                TimeUnit.SECONDS.sleep(5);
+            }
+        });
+
+        // 逐渐关闭给定的执行者服务，首先禁用新提交，并在必要时取消剩余的任务
+        MoreExecutors.shutdownAndAwaitTermination(service, 60, TimeUnit.SECONDS);
+        MoreExecutors.platformThreadFactory().newThread(() -> {
+            System.out.println("cancel");
+        });
+	}
 }
